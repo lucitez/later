@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"later.co/pkg/client/user"
+	"later.co/pkg/server/user"
 )
 
 func main() {
