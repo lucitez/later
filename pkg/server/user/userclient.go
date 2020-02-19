@@ -1,26 +1,24 @@
 package user
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"later.co/pkg/later"
+	userRepository "later.co/pkg/repository/user"
 )
-
-// User Binding from json
-type User struct {
-	ID   uuid.UUID `form:"id" json:"id" binding:"required"`
-	Name string    `form:"name" json:"name" binding:"required"`
-}
 
 // RegisterEndpoints defines handlers for endpoints for the user service
 func RegisterEndpoints(router *gin.Engine) {
-	router.POST("/user/create", createUser)
-	router.GET("/user/by-id", getUserByID)
+	router.POST("/user/sign-up", signUp)
+	router.GET("/user/by-id", byID)
 }
 
-func createUser(context *gin.Context) {
-	var json User
+func signUp(context *gin.Context) {
+	var json later.UserSignUpRequestBody
 
 	err := context.ShouldBindJSON(&json)
 
@@ -32,13 +30,34 @@ func createUser(context *gin.Context) {
 	context.JSON(http.StatusOK, json)
 }
 
-func getUserByID(context *gin.Context) {
-	id := context.DefaultQuery("id", "")
+func byID(context *gin.Context) {
+	id := context.Query("id")
 
 	if id == "" {
 		context.String(http.StatusBadRequest, "Parameter id is required\n")
 		return
 	}
 
-	context.String(http.StatusOK, "Hello %s\n", id)
+	idAsUUID, err := uuid.Parse(id)
+
+	if err != nil {
+		context.String(http.StatusBadRequest, "Parameter id must be a uuid\n")
+		return
+	}
+
+	user, err := userRepository.ByID(idAsUUID)
+
+	if err != nil {
+		fmt.Println(err)
+		context.String(http.StatusNotFound, "User does not exist\n")
+		return
+	}
+
+	response, err := json.Marshal(user)
+
+	if err != nil {
+		context.String(http.StatusInternalServerError, "Error converting object into json")
+	}
+
+	context.String(http.StatusOK, string(response))
 }
