@@ -1,4 +1,4 @@
-package user
+package userserver
 
 import (
 	"encoding/json"
@@ -7,18 +7,19 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"later.co/pkg/later"
-	userRepository "later.co/pkg/repository/user"
+	"later.co/pkg/later/user"
+	"later.co/pkg/repository/userrepo"
+	"later.co/pkg/request"
 )
 
 // RegisterEndpoints defines handlers for endpoints for the user service
 func RegisterEndpoints(router *gin.Engine) {
-	router.POST("/user/sign-up", signUp)
-	router.GET("/user/by-id", byID)
+	router.POST("/users/sign-up", signUp)
+	router.GET("/users/by-id", byID)
 }
 
 func signUp(context *gin.Context) {
-	var json later.UserSignUpRequestBody
+	var json request.UserSignUpRequestBody
 
 	err := context.ShouldBindJSON(&json)
 
@@ -27,7 +28,25 @@ func signUp(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, json)
+	user, err := user.New(
+		json.Username,
+		json.Email,
+		json.PhoneNumber,
+		true)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	createdUser, err := userrepo.Insert(user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error_type": "On Insert", "error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, createdUser)
 }
 
 func byID(context *gin.Context) {
@@ -45,7 +64,7 @@ func byID(context *gin.Context) {
 		return
 	}
 
-	user, err := userRepository.ByID(idAsUUID)
+	user, err := userrepo.ByID(idAsUUID)
 
 	if err != nil {
 		fmt.Println(err)
