@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     username text NOT NULL,
     email text,
-    phone_number int,
+    phone_number text,
 
     created_at timestamp with time zone NOT NULL default now(),
     signed_up_at timestamp with time zone,
@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TRIGGER update_users BEFORE INSERT OR UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_users_on_username ON users(username);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_users_on_email ON users(email);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_users_on_phone_number ON users(phone_number) WHERE deleted_at IS NULL;
 
