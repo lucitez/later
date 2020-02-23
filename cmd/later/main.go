@@ -6,9 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"later.co/pkg/repository"
 
-	userrepo "later.co/pkg/repository/user"
+	"later.co/pkg/repository/userrepo"
 
-	userserver "later.co/pkg/server/user"
+	"later.co/pkg/server/userserver"
 )
 
 func main() {
