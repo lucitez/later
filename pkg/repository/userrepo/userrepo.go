@@ -65,3 +65,41 @@ func ByID(id uuid.UUID) (*user.User, error) {
 
 	return &user, nil
 }
+
+// All returns all users with a limit
+func All(limit int) ([]user.User, error) {
+	users := []user.User{}
+
+	rows, err := DB.Query(`SELECT * FROM users LIMIT $1`, limit)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var user user.User
+		err := rows.Scan(
+			&user.ID,
+			&user.Username,
+			&user.Email,
+			&user.PhoneNumber,
+			&user.CreatedAt,
+			&user.SignedUpAt,
+			&user.UpdatedAt,
+			&user.DeletedAt)
+
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

@@ -10,15 +10,15 @@ import (
 
 // User object
 type User struct {
-	ID          uuid.UUID
-	Username    string
-	Email       wrappers.NullString
-	PhoneNumber wrappers.NullString
+	ID          uuid.UUID           `json:"id"`
+	Username    string              `json:"username"`
+	Email       wrappers.NullString `json:"email"`
+	PhoneNumber wrappers.NullString `json:"phone_number"`
 
-	CreatedAt  time.Time
-	SignedUpAt wrappers.NullTime
-	UpdatedAt  time.Time
-	DeletedAt  wrappers.NullTime
+	CreatedAt  time.Time         `json:"created_at"`
+	SignedUpAt wrappers.NullTime `json:"signed_up_at"`
+	UpdatedAt  time.Time         `json:"updated_at"`
+	DeletedAt  wrappers.NullTime `json:"deleted_at"`
 }
 
 // New constructor for creating a new user
