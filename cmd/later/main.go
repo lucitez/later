@@ -6,8 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"later.co/pkg/repository"
 
+	"later.co/pkg/repository/contentrepo"
+	"later.co/pkg/repository/domainrepo"
 	"later.co/pkg/repository/userrepo"
 
+	"later.co/pkg/server/contentserver"
 	"later.co/pkg/server/userserver"
 )
 
@@ -21,8 +24,11 @@ func main() {
 	}
 
 	userrepo.DB = db
+	domainrepo.DB = db
+	contentrepo.DB = db
 
 	userserver.RegisterEndpoints(router)
+	contentserver.RegisterEndpoints(router)
 
 	router.Run(":8000")
 }
