@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS users
 CREATE TRIGGER update_users BEFORE INSERT OR UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_users_on_username ON users(username);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_users_on_email ON users(email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_users_on_username ON users(username) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_users_on_email ON users(email) WHERE deleted_at IS NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_users_on_phone_number ON users(phone_number) WHERE deleted_at IS NULL;
 
 -- Used to keep transaction of all shares of content back and forth.
@@ -47,9 +47,13 @@ CREATE TABLE IF NOT EXISTS shares
 -- but passing along only works when person A sends article X to person B and B sends to C (linked by content.id)
 CREATE TABLE IF NOT EXISTS content (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-    media_type text,
-    url text NOT NULL,
-    num_shares int NOT NULL DEFAULT 1 CHECK (num_shares > 0),
+    title TEXT NOT NULL,
+    description TEXT,
+    image_url TEXT,
+    content_type TEXT,
+    url TEXT NOT NULL,
+    domain TEXT NOT NULL,
+    shares int NOT NULL DEFAULT 0 CHECK (shares >= 0),
 
     created_at timestamp with time zone NOT NULL default now(),
     updated_at timestamp with time zone NOT NULL default now()
