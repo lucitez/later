@@ -43,7 +43,7 @@ func ByID(id uuid.UUID) (*user.User, error) {
 	var user user.User
 
 	statement := `
-	SELECT * FROM USERS 
+	SELECT * FROM users 
 	WHERE id = $1
 	`
 

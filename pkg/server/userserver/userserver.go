@@ -100,5 +100,4 @@ func allUsers(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, users)
-
 }

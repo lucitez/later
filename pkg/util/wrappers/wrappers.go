@@ -12,6 +12,24 @@ type NullString struct {
 	sql.NullString
 }
 
+// NewNullString constructor for NullTime
+func NewNullString(str *string) *NullString {
+
+	var nullString sql.NullString
+
+	if str == nil {
+		nullString = sql.NullString{
+			String: "",
+			Valid:  false}
+	} else {
+		nullString = sql.NullString {
+			String: *str,
+			Valid: true}
+	}
+
+	return &NullString{nullString}
+}
+
 // NullInt64 wraps sql.NullInt64 and implements Marshalling for serialization / deserialization
 type NullInt64 struct {
 	sql.NullInt64

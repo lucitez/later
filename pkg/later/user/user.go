@@ -43,7 +43,7 @@ func New(
 		signedUpAt = *wrappers.NewNullTime(now)
 	}
 
-	f := User{
+	user := User{
 		ID:          newUUID,
 		Username:    username,
 		Email:       email,
@@ -53,5 +53,5 @@ func New(
 		CreatedAt: now,
 		UpdatedAt: now}
 
-	return &f, nil
+	return &user, nil
 }
