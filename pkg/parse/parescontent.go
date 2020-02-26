@@ -12,6 +12,18 @@ import (
 	"later.co/pkg/util/wrappers"
 )
 
+type contentMetadata struct {
+	title       *string
+	description *string
+	imageURL    *string
+}
+
+type headerContent struct {
+	title       *string
+	description *string
+	imageURL    *string
+}
+
 // ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
 func ContentFromURL(url string) (*content.Content, error) {
 
@@ -27,11 +39,11 @@ func ContentFromURL(url string) (*content.Content, error) {
 		return nil, err
 	}
 
-	var title, description, imageURL *string
+	var contentMetadata *contentMetadata
 
 	switch {
 	case domain == nil:
-		title, description, imageURL, err = parseContentDefault(url, urlDomain)
+		contentMetadata, err = contentMetadataDefault(url, urlDomain)
 	}
 
 	if err != nil {
@@ -43,9 +55,9 @@ func ContentFromURL(url string) (*content.Content, error) {
 	}
 
 	newContent, err := content.New(
-		*title,
-		*wrappers.NewNullString(description),
-		*wrappers.NewNullString(imageURL),
+		*contentMetadata.title,
+		*wrappers.NewNullString(contentMetadata.description),
+		*wrappers.NewNullString(contentMetadata.imageURL),
 		*wrappers.NewNullString(contentType),
 		url,
 		urlDomain)
@@ -57,25 +69,26 @@ func ContentFromURL(url string) (*content.Content, error) {
 	return newContent, nil
 }
 
-func parseContentDefault(url string, urlDomain string) (*string, *string, *string, error) {
+// TODO dont parse entire doc, just go to header and go thru all meta tags
+func contentMetadataDefault(url string, urlDomain string) (*contentMetadata, error) {
 
 	resp, err := http.Get(url)
 
 	if resp.StatusCode != 200 {
-		return nil, nil, nil, err
+		return nil, err
 	}
 
 	doc, err := html.Parse(resp.Body)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 
-	var title, description, imageURL *string
+	var headContent headerContent
 	var parse func(*html.Node)
 
 	parse = func(node *html.Node) {
 		if node.Type == html.ElementNode && node.Data == "head" {
-			title, description, imageURL, err = parseHead(node.FirstChild)
+			headContent, err = parseHead(node.FirstChild)
 		}
 		for currNode := node.FirstChild; currNode != nil; currNode = currNode.NextSibling {
 			parse(currNode)
@@ -85,35 +98,38 @@ func parseContentDefault(url string, urlDomain string) (*string, *string, *strin
 	parse(doc)
 
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 
-	if title == nil {
-		return nil, nil, nil, errors.New("Title could not be found")
+	if headContent.title == nil {
+		return nil, errors.New("Title could not be found")
 	}
 
-	return title, description, imageURL, nil
+	contentMetadata := contentMetadata{
+		title:       headContent.title,
+		description: headContent.description,
+		imageURL:    headContent.imageURL}
+
+	return &contentMetadata, nil
 }
 
-func parseHead(node *html.Node) (*string, *string, *string, error) {
+func parseHead(node *html.Node) (headerContent, error) {
 
-	var title *string
-	var description *string
-	var imageURL *string
+	var headerContent headerContent
 
-	for c := node; c != nil; c = c.NextSibling {
+	for currNode := node; currNode != nil; currNode = currNode.NextSibling {
 
-		if c.Type == html.ElementNode && c.Data == "title" {
-			title = &c.FirstChild.Data
+		if currNode.Type == html.ElementNode && currNode.Data == "title" {
+			headerContent.title = &currNode.FirstChild.Data
 		}
 
-		if c.Type == html.ElementNode && c.Data == "meta" {
+		if currNode.Type == html.ElementNode && currNode.Data == "meta" {
 
 			var name string
 			var property string
 			var content *string
 
-			for _, attr := range c.Attr {
+			for _, attr := range currNode.Attr {
 				switch attr.Key {
 				case "name":
 					name = attr.Val
@@ -126,12 +142,12 @@ func parseHead(node *html.Node) (*string, *string, *string, error) {
 
 			switch {
 			case name == "description":
-				description = content
+				headerContent.description = content
 			case property == "og:image":
-				imageURL = content
+				headerContent.imageURL = content
 			}
 		}
 	}
 
-	return title, description, imageURL, nil
+	return headerContent, nil
 }

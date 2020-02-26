@@ -35,11 +35,10 @@ CREATE TABLE IF NOT EXISTS shares
 (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     content_id uuid NOT NULL,
-    sender uuid NOT NULL,
-    reciever uuid NOT NULL,
-    is_read boolean NOT NULL DEFAULT false,
+    sent_by_user_id uuid NOT NULL,
+    recipient_user_id uuid NOT NULL,
 
-    sent_at timestamp with time zone NOT NULL DEFAULT now(),
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
     opened_at timestamp with time zone
 );
 
