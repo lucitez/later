@@ -24,10 +24,8 @@ func Insert(content *content.Content) (*content.Content, error) {
 		image_url,
 		content_type,
 		url,
-		content,
-		shares,
-		created_at,
-		updated_at
+		domain,
+		shares
 	)
 	VALUES (
 		$1,
@@ -37,9 +35,7 @@ func Insert(content *content.Content) (*content.Content, error) {
 		$5,
 		$6,
 		$7,
-		$8,
-		$9,
-		$10
+		$8
 	)
 	`
 
@@ -52,10 +48,7 @@ func Insert(content *content.Content) (*content.Content, error) {
 		content.ContentType,
 		content.URL,
 		content.Domain,
-		content.Shares,
-		content.Shares,
-		content.CreatedAt,
-		content.UpdatedAt)
+		content.Shares)
 
 	if err != nil {
 		return nil, err
@@ -83,7 +76,6 @@ func ByID(id uuid.UUID) (*content.Content, error) {
 		&content.ContentType,
 		&content.URL,
 		&content.Domain,
-		&content.Shares,
 		&content.Shares,
 		&content.CreatedAt,
 		&content.UpdatedAt)
@@ -117,7 +109,6 @@ func All(limit int) ([]content.Content, error) {
 			&content.ContentType,
 			&content.URL,
 			&content.Domain,
-			&content.Shares,
 			&content.Shares,
 			&content.CreatedAt,
 			&content.UpdatedAt)

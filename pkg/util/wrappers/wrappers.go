@@ -22,9 +22,9 @@ func NewNullString(str *string) *NullString {
 			String: "",
 			Valid:  false}
 	} else {
-		nullString = sql.NullString {
+		nullString = sql.NullString{
 			String: *str,
-			Valid: true}
+			Valid:  true}
 	}
 
 	return &NullString{nullString}
@@ -41,11 +41,20 @@ type NullTime struct {
 }
 
 // NewNullTime constructor for NullTime
-func NewNullTime(time time.Time) *NullTime {
-	return &NullTime{
-		sql.NullTime{
-			Time:  time,
-			Valid: true}}
+func NewNullTime(tim *time.Time) *NullTime {
+	var nullTime sql.NullTime
+
+	if tim == nil {
+		nullTime = sql.NullTime{
+			Time:  time.Now(),
+			Valid: false}
+	} else {
+		nullTime = sql.NullTime{
+			Time:  *tim,
+			Valid: true}
+	}
+
+	return &NullTime{nullTime}
 }
 
 // MarshalJSON ...

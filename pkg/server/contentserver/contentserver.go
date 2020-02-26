@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"later.co/pkg/parse"
+	"later.co/pkg/repository/contentrepo"
 	"later.co/pkg/request"
 )
 
@@ -23,10 +24,12 @@ func create(context *gin.Context) {
 		return
 	}
 
-	_, err = parse.ContentFromURL(json.URL)
+	content, err := parse.ContentFromURL(json.URL)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	contentrepo.Insert(content)
 }

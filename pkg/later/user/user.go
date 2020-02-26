@@ -40,7 +40,7 @@ func New(
 	var signedUpAt wrappers.NullTime
 
 	if signingUp == true {
-		signedUpAt = *wrappers.NewNullTime(now)
+		signedUpAt = *wrappers.NewNullTime(&now)
 	}
 
 	user := User{
