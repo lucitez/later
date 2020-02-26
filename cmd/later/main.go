@@ -8,9 +8,11 @@ import (
 
 	"later.co/pkg/repository/contentrepo"
 	"later.co/pkg/repository/domainrepo"
+	"later.co/pkg/repository/sharerepo"
 	"later.co/pkg/repository/userrepo"
 
 	"later.co/pkg/server/contentserver"
+	"later.co/pkg/server/shareserver"
 	"later.co/pkg/server/userserver"
 )
 
@@ -26,9 +28,11 @@ func main() {
 	userrepo.DB = db
 	domainrepo.DB = db
 	contentrepo.DB = db
+	sharerepo.DB = db
 
 	userserver.RegisterEndpoints(router)
 	contentserver.RegisterEndpoints(router)
+	shareserver.RegisterEndpoints(router)
 
 	router.Run(":8000")
 }
