@@ -24,6 +24,10 @@ type headerContent struct {
 	imageURL    *string
 }
 
+func (headerContent *headerContent) isPopulated() bool {
+	return headerContent.title != nil && headerContent.description != nil && headerContent.imageURL != nil
+}
+
 // ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
 func ContentFromURL(url string) (*content.Content, error) {
 
@@ -69,9 +73,7 @@ func ContentFromURL(url string) (*content.Content, error) {
 	return newContent, nil
 }
 
-// TODO dont parse entire doc, just go to header and go thru all meta tags
 func contentMetadataDefault(url string, urlDomain string) (*contentMetadata, error) {
-
 	resp, err := http.Get(url)
 
 	if resp.StatusCode != 200 {
@@ -79,23 +81,18 @@ func contentMetadataDefault(url string, urlDomain string) (*contentMetadata, err
 	}
 
 	doc, err := html.Parse(resp.Body)
+
 	if err != nil {
 		return nil, err
 	}
 
-	var headContent headerContent
-	var parse func(*html.Node)
+	head, err := findHead(doc)
 
-	parse = func(node *html.Node) {
-		if node.Type == html.ElementNode && node.Data == "head" {
-			headContent, err = parseHead(node.FirstChild)
-		}
-		for currNode := node.FirstChild; currNode != nil; currNode = currNode.NextSibling {
-			parse(currNode)
-		}
+	if err != nil {
+		return nil, err
 	}
 
-	parse(doc)
+	headContent, err := parseHead(head)
 
 	if err != nil {
 		return nil, err
@@ -113,11 +110,27 @@ func contentMetadataDefault(url string, urlDomain string) (*contentMetadata, err
 	return &contentMetadata, nil
 }
 
-func parseHead(node *html.Node) (headerContent, error) {
+func findHead(node *html.Node) (*html.Node, error) {
+
+	if node.Type == html.ElementNode && node.Data == "head" {
+		return node, nil
+	}
+
+	if node.FirstChild == nil {
+		if node.NextSibling != nil {
+			return findHead(node.NextSibling)
+		}
+		return nil, errors.New("Head could not be found")
+	}
+
+	return findHead(node.FirstChild)
+}
+
+func parseHead(head *html.Node) (headerContent, error) {
 
 	var headerContent headerContent
 
-	for currNode := node; currNode != nil; currNode = currNode.NextSibling {
+	for currNode := head.FirstChild; currNode != nil; currNode = currNode.NextSibling {
 
 		if currNode.Type == html.ElementNode && currNode.Data == "title" {
 			headerContent.title = &currNode.FirstChild.Data

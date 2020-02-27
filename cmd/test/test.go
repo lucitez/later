@@ -19,11 +19,9 @@ func main() {
 
 	domainrepo.DB = db
 
-	content, err := parse.ContentFromURL("https://soundcloud.com/itskforest/stwo-kmh-lovin-u")
+	_, err = parse.ContentFromURL("https://soundcloud.com/itskforest/stwo-kmh-lovin-u")
 
 	if err != nil {
 		fmt.Print(err)
 	}
-
-	fmt.Print(content)
 }
