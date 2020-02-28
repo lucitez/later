@@ -68,8 +68,9 @@ CREATE TABLE IF NOT EXISTS user_content (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     share_id uuid NOT NULL,
     content_id uuid NOT NULL,
+    content_type text,
     user_id uuid NOT NULL,
-    sender_type text NOT NULL, -- [self, friend, us]
+    sent_by uuid NOT NULL, -- [self, friend, us]
 
     created_at timestamp with time zone NOT NULL default now(),
     updated_at timestamp with time zone NOT NULL default now(),

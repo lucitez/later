@@ -45,6 +45,7 @@ func ContentFromURL(url string) (*content.Content, error) {
 
 	var contentMetadata *contentMetadata
 
+	// TODO just pass a pointer in as an argument
 	switch {
 	case domain == nil:
 		contentMetadata, err = contentMetadataDefault(url, urlDomain)

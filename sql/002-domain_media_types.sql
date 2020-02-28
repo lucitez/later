@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE IF NOT EXISTS domains (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     domain TEXT NOT NULL,
@@ -13,3 +15,5 @@ CREATE TRIGGER update_domains BEFORE INSERT OR UPDATE ON domains
 
 CREATE UNIQUE INDEX idx_uniq_domains_on_domain ON domains(domain)
 WHERE deleted_at IS NULL;
+
+COMMIT;
