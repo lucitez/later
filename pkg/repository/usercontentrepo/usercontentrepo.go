@@ -2,7 +2,6 @@ package usercontentrepo
 
 import (
 	"database/sql"
-	"fmt"
 
 	// Postgres driver
 	"github.com/google/uuid"
@@ -134,35 +133,56 @@ func Feed(
 	contentType *string,
 	archived *bool) ([]usercontent.UserContent, error) {
 
+	tableName := "user_content"
+	userIDString := userID.String()
+
 	userContents := []usercontent.UserContent{}
 
-	statement := `
-	SELECT * FROM user_content
-	WHERE user_id = $1
-	AND deleted_at IS NULL
-	`
-	whens := []string{}
-	arguments := []string{userID.String()}
-	orders := []string{}
+	selectStatments := []repository.Select{
+		repository.Select{
+			TableName:  tableName,
+			ColumnName: "*"}}
+
+	whereStatements := []repository.Where{}
+	orderStatements := []repository.Order{}
+
+	whereStatements = append(whereStatements,
+		repository.Where{
+			TableName:  tableName,
+			ColumnName: "user_id",
+			Argument:   &userIDString})
 
 	if senderType != nil {
-		whens = append(whens, `sender_type`)
-		arguments = append(arguments, *senderType)
+		where := repository.Where{
+			TableName:  tableName,
+			ColumnName: "sender_type",
+			Argument:   senderType}
+		whereStatements = append(whereStatements, where)
 	}
 
 	if contentType != nil {
-		whens = append(whens, `content_type`)
-		arguments = append(arguments, *contentType)
+		where := repository.Where{
+			TableName:  tableName,
+			ColumnName: "content_type",
+			Argument:   contentType}
+		whereStatements = append(whereStatements, where)
 	}
 
 	if archived != nil && *archived == true {
-		statement = statement + `AND archived_at IS NOT NULL`
-		orders = append(orders, `archived_at`)
+		where := repository.Where{
+			TableName:  tableName,
+			ColumnName: "archived_at IS NOT NULL",
+			Argument:   nil}
+		whereStatements = append(whereStatements, where)
 	}
 
-	statement = statement + repository.ConstructWhens(whens, 2)
+	query := repository.Query{
+		TableName:        tableName,
+		SelectStatements: selectStatments,
+		WhereStatements:  whereStatements,
+		OrderStatements:  orderStatements}
 
-	rows, err := repository.QueryRowsWithArguments(DB, statement, arguments)
+	rows, err := DB.Query(query.GenerateQuery(), query.GenerateArguments()...)
 
 	if err != nil {
 		return nil, err
