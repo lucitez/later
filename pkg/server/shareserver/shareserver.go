@@ -5,17 +5,39 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"later.co/pkg/later/share"
-	"later.co/pkg/later/usercontent"
+	"later.co/pkg/manager/sharemanager"
 	"later.co/pkg/parse"
 	"later.co/pkg/repository/contentrepo"
-	"later.co/pkg/repository/sharerepo"
-	"later.co/pkg/repository/usercontentrepo"
 	"later.co/pkg/request"
 )
 
 // RegisterEndpoints defines handlers for endpoints for the user service
 func RegisterEndpoints(router *gin.Engine) {
-	router.POST("/shares/new", new)
+	router.POST("/shares/forward", forwardShare)
+	router.POST("/shares/new/by-user-id", newByUserID)
+	router.POST("/shares/new/by-phone-number", newByPhoneNumber)
+}
+
+/**
+*	1. Already have content from the share reference
+*	For each user in recipients list:
+*	2. Create new share
+*	3. Create new user_content
+*	4. Send notification
+ */
+func forwardShare(context *gin.Context) {
+
+}
+
+/**
+*	1. If phone number does belong to an existing user, send error response. Client should present an option
+*	to add this person as a friend.
+*	2. Parse content from URL and create entry in `contents` table
+*	3. If phone number does not belong to an existing user, send SMS with URL, Title, and link to us in app store
+*	4.
+ */
+func newByPhoneNumber(context *gin.Context) {
+
 }
 
 /**
@@ -23,8 +45,8 @@ func RegisterEndpoints(router *gin.Engine) {
 *	2. Insert share into `shares` table
 *	3. Create `user_content` from this share.
  */
-func new(context *gin.Context) {
-	var shareCreateRequestBody request.ShareCreateRequestBody
+func newByUserID(context *gin.Context) {
+	var shareCreateRequestBody request.ShareCreateByUserIDRequestBody
 
 	err := context.ShouldBindJSON(&shareCreateRequestBody)
 
@@ -49,42 +71,21 @@ func new(context *gin.Context) {
 	}
 
 	/* create share with inserted content */
-	share, err := share.New(
-		content.ID,
-		shareCreateRequestBody.SenderUserID,
-		shareCreateRequestBody.RecipientUserID)
 
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	createBodies := shareCreateRequestBody.ToShareCreateBodies(content)
+
+	shares := []share.Share{}
+
+	for _, createBody := range createBodies {
+		share, err := sharemanager.Create(createBody)
+
+		if err != nil {
+			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		shares = append(shares, *share)
 	}
 
-	share, err = sharerepo.Insert(share)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error_type": "On Insert", "error": err.Error()})
-		return
-	}
-
-	/* create and insert usercontent */
-	usercontent, err := usercontent.New(
-		share.ID,
-		content.ID,
-		content.ContentType,
-		shareCreateRequestBody.RecipientUserID,
-		shareCreateRequestBody.SenderUserID)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	_, err = usercontentrepo.Insert(usercontent)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	context.JSON(http.StatusOK, share)
+	context.JSON(http.StatusOK, shares)
 }

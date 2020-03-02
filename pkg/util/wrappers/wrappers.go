@@ -5,6 +5,8 @@ import (
 
 	"database/sql"
 	"encoding/json"
+
+	"github.com/google/uuid"
 )
 
 // NullString wraps sql.NullString and implements Marshalling for serialization / deserialization
@@ -55,6 +57,12 @@ func NewNullTime(tim *time.Time) *NullTime {
 	}
 
 	return &NullTime{nullTime}
+}
+
+// NullUUID wraps uuid.UUID and implements Marshalling
+type NullUUID struct {
+	id uuid.UUID
+	valid bool
 }
 
 // MarshalJSON ...
@@ -128,6 +136,31 @@ func (nullTime *NullTime) UnmarshalJSON(data []byte) error {
 		nullTime.Valid = true
 	} else {
 		nullTime.Valid = false
+	}
+	return nil
+}
+
+// MarshalJSON ...
+func (nullUUID NullUUID) MarshalJSON() ([]byte, error) {
+	if nullUUID.valid {
+		return json.Marshal(nullUUID.id)
+	}
+
+	return json.Marshal(nil)
+}
+
+// UnmarshalJSON ...
+func (nullUUID *NullUUID) UnmarshalJSON(data []byte) error {
+	// Unmarshalling into a pointer will let us detect null
+	var id *uuid.UUID
+	if err := json.Unmarshal(data, &id); err != nil {
+		return err
+	}
+	if id != nil {
+		nullUUID.id = *id
+		nullUUID.valid = true
+	} else {
+		nullUUID.valid = false
 	}
 	return nil
 }

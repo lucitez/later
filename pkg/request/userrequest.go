@@ -6,5 +6,5 @@ import "later.co/pkg/util/wrappers"
 type UserSignUpRequestBody struct {
 	Username    string              `form:"username" json:"username" binding:"required"`
 	Email       wrappers.NullString `form:"email" json:"email"`
-	PhoneNumber wrappers.NullString `form:"phone_number" json:"phone_number,string"`
+	PhoneNumber wrappers.NullString `form:"phone_number" json:"phone_number"`
 }

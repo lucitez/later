@@ -11,7 +11,7 @@ import (
 // User object
 type User struct {
 	ID          uuid.UUID           `json:"id"`
-	Username    string              `json:"username"`
+	Username    wrappers.NullString `json:"username"`
 	Email       wrappers.NullString `json:"email"`
 	PhoneNumber wrappers.NullString `json:"phone_number"`
 
@@ -24,7 +24,7 @@ type User struct {
 // New constructor for creating a new user
 // TODO validate email, phone number
 func New(
-	username string,
+	username wrappers.NullString,
 	email wrappers.NullString,
 	phoneNumber wrappers.NullString,
 	signingUp bool) (*User, error) {

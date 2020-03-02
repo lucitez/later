@@ -2,10 +2,12 @@ package usercontentserver
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"later.co/pkg/repository/usercontentrepo"
+	"later.co/pkg/util/stringutil"
 )
 
 // RegisterEndpoints defines handlers for endpoints for the user service
@@ -18,6 +20,9 @@ func feed(context *gin.Context) {
 	userID := context.Query("user_id")
 	senderType := context.Query("sender_type")
 	contentType := context.Query("content_type")
+	archivedQuery := context.Query("archived")
+
+	archived, err := strconv.ParseBool(archivedQuery)
 
 	if userID == "" {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter user_id is required"})
@@ -27,15 +32,15 @@ func feed(context *gin.Context) {
 	userIDAsUUID, err := uuid.Parse(userID)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter id must be a uuid"})
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter user_id must be a uuid"})
 		return
 	}
 
 	userContent, err := usercontentrepo.Feed(
 		userIDAsUUID,
-		nullIfBlank(&senderType),
-		nullIfBlank(&contentType),
-		nil)
+		stringutil.NullIfBlank(&senderType),
+		stringutil.NullIfBlank(&contentType),
+		&archived)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -43,11 +48,4 @@ func feed(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, userContent)
-}
-
-func nullIfBlank(str *string) *string {
-	if str != nil && *str == "" {
-		return nil
-	}
-	return str
 }

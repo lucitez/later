@@ -12,7 +12,7 @@ $update_updated_at$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS users
 (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-    username text NOT NULL,
+    username text,
     email text,
     phone_number text,
 
