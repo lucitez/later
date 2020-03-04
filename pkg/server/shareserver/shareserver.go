@@ -1,21 +1,25 @@
 package shareserver
 
 import (
+	"errors"
 	"net/http"
 
+	"later.co/pkg/body"
+
 	"github.com/gin-gonic/gin"
-	"later.co/pkg/later/share"
+	"later.co/pkg/later/user"
 	"later.co/pkg/manager/sharemanager"
+	"later.co/pkg/manager/usermanager"
 	"later.co/pkg/parse"
 	"later.co/pkg/repository/contentrepo"
+	"later.co/pkg/repository/userrepo"
 	"later.co/pkg/request"
 )
 
 // RegisterEndpoints defines handlers for endpoints for the user service
 func RegisterEndpoints(router *gin.Engine) {
-	router.POST("/shares/forward", forwardShare)
-	router.POST("/shares/new/by-user-id", newByUserID)
-	router.POST("/shares/new/by-phone-number", newByPhoneNumber)
+	router.POST("/shares/forward", forward)
+	router.POST("/shares/new", new)
 }
 
 /**
@@ -25,19 +29,59 @@ func RegisterEndpoints(router *gin.Engine) {
 *	3. Create new user_content
 *	4. Send notification
  */
-func forwardShare(context *gin.Context) {
+func forward(context *gin.Context) {
+	var requestBody request.ShareForwardRequestBody
 
-}
+	err := context.ShouldBindJSON(&requestBody)
 
-/**
-*	1. If phone number does belong to an existing user, send error response. Client should present an option
-*	to add this person as a friend.
-*	2. Parse content from URL and create entry in `contents` table
-*	3. If phone number does not belong to an existing user, send SMS with URL, Title, and link to us in app store
-*	4.
- */
-func newByPhoneNumber(context *gin.Context) {
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	userIds := requestBody.RecipientUserIDs
+
+	if requestBody.PhoneNumber.Valid {
+		userFromPhoneNumber, err := userFromPhoneNumber(requestBody.PhoneNumber.String)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		userIds = append(userIds, userFromPhoneNumber.ID)
+	}
+
+	content, err := contentrepo.ByID(requestBody.ContentID)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if content == nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Content not found"})
+		return
+	}
+
+	var createBodies []body.ShareCreateBody
+
+	for _, recipientUserID := range userIds {
+		createBody := body.ShareCreateBody{
+			Content:         *content,
+			SenderUserID:    requestBody.SenderUserID,
+			RecipientUserID: recipientUserID}
+
+		createBodies = append(createBodies, createBody)
+	}
+
+	shares, err := sharemanager.CreateMultiple(createBodies)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, shares)
 }
 
 /**
@@ -45,18 +89,30 @@ func newByPhoneNumber(context *gin.Context) {
 *	2. Insert share into `shares` table
 *	3. Create `user_content` from this share.
  */
-func newByUserID(context *gin.Context) {
-	var shareCreateRequestBody request.ShareCreateByUserIDRequestBody
+func new(context *gin.Context) {
+	var requestBody request.ShareCreateRequestBody
 
-	err := context.ShouldBindJSON(&shareCreateRequestBody)
+	err := context.ShouldBindJSON(&requestBody)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	userIds := requestBody.RecipientUserIDs
+
+	if requestBody.PhoneNumber.Valid {
+		userFromPhoneNumber, err := userFromPhoneNumber(requestBody.PhoneNumber.String)
+		if err != nil {
+			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		userIds = append(userIds, userFromPhoneNumber.ID)
+	}
+
 	/* get and insert content from url */
-	content, err := parse.ContentFromURL(shareCreateRequestBody.URL)
+	content, err := parse.ContentFromURL(requestBody.URL)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -72,20 +128,52 @@ func newByUserID(context *gin.Context) {
 
 	/* create share with inserted content */
 
-	createBodies := shareCreateRequestBody.ToShareCreateBodies(content)
+	var createBodies []body.ShareCreateBody
 
-	shares := []share.Share{}
+	for _, recipientUserID := range userIds {
+		createBody := body.ShareCreateBody{
+			Content:         *content,
+			SenderUserID:    requestBody.SenderUserID,
+			RecipientUserID: recipientUserID}
 
-	for _, createBody := range createBodies {
-		share, err := sharemanager.Create(createBody)
+		createBodies = append(createBodies, createBody)
+	}
 
-		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+	shares, err := sharemanager.CreateMultiple(createBodies)
 
-		shares = append(shares, *share)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	context.JSON(http.StatusOK, shares)
+}
+
+/**
+*	1. If phone number does belong to an existing user that has signed up, send error response. Client should present an option
+*	to add this person as a friend.
+*	2. Parse content from URL and create entry in `contents` table
+*	3. If phone number does not belong to an existing user or belongs to an existing user that has not signed up,
+*	send SMS with URL, Title, and link to us in app store
+ */
+func userFromPhoneNumber(phoneNumber string) (*user.User, error) {
+	user, err := userrepo.ByPhoneNumber(phoneNumber)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if user != nil && user.SignedUpAt.Valid {
+		return nil, errors.New("existing_user_not_friend")
+	}
+
+	if user == nil {
+		user, err = usermanager.NewUserFromPhoneNumber(phoneNumber)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

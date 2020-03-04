@@ -38,6 +38,20 @@ func Insert(user *user.User) (*user.User, error) {
 	return user, nil
 }
 
+func scanRowIntoUser(user *user.User, row *sql.Row) error {
+	err := row.Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.PhoneNumber,
+		&user.CreatedAt,
+		&user.SignedUpAt,
+		&user.UpdatedAt,
+		&user.DeletedAt)
+
+	return err
+}
+
 // ByID gets a user by id
 func ByID(id uuid.UUID) (*user.User, error) {
 	var user user.User
@@ -49,15 +63,27 @@ func ByID(id uuid.UUID) (*user.User, error) {
 
 	row := DB.QueryRow(statement, id)
 
-	err := row.Scan(
-		&user.ID,
-		&user.Username,
-		&user.Email,
-		&user.PhoneNumber,
-		&user.CreatedAt,
-		&user.SignedUpAt,
-		&user.UpdatedAt,
-		&user.DeletedAt)
+	err := scanRowIntoUser(&user, row)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// ByPhoneNumber gets a user by their phone number
+func ByPhoneNumber(phoneNumber string) (*user.User, error) {
+	var user user.User
+
+	statement := `
+	SELECT * FROM users 
+	WHERE phone_number = $1
+	`
+
+	row := DB.QueryRow(statement, phoneNumber)
+
+	err := scanRowIntoUser(&user, row)
 
 	if err != nil {
 		return nil, err

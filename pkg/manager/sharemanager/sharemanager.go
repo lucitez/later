@@ -8,7 +8,27 @@ import (
 	"later.co/pkg/repository/usercontentrepo"
 )
 
+// CreateMultiple creates multiple shares from multiple bodies
+func CreateMultiple(createBodies []body.ShareCreateBody) ([]share.Share, error) {
+	shares := []share.Share{}
+
+	for _, createBody := range createBodies {
+		share, err := Create(createBody)
+
+		if err != nil {
+			return nil, err
+		}
+
+		shares = append(shares, *share)
+	}
+
+	return shares, nil
+}
+
 // Create creates a share and usercontent
+// Should probably do the notification stuff here
+// TODO how do we want to increment total # shares? maybe just unique user_ids on shares table per content_id?
+// TODO how do we want to send notifications? get user after creating the user content, if they have signed up, send notif, else send sms
 func Create(body body.ShareCreateBody) (*share.Share, error) {
 	share, err := share.New(
 		body.Content.ID,

@@ -2,11 +2,13 @@ package usercontentrepo
 
 import (
 	"database/sql"
+	"strconv"
 
 	// Postgres driver
 	"github.com/google/uuid"
 	"later.co/pkg/later/usercontent"
 	"later.co/pkg/repository"
+	"later.co/pkg/response"
 )
 
 // DB is this repository's database connection
@@ -131,58 +133,57 @@ func Feed(
 	userID uuid.UUID,
 	senderType *string,
 	contentType *string,
-	archived *bool) ([]usercontent.UserContent, error) {
+	archived *bool) ([]response.WireUserContent, error) {
 
-	tableName := "user_content"
 	userIDString := userID.String()
 
-	userContents := []usercontent.UserContent{}
+	args := []string{userIDString}
 
-	selectStatments := []repository.Select{
-		repository.Select{
-			TableName:  tableName,
-			ColumnName: "*"}}
+	testStatement := `
+		SELECT 	user_content.id,
+				content.id as content_id,
+				content.title,
+				content.description,
+				content.image_url,
+				content.content_type,
+				content.domain,
+				user_content.sent_by,
+				user_content.created_at
+		FROM user_content
+		JOIN content ON content.id = user_content.content_id
+		WHERE user_content.user_id = $1
+		`
 
-	whereStatements := []repository.Where{}
-	orderStatements := []repository.Order{}
-
-	whereStatements = append(whereStatements,
-		repository.Where{
-			TableName:  tableName,
-			ColumnName: "user_id",
-			Argument:   &userIDString})
+	counter := 2
 
 	if senderType != nil {
-		where := repository.Where{
-			TableName:  tableName,
-			ColumnName: "sender_type",
-			Argument:   senderType}
-		whereStatements = append(whereStatements, where)
+		testStatement += `AND user_content.sender_type = $` + strconv.Itoa(counter) + ` `
+		args = append(args, *senderType)
+		counter++
 	}
 
 	if contentType != nil {
-		where := repository.Where{
-			TableName:  tableName,
-			ColumnName: "content_type",
-			Argument:   contentType}
-		whereStatements = append(whereStatements, where)
+		testStatement += `AND user_content.content_type = $` + strconv.Itoa(counter) + ` `
+		args = append(args, *contentType)
+		counter++
 	}
 
 	if archived != nil && *archived == true {
-		where := repository.Where{
-			TableName:  tableName,
-			ColumnName: "archived_at IS NOT NULL",
-			Argument:   nil}
-		whereStatements = append(whereStatements, where)
+		testStatement += `
+		AND user_content.archived_at IS NOT NULL
+		`
 	}
 
-	query := repository.Query{
-		TableName:        tableName,
-		SelectStatements: selectStatments,
-		WhereStatements:  whereStatements,
-		OrderStatements:  orderStatements}
+	switch {
+	case archived != nil && *archived == true:
+		testStatement += `ORDER BY user_content.archived_at DESC`
+	default:
+		testStatement += `ORDER BY user_content.created_at DESC`
+	}
 
-	rows, err := DB.Query(query.GenerateQuery(), query.GenerateArguments()...)
+	userContents := []response.WireUserContent{}
+
+	rows, err := DB.Query(testStatement, repository.GenerateArguments(args)...)
 
 	if err != nil {
 		return nil, err
@@ -191,8 +192,17 @@ func Feed(
 	defer rows.Close()
 
 	for rows.Next() {
-		var userContent usercontent.UserContent
-		err := scanRowsIntoUserContent(&userContent, rows)
+		var userContent response.WireUserContent
+		err := rows.Scan(
+			&userContent.ID,
+			&userContent.ContentID,
+			&userContent.Title,
+			&userContent.Description,
+			&userContent.ImageURL,
+			&userContent.ContentType,
+			&userContent.Domain,
+			&userContent.SentBy,
+			&userContent.CreatedAt)
 
 		if err != nil {
 			return nil, err

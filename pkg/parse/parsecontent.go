@@ -61,9 +61,9 @@ func ContentFromURL(url string) (*content.Content, error) {
 
 	newContent, err := content.New(
 		*contentMetadata.title,
-		*wrappers.NewNullString(contentMetadata.description),
-		*wrappers.NewNullString(contentMetadata.imageURL),
-		*wrappers.NewNullString(contentType),
+		wrappers.NewNullString(contentMetadata.description),
+		wrappers.NewNullString(contentMetadata.imageURL),
+		wrappers.NewNullString(contentType),
 		url,
 		urlDomain)
 

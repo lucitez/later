@@ -81,6 +81,9 @@ func ByID(id uuid.UUID) (*content.Content, error) {
 		&content.UpdatedAt)
 
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
 		return nil, err
 	}
 

@@ -15,7 +15,7 @@ type NullString struct {
 }
 
 // NewNullString constructor for NullTime
-func NewNullString(str *string) *NullString {
+func NewNullString(str *string) NullString {
 
 	var nullString sql.NullString
 
@@ -29,7 +29,7 @@ func NewNullString(str *string) *NullString {
 			Valid:  true}
 	}
 
-	return &NullString{nullString}
+	return NullString{nullString}
 }
 
 // NullInt64 wraps sql.NullInt64 and implements Marshalling for serialization / deserialization
@@ -61,7 +61,7 @@ func NewNullTime(tim *time.Time) *NullTime {
 
 // NullUUID wraps uuid.UUID and implements Marshalling
 type NullUUID struct {
-	id uuid.UUID
+	id    uuid.UUID
 	valid bool
 }
 

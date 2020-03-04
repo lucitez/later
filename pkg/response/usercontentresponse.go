@@ -10,13 +10,14 @@ import (
 // WireUserContent to be sent to client when displaing feed
 type WireUserContent struct {
 	ID             uuid.UUID
+	ContentID      uuid.UUID
 	Title          string
 	Description    wrappers.NullString
 	ImageURL       wrappers.NullString
 	ContentType    wrappers.NullString
 	Domain         string
 	SentBy         uuid.UUID
-	SentByUsername string
+	SentByUsername wrappers.NullString
 
-	SentAt time.Time
+	CreatedAt time.Time
 }

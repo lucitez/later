@@ -13,7 +13,7 @@ type User struct {
 	ID          uuid.UUID           `json:"id"`
 	Username    wrappers.NullString `json:"username"`
 	Email       wrappers.NullString `json:"email"`
-	PhoneNumber wrappers.NullString `json:"phone_number"`
+	PhoneNumber string              `json:"phone_number"`
 
 	CreatedAt  time.Time         `json:"created_at"`
 	SignedUpAt wrappers.NullTime `json:"signed_up_at"`
@@ -26,7 +26,7 @@ type User struct {
 func New(
 	username wrappers.NullString,
 	email wrappers.NullString,
-	phoneNumber wrappers.NullString,
+	phoneNumber string,
 	signingUp bool) (*User, error) {
 
 	newUUID, err := uuid.NewRandom()
