@@ -27,8 +27,9 @@ func CreateMultiple(createBodies []body.ShareCreateBody) ([]share.Share, error) 
 
 // Create creates a share and usercontent
 // Should probably do the notification stuff here
-// TODO how do we want to increment total # shares? maybe just unique user_ids on shares table per content_id?
-// TODO how do we want to send notifications? get user after creating the user content, if they have signed up, send notif, else send sms
+// TODO Two Goroutines:
+// Update _body.Content.shares_ total by getting count(shares distinct on user_id with this content_id)
+// Send Push notification if user has signed up <-- maybe move this to usercontent
 func Create(body body.ShareCreateBody) (*share.Share, error) {
 	share, err := share.New(
 		body.Content.ID,

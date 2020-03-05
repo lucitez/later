@@ -4,6 +4,9 @@ import (
 	"errors"
 	"net/http"
 
+	"later.co/pkg/later/content"
+	"later.co/pkg/util/wrappers"
+
 	"later.co/pkg/body"
 
 	"github.com/gin-gonic/gin"
@@ -18,76 +21,35 @@ import (
 
 // RegisterEndpoints defines handlers for endpoints for the user service
 func RegisterEndpoints(router *gin.Engine) {
-	router.POST("/shares/forward", forward)
 	router.POST("/shares/new", new)
+	router.POST("/shares/new/by-phone-number", newByPhoneNumber)
 }
 
 /**
-*	1. Already have content from the share reference
-*	For each user in recipients list:
-*	2. Create new share
-*	3. Create new user_content
-*	4. Send notification
+*	1. If content_id is present, try to get content by that.
+*	2. If url is present, parse content from url and insert new content
  */
-func forward(context *gin.Context) {
-	var requestBody request.ShareForwardRequestBody
-
-	err := context.ShouldBindJSON(&requestBody)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	userIds := requestBody.RecipientUserIDs
-
-	if requestBody.PhoneNumber.Valid {
-		userFromPhoneNumber, err := userFromPhoneNumber(requestBody.PhoneNumber.String)
+func getContentFromURLOrContentID(url wrappers.NullString, contentID wrappers.NullUUID) (content *content.Content, err error) {
+	switch {
+	case contentID.Valid:
+		content, err = contentrepo.ByID(contentID.ID)
+	case url.Valid:
+		contentFromURL, err := parse.ContentFromURL(url.String)
 		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+			return nil, err
 		}
-
-		userIds = append(userIds, userFromPhoneNumber.ID)
+		content, err = contentrepo.Insert(contentFromURL)
+	default:
+		content, err = nil, errors.New("parameters url or content_id required")
 	}
 
-	content, err := contentrepo.ByID(requestBody.ContentID)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if content == nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Content not found"})
-		return
-	}
-
-	var createBodies []body.ShareCreateBody
-
-	for _, recipientUserID := range userIds {
-		createBody := body.ShareCreateBody{
-			Content:         *content,
-			SenderUserID:    requestBody.SenderUserID,
-			RecipientUserID: recipientUserID}
-
-		createBodies = append(createBodies, createBody)
-	}
-
-	shares, err := sharemanager.CreateMultiple(createBodies)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	context.JSON(http.StatusOK, shares)
+	return
 }
 
 /**
-*	1. Parse content from URL and create entry in `contents` table
-*	2. Insert share into `shares` table
-*	3. Create `user_content` from this share.
+*	1. Get or create _content_ (Get if it is forwarding existing content)
+*	2. Create new _share_
+*	3. Create new _user_content_ for recipient
  */
 func new(context *gin.Context) {
 	var requestBody request.ShareCreateRequestBody
@@ -95,31 +57,15 @@ func new(context *gin.Context) {
 	err := context.ShouldBindJSON(&requestBody)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		context.JSON(http.StatusBadRequest, gin.H{"error_parsing": err.Error()})
+		return
+	}
+	if len(requestBody.RecipientUserIDs) == 0 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Must include at least one recipient"})
 		return
 	}
 
-	userIds := requestBody.RecipientUserIDs
-
-	if requestBody.PhoneNumber.Valid {
-		userFromPhoneNumber, err := userFromPhoneNumber(requestBody.PhoneNumber.String)
-		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		userIds = append(userIds, userFromPhoneNumber.ID)
-	}
-
-	/* get and insert content from url */
-	content, err := parse.ContentFromURL(requestBody.URL)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	content, err = contentrepo.Insert(content)
+	content, err := getContentFromURLOrContentID(requestBody.URL, requestBody.ContentID)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -130,7 +76,7 @@ func new(context *gin.Context) {
 
 	var createBodies []body.ShareCreateBody
 
-	for _, recipientUserID := range userIds {
+	for _, recipientUserID := range requestBody.RecipientUserIDs {
 		createBody := body.ShareCreateBody{
 			Content:         *content,
 			SenderUserID:    requestBody.SenderUserID,
@@ -147,6 +93,49 @@ func new(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, shares)
+}
+
+/**
+*	1. When user wants to share content
+ */
+func newByPhoneNumber(context *gin.Context) {
+	var requestBody request.ShareCreateByPhoneNumberRequestBody
+
+	err := context.ShouldBindJSON(&requestBody)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userFromPhoneNumber, err := userFromPhoneNumber(requestBody.PhoneNumber)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	content, err := getContentFromURLOrContentID(requestBody.URL, requestBody.ContentID)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	/* create share with inserted content */
+
+	createBody := body.ShareCreateBody{
+		Content:         *content,
+		SenderUserID:    requestBody.SenderUserID,
+		RecipientUserID: userFromPhoneNumber.ID}
+
+	share, err := sharemanager.Create(createBody)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, share)
 }
 
 /**

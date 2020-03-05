@@ -61,8 +61,8 @@ func NewNullTime(tim *time.Time) *NullTime {
 
 // NullUUID wraps uuid.UUID and implements Marshalling
 type NullUUID struct {
-	id    uuid.UUID
-	valid bool
+	ID    uuid.UUID
+	Valid bool
 }
 
 // MarshalJSON ...
@@ -87,6 +87,7 @@ func (nullString *NullString) UnmarshalJSON(data []byte) error {
 	} else {
 		nullString.Valid = false
 	}
+
 	return nil
 }
 
@@ -142,8 +143,8 @@ func (nullTime *NullTime) UnmarshalJSON(data []byte) error {
 
 // MarshalJSON ...
 func (nullUUID NullUUID) MarshalJSON() ([]byte, error) {
-	if nullUUID.valid {
-		return json.Marshal(nullUUID.id)
+	if nullUUID.Valid {
+		return json.Marshal(nullUUID.ID)
 	}
 
 	return json.Marshal(nil)
@@ -157,10 +158,10 @@ func (nullUUID *NullUUID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	if id != nil {
-		nullUUID.id = *id
-		nullUUID.valid = true
+		nullUUID.Valid = true
+		nullUUID.ID = *id
 	} else {
-		nullUUID.valid = false
+		nullUUID.Valid = false
 	}
 	return nil
 }
