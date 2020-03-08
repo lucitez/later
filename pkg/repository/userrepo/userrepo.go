@@ -38,20 +38,6 @@ func Insert(user *user.User) (*user.User, error) {
 	return user, nil
 }
 
-func scanRowIntoUser(user *user.User, row *sql.Row) error {
-	err := row.Scan(
-		&user.ID,
-		&user.Username,
-		&user.Email,
-		&user.PhoneNumber,
-		&user.CreatedAt,
-		&user.SignedUpAt,
-		&user.UpdatedAt,
-		&user.DeletedAt)
-
-	return err
-}
-
 // ByID gets a user by id
 func ByID(id uuid.UUID) (*user.User, error) {
 	var user user.User
@@ -70,6 +56,28 @@ func ByID(id uuid.UUID) (*user.User, error) {
 	}
 
 	return &user, nil
+}
+
+func ByIDs(ids []uuid.UUID) ([]user.User, error) {
+	statement := `
+	SELECT * FROM users
+	WHERE id in $1
+	AND deleted_at IS NULL
+	`
+
+	rows, err := DB.Query(statement, ids)
+
+	if err != nil {
+		return nil, err
+	}
+
+	users, err := scanRows(rows)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }
 
 // ByPhoneNumber gets a user by their phone number
@@ -94,13 +102,29 @@ func ByPhoneNumber(phoneNumber string) (*user.User, error) {
 
 // All returns all users with a limit
 func All(limit int) ([]user.User, error) {
-	users := []user.User{}
+	statement := `
+	SELECT * FROM users
+	LIMIT $1
+	WHERE deleted_at IS NULL
+	`
 
-	rows, err := DB.Query(`SELECT * FROM users LIMIT $1`, limit)
+	rows, err := DB.Query(statement, limit)
 
 	if err != nil {
 		return nil, err
 	}
+
+	users, err := scanRows(rows)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func scanRows(rows *sql.Rows) ([]user.User, error) {
+	users := []user.User{}
 
 	defer rows.Close()
 
@@ -122,10 +146,24 @@ func All(limit int) ([]user.User, error) {
 		users = append(users, user)
 	}
 
-	err = rows.Err()
+	err := rows.Err()
 	if err != nil {
 		return nil, err
 	}
 
 	return users, nil
+}
+
+func scanRowIntoUser(user *user.User, row *sql.Row) error {
+	err := row.Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+		&user.PhoneNumber,
+		&user.CreatedAt,
+		&user.SignedUpAt,
+		&user.UpdatedAt,
+		&user.DeletedAt)
+
+	return err
 }

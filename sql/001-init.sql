@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS user_content (
     content_id uuid NOT NULL,
     content_type text,
     user_id uuid NOT NULL,
-    sent_by uuid NOT NULL, -- [self, friend, us]
+    sent_by_user_id uuid NOT NULL, -- [self, friend, us]
 
     created_at timestamp with time zone NOT NULL default now(),
     updated_at timestamp with time zone NOT NULL default now(),
