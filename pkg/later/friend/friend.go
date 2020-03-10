@@ -3,7 +3,10 @@ package friend
 import (
 	"time"
 
+	"later.co/pkg/response"
+
 	"github.com/google/uuid"
+	"later.co/pkg/later/user"
 	"later.co/pkg/util/wrappers"
 )
 
@@ -39,4 +42,14 @@ func New(
 		UpdatedAt: now}
 
 	return &friend, nil
+}
+
+func (friend *Friend) ToWire(friendUser *user.User) response.WireFriend {
+	return response.WireFriend{
+		ID:        friend.ID,
+		UserID:    friendUser.ID,
+		FirstName: friendUser.FirstName,
+		LastName:  friendUser.LastName,
+		Username:  friendUser.Username,
+		CreatedAt: friend.CreatedAt}
 }

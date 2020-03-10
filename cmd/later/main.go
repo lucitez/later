@@ -13,6 +13,7 @@ import (
 	"later.co/pkg/repository/userrepo"
 
 	"later.co/pkg/server/contentserver"
+	"later.co/pkg/server/friendserver"
 	"later.co/pkg/server/shareserver"
 	"later.co/pkg/server/usercontentserver"
 	"later.co/pkg/server/userserver"
@@ -37,6 +38,7 @@ func main() {
 	contentserver.RegisterEndpoints(router)
 	shareserver.RegisterEndpoints(router)
 	usercontentserver.RegisterEndpoints(router)
+	friendserver.RegisterEndpoints(router)
 
 	router.Run(":8000")
 }

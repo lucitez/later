@@ -76,23 +76,11 @@ func byID(context *gin.Context) {
 }
 
 func allUsers(context *gin.Context) {
-	limit := context.Query("limit")
+	limitstr := context.DefaultQuery("limit", "100")
 
-	var err error
-	var limitint int
+	limit, err := strconv.Atoi(limitstr)
 
-	if limit == "" {
-		limitint = 100
-	} else {
-		limitint, err = strconv.Atoi(limit)
-	}
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter limit must be a number"})
-		return
-	}
-
-	users, err := userrepo.All(limitint)
+	users, err := userrepo.All(limit)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

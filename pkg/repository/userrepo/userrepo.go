@@ -44,7 +44,7 @@ func ByID(id uuid.UUID) (*user.User, error) {
 
 	statement := `
 	SELECT * FROM users 
-	WHERE id = $1
+	WHERE id = $1;
 	`
 
 	row := DB.QueryRow(statement, id)
@@ -62,7 +62,7 @@ func ByIDs(ids []uuid.UUID) ([]user.User, error) {
 	statement := `
 	SELECT * FROM users
 	WHERE id in $1
-	AND deleted_at IS NULL
+	AND deleted_at IS NULL;
 	`
 
 	rows, err := DB.Query(statement, ids)
@@ -86,7 +86,7 @@ func ByPhoneNumber(phoneNumber string) (*user.User, error) {
 
 	statement := `
 	SELECT * FROM users 
-	WHERE phone_number = $1
+	WHERE phone_number = $1;
 	`
 
 	row := DB.QueryRow(statement, phoneNumber)
@@ -104,8 +104,8 @@ func ByPhoneNumber(phoneNumber string) (*user.User, error) {
 func All(limit int) ([]user.User, error) {
 	statement := `
 	SELECT * FROM users
-	LIMIT $1
 	WHERE deleted_at IS NULL
+	LIMIT $1;
 	`
 
 	rows, err := DB.Query(statement, limit)
