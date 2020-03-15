@@ -1,4 +1,4 @@
-package user
+package entity
 
 import (
 	"github.com/google/uuid"
@@ -23,9 +23,9 @@ type User struct {
 	DeletedAt  wrappers.NullTime `json:"deleted_at"`
 }
 
-// New constructor for creating a new user
+// NewUser constructor for creating a new user
 // TODO validate email, phone number
-func New(
+func NewUser(
 	username wrappers.NullString,
 	email wrappers.NullString,
 	phoneNumber string,

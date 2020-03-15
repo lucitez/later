@@ -1,6 +1,7 @@
-package friendrequest
+package entity
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -10,8 +11,8 @@ import (
 // FriendRequest object
 type FriendRequest struct {
 	ID              uuid.UUID `json:"id"`
-	SentByUserID    uuid.UUID `json:"user_id"`
-	RecipientUserID uuid.UUID `json:"FriendRequest_user_id"`
+	SentByUserID    uuid.UUID `json:"sent_by_user_id"`
+	RecipientUserID uuid.UUID `json:"recipient_user_id"`
 
 	CreatedAt  time.Time         `json:"created_at"`
 	UpdatedAt  time.Time         `json:"updated_at"`
@@ -20,8 +21,8 @@ type FriendRequest struct {
 	DeletedAt  wrappers.NullTime `json:"deleted_at"`
 }
 
-// New constructor for FriendRequest
-func New(
+// NewFriendRequest constructor for FriendRequest
+func NewFriendRequest(
 	userID uuid.UUID,
 	recipientUserID uuid.UUID) (*FriendRequest, error) {
 	uuid, err := uuid.NewRandom()
@@ -41,4 +42,18 @@ func New(
 		UpdatedAt: now}
 
 	return &FriendRequest, nil
+}
+
+func (friendRequest *FriendRequest) ScanRows(rows *sql.Rows) error {
+	err := rows.Scan(
+		&friendRequest.ID,
+		&friendRequest.SentByUserID,
+		&friendRequest.RecipientUserID,
+		&friendRequest.CreatedAt,
+		&friendRequest.UpdatedAt,
+		&friendRequest.AcceptedAt,
+		&friendRequest.DeclinedAt,
+		&friendRequest.DeletedAt)
+
+	return err
 }

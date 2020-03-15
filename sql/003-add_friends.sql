@@ -28,10 +28,10 @@ CREATE TABLE friend_requests (
     accepted_at TIMESTAMP WITH TIME ZONE,
     declined_at TIMESTAMP WITH TIME ZONE,
     deleted_at  TIMESTAMP WITH TIME ZONE
-)
+);
 
-CREATE UNIQUE INDEX idx_uniq_friend_requests_on_requester_and_requestee
-ON friend_requests(requester_user_id, requestee_user_id)
+CREATE UNIQUE INDEX idx_uniq_friend_requests_on_sent_by_and_recipient
+ON friend_requests(sent_by_user_id, recipient_user_id)
 WHERE declined_at IS NULL
 AND deleted_at IS NULL;
 

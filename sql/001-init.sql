@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS users
 (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     username text,
+    first_name text,
+    last_name text,
     email text,
     phone_number text,
 

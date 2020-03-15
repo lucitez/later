@@ -3,7 +3,7 @@ package request
 import (
 	"github.com/google/uuid"
 	"later.co/pkg/body"
-	"later.co/pkg/later/content"
+	"later.co/pkg/later/entity"
 	"later.co/pkg/util/wrappers"
 )
 
@@ -17,7 +17,7 @@ type ShareCreateRequestBody struct {
 }
 
 // ToShareCreateBodiesByUserIds converts this request body to a list of share create bodies
-func (requestBody *ShareCreateRequestBody) ToShareCreateBodiesByUserIds(content *content.Content) []body.ShareCreateBody {
+func (requestBody *ShareCreateRequestBody) ToShareCreateBodiesByUserIds(content *entity.Content) []body.ShareCreateBody {
 	bodies := []body.ShareCreateBody{}
 
 	for _, recipientUserID := range requestBody.RecipientUserIDs {

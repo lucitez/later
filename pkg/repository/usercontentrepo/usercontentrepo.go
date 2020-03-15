@@ -6,7 +6,7 @@ import (
 
 	// Postgres driver
 	"github.com/google/uuid"
-	"later.co/pkg/later/usercontent"
+	"later.co/pkg/later/entity"
 	"later.co/pkg/repository"
 	"later.co/pkg/response"
 )
@@ -15,7 +15,7 @@ import (
 var DB *sql.DB
 
 // Insert inserts a new userContent
-func Insert(userContent *usercontent.UserContent) (*usercontent.UserContent, error) {
+func Insert(userContent *entity.UserContent) (*entity.UserContent, error) {
 
 	statement := `
 	INSERT INTO user_content (id, share_id, content_id, user_id, sent_by)
@@ -43,7 +43,7 @@ func Insert(userContent *usercontent.UserContent) (*usercontent.UserContent, err
 	return userContent, nil
 }
 
-func scanRowIntoUserContent(userContent *usercontent.UserContent, row *sql.Row) error {
+func scanRowIntoUserContent(userContent *entity.UserContent, row *sql.Row) error {
 	err := row.Scan(
 		&userContent.ID,
 		&userContent.ShareID,
@@ -59,7 +59,7 @@ func scanRowIntoUserContent(userContent *usercontent.UserContent, row *sql.Row) 
 	return err
 }
 
-func scanRowsIntoUserContent(userContent *usercontent.UserContent, rows *sql.Rows) error {
+func scanRowsIntoUserContent(userContent *entity.UserContent, rows *sql.Rows) error {
 	err := rows.Scan(
 		&userContent.ID,
 		&userContent.ShareID,
@@ -76,8 +76,8 @@ func scanRowsIntoUserContent(userContent *usercontent.UserContent, rows *sql.Row
 }
 
 // ByID gets a userContent by id
-func ByID(id uuid.UUID) (*usercontent.UserContent, error) {
-	var userContent usercontent.UserContent
+func ByID(id uuid.UUID) (*entity.UserContent, error) {
+	var userContent entity.UserContent
 
 	statement := `
 	SELECT * FROM user_content 
@@ -99,8 +99,8 @@ func ByID(id uuid.UUID) (*usercontent.UserContent, error) {
 }
 
 // All returns all userContents
-func All(limit int) ([]usercontent.UserContent, error) {
-	userContents := []usercontent.UserContent{}
+func All(limit int) ([]entity.UserContent, error) {
+	userContents := []entity.UserContent{}
 
 	rows, err := DB.Query(`SELECT * FROM user_content LIMIT $1`, limit)
 
@@ -111,7 +111,7 @@ func All(limit int) ([]usercontent.UserContent, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var userContent usercontent.UserContent
+		var userContent entity.UserContent
 		err := scanRowsIntoUserContent(&userContent, rows)
 
 		if err != nil {

@@ -1,4 +1,4 @@
-package friend
+package entity
 
 import (
 	"time"
@@ -6,7 +6,6 @@ import (
 	"later.co/pkg/response"
 
 	"github.com/google/uuid"
-	"later.co/pkg/later/user"
 	"later.co/pkg/util/wrappers"
 )
 
@@ -21,8 +20,8 @@ type Friend struct {
 	DeletedAt wrappers.NullTime `json:"deleted_at"`
 }
 
-// New constructor for Friend
-func New(
+// NewFriend constructor for Friend
+func NewFriend(
 	userID uuid.UUID,
 	friendUserID uuid.UUID) (*Friend, error) {
 	uuid, err := uuid.NewRandom()
@@ -44,7 +43,8 @@ func New(
 	return &friend, nil
 }
 
-func (friend *Friend) ToWire(friendUser *user.User) response.WireFriend {
+// ToWire transforms a Friend to a WireFriend
+func (friend *Friend) ToWire(friendUser *User) response.WireFriend {
 	return response.WireFriend{
 		ID:        friend.ID,
 		UserID:    friendUser.ID,

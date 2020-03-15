@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/net/html"
 
-	"later.co/pkg/later/content"
+	"later.co/pkg/later/entity"
 	"later.co/pkg/repository/domainrepo"
 	"later.co/pkg/util/wrappers"
 )
@@ -29,7 +29,7 @@ func (headerContent *headerContent) isPopulated() bool {
 }
 
 // ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
-func ContentFromURL(url string) (*content.Content, error) {
+func ContentFromURL(url string) (*entity.Content, error) {
 
 	domainRegex := regexp.MustCompile(`.*[\./]([^\.]+)\.(com|co|org)`)
 	matches := domainRegex.FindStringSubmatch(url)
@@ -59,7 +59,7 @@ func ContentFromURL(url string) (*content.Content, error) {
 		contentType = &domain.ContentType
 	}
 
-	newContent, err := content.New(
+	newContent, err := entity.NewContent(
 		*contentMetadata.title,
 		wrappers.NewNullString(contentMetadata.description),
 		wrappers.NewNullString(contentMetadata.imageURL),

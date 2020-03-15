@@ -3,17 +3,17 @@ package sharerepo
 import (
 	"database/sql"
 
-	// Postgres driver
 	"github.com/google/uuid"
+	// Postgres driver
 	_ "github.com/lib/pq"
-	"later.co/pkg/later/share"
+	"later.co/pkg/later/entity"
 )
 
 // DB is this repository's database connection
 var DB *sql.DB
 
 // Insert inserts a new share
-func Insert(share *share.Share) (*share.Share, error) {
+func Insert(share *entity.Share) (*entity.Share, error) {
 
 	statement := `
 	INSERT INTO shares (id, content_id, sent_by_user_id, recipient_user_id)
@@ -40,8 +40,8 @@ func Insert(share *share.Share) (*share.Share, error) {
 }
 
 // ByID gets a share by id
-func ByID(id uuid.UUID) (*share.Share, error) {
-	var share share.Share
+func ByID(id uuid.UUID) (*entity.Share, error) {
+	var share entity.Share
 
 	statement := `
 	SELECT * FROM shares 
@@ -69,8 +69,8 @@ func ByID(id uuid.UUID) (*share.Share, error) {
 }
 
 // All returns all shares
-func All(limit int) ([]share.Share, error) {
-	shares := []share.Share{}
+func All(limit int) ([]entity.Share, error) {
+	shares := []entity.Share{}
 
 	rows, err := DB.Query(`SELECT * FROM shares LIMIT $1`, limit)
 
@@ -81,7 +81,7 @@ func All(limit int) ([]share.Share, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var share share.Share
+		var share entity.Share
 		err := rows.Scan(
 			&share.ID,
 			&share.ContentID,

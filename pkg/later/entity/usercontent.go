@@ -1,4 +1,4 @@
-package usercontent
+package entity
 
 import (
 	"time"
@@ -22,8 +22,8 @@ type UserContent struct {
 	DeletedAt  wrappers.NullTime
 }
 
-// New constructor for UserContent
-func New(
+// NewUserContent constructor for UserContent
+func NewUserContent(
 	shareID uuid.UUID,
 	contentID uuid.UUID,
 	contentType wrappers.NullString,

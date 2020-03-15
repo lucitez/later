@@ -1,14 +1,14 @@
 package usermanager
 
 import (
-	"later.co/pkg/later/user"
+	"later.co/pkg/later/entity"
 	"later.co/pkg/repository/userrepo"
 	"later.co/pkg/util/wrappers"
 )
 
 // NewUserFromPhoneNumber inserts a new user using just phone number
-func NewUserFromPhoneNumber(phoneNumber string) (*user.User, error) {
-	newUser, err := user.New(
+func NewUserFromPhoneNumber(phoneNumber string) (*entity.User, error) {
+	newUser, err := entity.NewUser(
 		wrappers.NewNullString(nil), // user_name
 		wrappers.NewNullString(nil), // email
 		phoneNumber,

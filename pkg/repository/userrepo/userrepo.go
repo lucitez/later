@@ -7,14 +7,14 @@ import (
 
 	// Postgres driver
 	_ "github.com/lib/pq"
-	"later.co/pkg/later/user"
+	"later.co/pkg/later/entity"
 )
 
 // DB is this repository's database connection
 var DB *sql.DB
 
 // Insert inserts a new user
-func Insert(user *user.User) (*user.User, error) {
+func Insert(user *entity.User) (*entity.User, error) {
 
 	statement := `
 	INSERT INTO users (username, email, phone_number)
@@ -39,8 +39,8 @@ func Insert(user *user.User) (*user.User, error) {
 }
 
 // ByID gets a user by id
-func ByID(id uuid.UUID) (*user.User, error) {
-	var user user.User
+func ByID(id uuid.UUID) (*entity.User, error) {
+	var user entity.User
 
 	statement := `
 	SELECT * FROM users 
@@ -58,7 +58,7 @@ func ByID(id uuid.UUID) (*user.User, error) {
 	return &user, nil
 }
 
-func ByIDs(ids []uuid.UUID) ([]user.User, error) {
+func ByIDs(ids []uuid.UUID) ([]entity.User, error) {
 	statement := `
 	SELECT * FROM users
 	WHERE id in $1
@@ -81,8 +81,8 @@ func ByIDs(ids []uuid.UUID) ([]user.User, error) {
 }
 
 // ByPhoneNumber gets a user by their phone number
-func ByPhoneNumber(phoneNumber string) (*user.User, error) {
-	var user user.User
+func ByPhoneNumber(phoneNumber string) (*entity.User, error) {
+	var user entity.User
 
 	statement := `
 	SELECT * FROM users 
@@ -101,7 +101,7 @@ func ByPhoneNumber(phoneNumber string) (*user.User, error) {
 }
 
 // All returns all users with a limit
-func All(limit int) ([]user.User, error) {
+func All(limit int) ([]entity.User, error) {
 	statement := `
 	SELECT * FROM users
 	WHERE deleted_at IS NULL
@@ -123,13 +123,13 @@ func All(limit int) ([]user.User, error) {
 	return users, nil
 }
 
-func scanRows(rows *sql.Rows) ([]user.User, error) {
-	users := []user.User{}
+func scanRows(rows *sql.Rows) ([]entity.User, error) {
+	users := []entity.User{}
 
 	defer rows.Close()
 
 	for rows.Next() {
-		var user user.User
+		var user entity.User
 		err := rows.Scan(
 			&user.ID,
 			&user.Username,
@@ -154,7 +154,7 @@ func scanRows(rows *sql.Rows) ([]user.User, error) {
 	return users, nil
 }
 
-func scanRowIntoUser(user *user.User, row *sql.Row) error {
+func scanRowIntoUser(user *entity.User, row *sql.Row) error {
 	err := row.Scan(
 		&user.ID,
 		&user.Username,

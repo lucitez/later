@@ -3,17 +3,17 @@ package friendrepo
 import (
 	"database/sql"
 
-	// Postgres driver
 	"github.com/google/uuid"
+	// Postgres driver
 	_ "github.com/lib/pq"
-	"later.co/pkg/later/friend"
+	"later.co/pkg/later/entity"
 )
 
 // DB is this repository's database connection
 var DB *sql.DB
 
 // Insert inserts a new friend
-func Insert(newFriend *friend.Friend) (*friend.Friend, error) {
+func Insert(friend *entity.Friend) (*entity.Friend, error) {
 
 	statement := `
 	INSERT INTO friends (id, user_id, friend_user_id)
@@ -26,19 +26,19 @@ func Insert(newFriend *friend.Friend) (*friend.Friend, error) {
 
 	_, err := DB.Exec(
 		statement,
-		newFriend.ID,
-		newFriend.UserID,
-		newFriend.FriendUserID)
+		friend.ID,
+		friend.UserID,
+		friend.FriendUserID)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return newFriend, nil
+	return friend, nil
 }
 
 // SearchByUserID gets all friends of a user
-func SearchByUserID(userID uuid.UUID, search string) ([]friend.Friend, error) {
+func SearchByUserID(userID uuid.UUID, search string) ([]entity.Friend, error) {
 	statement := `
 	SELECT * FROM friends 
 	WHERE user_id = $1
@@ -69,7 +69,7 @@ func SearchByUserID(userID uuid.UUID, search string) ([]friend.Friend, error) {
 }
 
 // ByUserID gets all friends of a user
-func ByUserID(userID uuid.UUID) ([]friend.Friend, error) {
+func ByUserID(userID uuid.UUID) ([]entity.Friend, error) {
 	statement := `
 	SELECT * FROM friends 
 	WHERE user_id = $1
@@ -91,13 +91,13 @@ func ByUserID(userID uuid.UUID) ([]friend.Friend, error) {
 	return friends, nil
 }
 
-func scanRows(rows *sql.Rows) ([]friend.Friend, error) {
-	friends := []friend.Friend{}
+func scanRows(rows *sql.Rows) ([]entity.Friend, error) {
+	friends := []entity.Friend{}
 
 	defer rows.Close()
 
 	for rows.Next() {
-		var friend friend.Friend
+		var friend entity.Friend
 		err := rows.Scan(
 			&friend.ID,
 			&friend.UserID,

@@ -2,11 +2,12 @@ package body
 
 import (
 	"github.com/google/uuid"
-	"later.co/pkg/later/content"
+	"later.co/pkg/later/entity"
 )
 
+// ShareCreateBody ...
 type ShareCreateBody struct {
-	Content         content.Content
+	Content         entity.Content
 	SenderUserID    uuid.UUID
 	RecipientUserID uuid.UUID
 }

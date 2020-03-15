@@ -1,4 +1,4 @@
-package content
+package entity
 
 import (
 	"time"
@@ -22,8 +22,8 @@ type Content struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// New constructor for Content
-func New(
+// NewContent constructor for Content
+func NewContent(
 	title string,
 	description wrappers.NullString,
 	imageURL wrappers.NullString,

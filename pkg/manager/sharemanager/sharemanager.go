@@ -2,15 +2,14 @@ package sharemanager
 
 import (
 	"later.co/pkg/body"
-	"later.co/pkg/later/share"
-	"later.co/pkg/later/usercontent"
+	"later.co/pkg/later/entity"
 	"later.co/pkg/repository/sharerepo"
 	"later.co/pkg/repository/usercontentrepo"
 )
 
 // CreateMultiple creates multiple shares from multiple bodies
-func CreateMultiple(createBodies []body.ShareCreateBody) ([]share.Share, error) {
-	shares := []share.Share{}
+func CreateMultiple(createBodies []body.ShareCreateBody) ([]entity.Share, error) {
+	shares := []entity.Share{}
 
 	for _, createBody := range createBodies {
 		share, err := Create(createBody)
@@ -30,8 +29,8 @@ func CreateMultiple(createBodies []body.ShareCreateBody) ([]share.Share, error) 
 // TODO Two Goroutines:
 // Update _body.Content.shares_ total by getting count(shares distinct on user_id with this content_id)
 // Send Push notification if user has signed up <-- maybe move this to usercontent
-func Create(body body.ShareCreateBody) (*share.Share, error) {
-	share, err := share.New(
+func Create(body body.ShareCreateBody) (*entity.Share, error) {
+	share, err := entity.NewShare(
 		body.Content.ID,
 		body.SenderUserID,
 		body.RecipientUserID)
@@ -46,7 +45,7 @@ func Create(body body.ShareCreateBody) (*share.Share, error) {
 		return nil, err
 	}
 
-	usercontent, err := usercontent.New(
+	usercontent, err := entity.NewUserContent(
 		share.ID,
 		body.Content.ID,
 		body.Content.ContentType,

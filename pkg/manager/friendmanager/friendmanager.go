@@ -1,7 +1,7 @@
 package friendmanager
 
 import (
-	"later.co/pkg/later/friend"
+	"later.co/pkg/later/entity"
 	"later.co/pkg/repository/userrepo"
 	"later.co/pkg/response"
 
@@ -10,7 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func all(userID uuid.UUID) ([]response.WireFriend, error) {
+// All ...
+func All(userID uuid.UUID) ([]response.WireFriend, error) {
 	friends, err := friendrepo.ByUserID(userID)
 
 	if err != nil {
@@ -20,7 +21,8 @@ func all(userID uuid.UUID) ([]response.WireFriend, error) {
 	return friendsList{friends}.toWireFriends(), nil
 }
 
-func search(userID uuid.UUID, query string) ([]response.WireFriend, error) {
+// Search ...
+func Search(userID uuid.UUID, query string) ([]response.WireFriend, error) {
 	friends, err := friendrepo.SearchByUserID(userID, query)
 
 	if err != nil {
@@ -31,7 +33,7 @@ func search(userID uuid.UUID, query string) ([]response.WireFriend, error) {
 }
 
 type friendsList struct {
-	friends []friend.Friend
+	friends []entity.Friend
 }
 
 func (friendsList friendsList) toWireFriends() []response.WireFriend {

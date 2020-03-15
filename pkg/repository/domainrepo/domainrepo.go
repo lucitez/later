@@ -5,14 +5,14 @@ import (
 
 	// Postgres driver
 	_ "github.com/lib/pq"
-	"later.co/pkg/later/domain"
+	"later.co/pkg/later/entity"
 )
 
 // DB is this repository's database connection
 var DB *sql.DB
 
 // Insert inserts a new domain
-func Insert(domain *domain.Domain) (*domain.Domain, error) {
+func Insert(domain *entity.Domain) (*entity.Domain, error) {
 
 	statement := `
 	INSERT INTO domains (id, domain, content_type)
@@ -37,8 +37,8 @@ func Insert(domain *domain.Domain) (*domain.Domain, error) {
 }
 
 // ByDomain gets a domain by id
-func ByDomain(domainName string) (*domain.Domain, error) {
-	var domain domain.Domain
+func ByDomain(domainName string) (*entity.Domain, error) {
+	var domain entity.Domain
 
 	statement := `
 	SELECT * FROM domains 
@@ -66,8 +66,8 @@ func ByDomain(domainName string) (*domain.Domain, error) {
 }
 
 // All returns all domains
-func All(limit int) ([]domain.Domain, error) {
-	domains := []domain.Domain{}
+func All(limit int) ([]entity.Domain, error) {
+	domains := []entity.Domain{}
 
 	rows, err := DB.Query(`SELECT * FROM domains LIMIT $1`, limit)
 
@@ -78,7 +78,7 @@ func All(limit int) ([]domain.Domain, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var domain domain.Domain
+		var domain entity.Domain
 		err := rows.Scan(
 			&domain.ID,
 			&domain.Domain,

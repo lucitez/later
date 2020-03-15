@@ -4,13 +4,12 @@ import (
 	"errors"
 	"net/http"
 
-	"later.co/pkg/later/content"
+	"later.co/pkg/later/entity"
 	"later.co/pkg/util/wrappers"
 
 	"later.co/pkg/body"
 
 	"github.com/gin-gonic/gin"
-	"later.co/pkg/later/user"
 	"later.co/pkg/manager/sharemanager"
 	"later.co/pkg/manager/usermanager"
 	"later.co/pkg/parse"
@@ -29,7 +28,7 @@ func RegisterEndpoints(router *gin.Engine) {
 *	1. If content_id is present, try to get content by that.
 *	2. If url is present, parse content from url and insert new content
  */
-func getContentFromURLOrContentID(url wrappers.NullString, contentID wrappers.NullUUID) (content *content.Content, err error) {
+func getContentFromURLOrContentID(url wrappers.NullString, contentID wrappers.NullUUID) (content *entity.Content, err error) {
 	switch {
 	case contentID.Valid:
 		content, err = contentrepo.ByID(contentID.ID)
@@ -145,7 +144,7 @@ func newByPhoneNumber(context *gin.Context) {
 *	3. If phone number does not belong to an existing user or belongs to an existing user that has not signed up,
 *	send SMS with URL, Title, and link to us in app store
  */
-func userFromPhoneNumber(phoneNumber string) (*user.User, error) {
+func userFromPhoneNumber(phoneNumber string) (*entity.User, error) {
 	user, err := userrepo.ByPhoneNumber(phoneNumber)
 
 	if err != nil {

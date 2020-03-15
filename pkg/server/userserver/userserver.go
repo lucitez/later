@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"later.co/pkg/later/entity"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"later.co/pkg/later/user"
 	"later.co/pkg/repository/userrepo"
 	"later.co/pkg/request"
 )
@@ -29,7 +30,7 @@ func signUp(context *gin.Context) {
 		return
 	}
 
-	user, err := user.New(
+	user, err := entity.NewUser(
 		json.Username,
 		json.Email,
 		json.PhoneNumber,

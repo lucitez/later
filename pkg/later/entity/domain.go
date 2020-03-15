@@ -1,4 +1,4 @@
-package domain
+package entity
 
 import (
 	"time"
@@ -18,8 +18,8 @@ type Domain struct {
 	DeletedAt wrappers.NullTime `json:"deleted_at"`
 }
 
-// New constructor for Domain
-func New(
+// NewDomain constructor for Domain
+func NewDomain(
 	domain string,
 	contentType string) (*Domain, error) {
 	uuid, err := uuid.NewRandom()

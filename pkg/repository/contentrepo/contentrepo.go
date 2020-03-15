@@ -7,14 +7,15 @@ import (
 
 	// Postgres driver
 	_ "github.com/lib/pq"
-	"later.co/pkg/later/content"
+
+	"later.co/pkg/later/entity"
 )
 
 // DB is this repository's database connection
 var DB *sql.DB
 
 // Insert inserts new content
-func Insert(content *content.Content) (*content.Content, error) {
+func Insert(content *entity.Content) (*entity.Content, error) {
 
 	statement := `
 	INSERT INTO content (
@@ -58,8 +59,8 @@ func Insert(content *content.Content) (*content.Content, error) {
 }
 
 // ByID gets a content by id
-func ByID(id uuid.UUID) (*content.Content, error) {
-	var content content.Content
+func ByID(id uuid.UUID) (*entity.Content, error) {
+	var content entity.Content
 
 	statement := `
 	SELECT * FROM content 
@@ -91,8 +92,8 @@ func ByID(id uuid.UUID) (*content.Content, error) {
 }
 
 // All returns all content
-func All(limit int) ([]content.Content, error) {
-	allContent := []content.Content{}
+func All(limit int) ([]entity.Content, error) {
+	allContent := []entity.Content{}
 
 	rows, err := DB.Query(`SELECT * FROM content LIMIT $1`, limit)
 
@@ -103,7 +104,7 @@ func All(limit int) ([]content.Content, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var content content.Content
+		var content entity.Content
 		err := rows.Scan(
 			&content.ID,
 			&content.Title,

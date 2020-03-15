@@ -1,4 +1,4 @@
-package share
+package entity
 
 import (
 	"time"
@@ -18,8 +18,8 @@ type Share struct {
 	OpenedAt  wrappers.NullTime `json:"opened_at"`
 }
 
-// New constructor for Share
-func New(
+// NewShare constructor for Share
+func NewShare(
 	contentID uuid.UUID,
 	sentByUserID uuid.UUID,
 	recipientUserID uuid.UUID) (*Share, error) {
