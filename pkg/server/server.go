@@ -7,6 +7,10 @@ import (
 	"github.com/google/uuid"
 )
 
+type Server interface {
+	RegisterEndpoints(router *gin.Engine)
+}
+
 // DeserUUID Deserializes a UUID query parameter
 func DeserUUID(context *gin.Context, paramName string) (*uuid.UUID, error) {
 	idString := context.Query(paramName)

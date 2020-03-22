@@ -8,7 +8,7 @@ import (
 // FriendRequestCreateRequestBody request body for sending a new friend request
 type FriendRequestCreateRequestBody struct {
 	SenderUserID    uuid.UUID `form:"sender_user_id" json:"sender_user_id" binding:"required"`
-	RecipientUserID uuid.UUID `form:"recipient_user_id" json:"recipient_user_ids" binding:"required"`
+	RecipientUserID uuid.UUID `form:"recipient_user_id" json:"recipient_user_id" binding:"required"`
 }
 
 // ToFriendRequestCreateBody ...

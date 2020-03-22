@@ -44,8 +44,24 @@ func NewFriendRequest(
 	return &FriendRequest, nil
 }
 
+// ScanRows ...
 func (friendRequest *FriendRequest) ScanRows(rows *sql.Rows) error {
 	err := rows.Scan(
+		&friendRequest.ID,
+		&friendRequest.SentByUserID,
+		&friendRequest.RecipientUserID,
+		&friendRequest.CreatedAt,
+		&friendRequest.UpdatedAt,
+		&friendRequest.AcceptedAt,
+		&friendRequest.DeclinedAt,
+		&friendRequest.DeletedAt)
+
+	return err
+}
+
+// ScanRow ...
+func (friendRequest *FriendRequest) ScanRow(row *sql.Row) error {
+	err := row.Scan(
 		&friendRequest.ID,
 		&friendRequest.SentByUserID,
 		&friendRequest.RecipientUserID,

@@ -49,7 +49,7 @@ func ByID(id uuid.UUID) (*entity.User, error) {
 
 	row := DB.QueryRow(statement, id)
 
-	err := scanRowIntoUser(&user, row)
+	err := user.ScanRow(row)
 
 	if err != nil {
 		return nil, err
@@ -58,6 +58,7 @@ func ByID(id uuid.UUID) (*entity.User, error) {
 	return &user, nil
 }
 
+// ByIDs ...
 func ByIDs(ids []uuid.UUID) ([]entity.User, error) {
 	statement := `
 	SELECT * FROM users
@@ -91,7 +92,7 @@ func ByPhoneNumber(phoneNumber string) (*entity.User, error) {
 
 	row := DB.QueryRow(statement, phoneNumber)
 
-	err := scanRowIntoUser(&user, row)
+	err := user.ScanRow(row)
 
 	if err != nil {
 		return nil, err
@@ -130,15 +131,7 @@ func scanRows(rows *sql.Rows) ([]entity.User, error) {
 
 	for rows.Next() {
 		var user entity.User
-		err := rows.Scan(
-			&user.ID,
-			&user.Username,
-			&user.Email,
-			&user.PhoneNumber,
-			&user.CreatedAt,
-			&user.SignedUpAt,
-			&user.UpdatedAt,
-			&user.DeletedAt)
+		err := user.ScanRows(rows)
 
 		if err != nil {
 			return nil, err
@@ -152,18 +145,4 @@ func scanRows(rows *sql.Rows) ([]entity.User, error) {
 	}
 
 	return users, nil
-}
-
-func scanRowIntoUser(user *entity.User, row *sql.Row) error {
-	err := row.Scan(
-		&user.ID,
-		&user.Username,
-		&user.Email,
-		&user.PhoneNumber,
-		&user.CreatedAt,
-		&user.SignedUpAt,
-		&user.UpdatedAt,
-		&user.DeletedAt)
-
-	return err
 }

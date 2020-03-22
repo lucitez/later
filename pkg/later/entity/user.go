@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"database/sql"
+
 	"github.com/google/uuid"
 
 	"time"
@@ -56,4 +58,38 @@ func NewUser(
 		UpdatedAt: now}
 
 	return &user, nil
+}
+
+// ScanRows ...
+func (user *User) ScanRows(rows *sql.Rows) error {
+	err := rows.Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.Username,
+		&user.Email,
+		&user.PhoneNumber,
+		&user.CreatedAt,
+		&user.SignedUpAt,
+		&user.UpdatedAt,
+		&user.DeletedAt)
+
+	return err
+}
+
+// ScanRow ...
+func (user *User) ScanRow(row *sql.Row) error {
+	err := row.Scan(
+		&user.ID,
+		&user.FirstName,
+		&user.LastName,
+		&user.Username,
+		&user.Email,
+		&user.PhoneNumber,
+		&user.CreatedAt,
+		&user.SignedUpAt,
+		&user.UpdatedAt,
+		&user.DeletedAt)
+
+	return err
 }

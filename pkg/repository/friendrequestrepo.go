@@ -1,4 +1,4 @@
-package friendrequestrepo
+package repository
 
 import (
 	"database/sql"
@@ -8,11 +8,20 @@ import (
 	"later.co/pkg/later/entity"
 )
 
-// DB is this repository's database connection
-var DB *sql.DB
+// FriendRequestRepository ...
+type FriendRequestRepository interface {
+	Insert(friendRequest *entity.FriendRequest) (*entity.FriendRequest, error)
+	PendingByUserID(userID uuid.UUID) ([]entity.FriendRequest, error)
+	Accept(ID uuid.UUID) error
+	Decline(ID uuid.UUID) error
+}
+
+type FriendRequestRepositoryImpl struct {
+	DB *sql.DB
+}
 
 // Insert inserts a new friend
-func Insert(friendRequest *entity.FriendRequest) (*entity.FriendRequest, error) {
+func (repo *FriendRequestRepositoryImpl) Insert(friendRequest *entity.FriendRequest) (*entity.FriendRequest, error) {
 
 	statement := `
 	INSERT INTO friend_requests (id, sent_by_user_id, recipient_user_id)
@@ -23,7 +32,7 @@ func Insert(friendRequest *entity.FriendRequest) (*entity.FriendRequest, error) 
 	);
 	`
 
-	_, err := DB.Exec(
+	_, err := repo.DB.Exec(
 		statement,
 		friendRequest.ID,
 		friendRequest.SentByUserID,
@@ -37,7 +46,7 @@ func Insert(friendRequest *entity.FriendRequest) (*entity.FriendRequest, error) 
 }
 
 // PendingByUserID gets all pending friend requests for a user
-func PendingByUserID(userID uuid.UUID) ([]entity.FriendRequest, error) {
+func (repo *FriendRequestRepositoryImpl) PendingByUserID(userID uuid.UUID) ([]entity.FriendRequest, error) {
 	statement := `
 	SELECT * FROM friend_requests 
 	WHERE recipient_user_id = $1
@@ -46,7 +55,7 @@ func PendingByUserID(userID uuid.UUID) ([]entity.FriendRequest, error) {
 	AND deleted_at IS NULL;
 	`
 
-	rows, err := DB.Query(statement, userID)
+	rows, err := repo.DB.Query(statement, userID)
 
 	if err != nil {
 		return nil, err
@@ -62,27 +71,27 @@ func PendingByUserID(userID uuid.UUID) ([]entity.FriendRequest, error) {
 }
 
 // Accept updates accepted_at
-func Accept(ID uuid.UUID) error {
+func (repo *FriendRequestRepositoryImpl) Accept(ID uuid.UUID) error {
 	statement := `
 	UPDATE friend_requests
 	SET accepted_at = now()
 	WHERE id = $1;
 	`
 
-	_, err := DB.Exec(statement, ID)
+	_, err := repo.DB.Exec(statement, ID)
 
 	return err
 }
 
 // Decline updates accepted_at
-func Decline(ID uuid.UUID) error {
+func (repo *FriendRequestRepositoryImpl) Decline(ID uuid.UUID) error {
 	statement := `
 	UPDATE friend_requests
 	SET declined_at = now()
 	WHERE id = $1;
 	`
 
-	_, err := DB.Exec(statement, ID)
+	_, err := repo.DB.Exec(statement, ID)
 
 	return err
 }
