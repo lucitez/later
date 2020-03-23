@@ -25,13 +25,12 @@ type User struct {
 	DeletedAt  wrappers.NullTime `json:"deleted_at"`
 }
 
-// NewUser constructor for creating a new user
+// NewUserFromSignUp constructor for creating a new user
 // TODO validate email, phone number
-func NewUser(
+func NewUserFromSignUp(
 	username wrappers.NullString,
 	email wrappers.NullString,
-	phoneNumber string,
-	signingUp bool) (*User, error) {
+	phoneNumber string) (*User, error) {
 
 	newUUID, err := uuid.NewRandom()
 
@@ -41,18 +40,39 @@ func NewUser(
 
 	now := time.Now()
 
-	var signedUpAt wrappers.NullTime
+	user := User{
+		ID:          newUUID,
+		Username:    username,
+		Email:       email,
+		PhoneNumber: phoneNumber,
+		SignedUpAt:  *wrappers.NewNullTime(&now),
 
-	if signingUp == true {
-		signedUpAt = *wrappers.NewNullTime(&now)
+		CreatedAt: now,
+		UpdatedAt: now}
+
+	return &user, nil
+}
+
+// NewUserFromShare constructor for creating a new user
+// TODO validate email, phone number
+func NewUserFromShare(
+	username wrappers.NullString,
+	email wrappers.NullString,
+	phoneNumber string) (*User, error) {
+
+	newUUID, err := uuid.NewRandom()
+
+	if err != nil {
+		return nil, err
 	}
+
+	now := time.Now()
 
 	user := User{
 		ID:          newUUID,
 		Username:    username,
 		Email:       email,
 		PhoneNumber: phoneNumber,
-		SignedUpAt:  signedUpAt,
 
 		CreatedAt: now,
 		UpdatedAt: now}
@@ -91,5 +111,12 @@ func (user *User) ScanRow(row *sql.Row) error {
 		&user.UpdatedAt,
 		&user.DeletedAt)
 
-	return err
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
+	}
+
+	return nil
 }

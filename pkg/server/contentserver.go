@@ -1,20 +1,25 @@
-package contentserver
+package server
 
 import (
 	"net/http"
 
+	"later.co/pkg/repository"
+
 	"github.com/gin-gonic/gin"
 	"later.co/pkg/parse"
-	"later.co/pkg/repository/contentrepo"
 	"later.co/pkg/request"
 )
 
-// RegisterEndpoints defines handlers for endpoints for the content service
-func RegisterEndpoints(router *gin.Engine) {
-	router.POST("/content/create", create)
+type ContentServer struct {
+	Repository repository.ContentRepository
 }
 
-func create(context *gin.Context) {
+// RegisterEndpoints defines handlers for endpoints for the content service
+func (server *ContentServer) RegisterEndpoints(router *gin.Engine) {
+	router.POST("/content/create", server.create)
+}
+
+func (server *ContentServer) create(context *gin.Context) {
 	var json request.ContentCreateRequestBody
 
 	err := context.ShouldBindJSON(&json)
@@ -31,5 +36,5 @@ func create(context *gin.Context) {
 		return
 	}
 
-	contentrepo.Insert(content)
+	server.Repository.Insert(content)
 }

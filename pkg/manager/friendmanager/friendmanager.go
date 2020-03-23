@@ -2,7 +2,6 @@ package friendmanager
 
 import (
 	"later.co/pkg/later/entity"
-	"later.co/pkg/repository/userrepo"
 	"later.co/pkg/response"
 
 	"later.co/pkg/repository/friendrepo"

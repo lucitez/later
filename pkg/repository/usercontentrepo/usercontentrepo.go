@@ -7,7 +7,7 @@ import (
 	// Postgres driver
 	"github.com/google/uuid"
 	"later.co/pkg/later/entity"
-	"later.co/pkg/repository"
+	"later.co/pkg/repository/util"
 	"later.co/pkg/response"
 )
 
@@ -183,7 +183,7 @@ func Feed(
 
 	userContents := []response.WireUserContent{}
 
-	rows, err := DB.Query(testStatement, repository.GenerateArguments(args)...)
+	rows, err := DB.Query(testStatement, util.GenerateArguments(args)...)
 
 	if err != nil {
 		return nil, err

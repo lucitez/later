@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -51,4 +52,45 @@ func NewContent(
 		UpdatedAt:   now}
 
 	return &content, nil
+}
+
+// ScanRows ...
+func (content *Content) ScanRows(rows *sql.Rows) error {
+	err := rows.Scan(
+		&content.ID,
+		&content.Title,
+		&content.Description,
+		&content.ImageURL,
+		&content.ContentType,
+		&content.URL,
+		&content.Domain,
+		&content.Shares,
+		&content.CreatedAt,
+		&content.UpdatedAt)
+
+	return err
+}
+
+// ScanRow ...
+func (content *Content) ScanRow(row *sql.Row) error {
+	err := row.Scan(
+		&content.ID,
+		&content.Title,
+		&content.Description,
+		&content.ImageURL,
+		&content.ContentType,
+		&content.URL,
+		&content.Domain,
+		&content.Shares,
+		&content.CreatedAt,
+		&content.UpdatedAt)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
+	}
+
+	return nil
 }

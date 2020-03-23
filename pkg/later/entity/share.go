@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -41,4 +42,36 @@ func NewShare(
 		CreatedAt: now}
 
 	return &newShare, nil
+}
+
+// ScanRows ...
+func (share *Share) ScanRows(rows *sql.Rows) error {
+	err := rows.Scan(
+		&share.ID,
+		&share.ContentID,
+		&share.SentByUserID,
+		&share.RecipientUserID,
+		&share.CreatedAt,
+		&share.OpenedAt)
+
+	return err
+}
+
+// ScanRow ...
+func (share *Share) ScanRow(row *sql.Row) error {
+	err := row.Scan(
+		&share.ID,
+		&share.ContentID,
+		&share.SentByUserID,
+		&share.RecipientUserID,
+		&share.CreatedAt,
+		&share.OpenedAt)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
+	}
+	return nil
 }

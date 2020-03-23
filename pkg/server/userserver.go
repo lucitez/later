@@ -1,26 +1,27 @@
-package userserver
+package server
 
 import (
 	"net/http"
 	"strconv"
 
-	"later.co/pkg/later/entity"
-
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"later.co/pkg/repository/userrepo"
+	"later.co/pkg/manager"
 	"later.co/pkg/request"
 )
 
-// RegisterEndpoints defines handlers for endpoints for the user service
-func RegisterEndpoints(router *gin.Engine) {
-	router.POST("/users/sign-up", signUp)
-
-	router.GET("/users/by-id", byID)
-	router.GET("/users/all", allUsers)
+type UserServer struct {
+	Manager manager.UserManager
 }
 
-func signUp(context *gin.Context) {
+// RegisterEndpoints defines handlers for endpoints for the user service
+func (server *UserServer) RegisterEndpoints(router *gin.Engine) {
+	router.POST("/users/sign-up", server.signUp)
+
+	router.GET("/users/by-id", server.byID)
+	router.GET("/users/all", server.allUsers)
+}
+
+func (server *UserServer) signUp(context *gin.Context) {
 	var json request.UserSignUpRequestBody
 
 	err := context.ShouldBindJSON(&json)
@@ -30,43 +31,25 @@ func signUp(context *gin.Context) {
 		return
 	}
 
-	user, err := entity.NewUser(
-		json.Username,
-		json.Email,
-		json.PhoneNumber,
-		true)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	createdUser, err := userrepo.Insert(user)
+	user, err := server.Manager.SignUp(json)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error_type": "On Insert", "error": err.Error()})
 		return
 	}
 
-	context.JSON(http.StatusOK, createdUser)
+	context.JSON(http.StatusOK, user)
 }
 
-func byID(context *gin.Context) {
-	id := context.Query("id")
-
-	if id == "" {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter id is required"})
-		return
-	}
-
-	idAsUUID, err := uuid.Parse(id)
+func (server *UserServer) byID(context *gin.Context) {
+	userID, err := DeserUUID(context, "user_id")
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter id must be a uuid"})
 		return
 	}
 
-	user, err := userrepo.ByID(idAsUUID)
+	user, err := server.Manager.ByID(*userID)
 
 	if err != nil {
 		context.JSON(http.StatusNotFound, gin.H{"error": "User does not exist"})
@@ -76,12 +59,12 @@ func byID(context *gin.Context) {
 	context.JSON(http.StatusOK, user)
 }
 
-func allUsers(context *gin.Context) {
+func (server *UserServer) allUsers(context *gin.Context) {
 	limitstr := context.DefaultQuery("limit", "100")
 
 	limit, err := strconv.Atoi(limitstr)
 
-	users, err := userrepo.All(limit)
+	users, err := server.Manager.All(limit)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

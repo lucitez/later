@@ -22,7 +22,7 @@ func (server *FriendRequestServer) RegisterEndpoints(router *gin.Engine) {
 	router.PUT("/friend-requests/declilne", server.decline)
 }
 
-func (frServer *FriendRequestServer) send(context *gin.Context) {
+func (server *FriendRequestServer) send(context *gin.Context) {
 	var body request.FriendRequestCreateRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
@@ -30,7 +30,7 @@ func (frServer *FriendRequestServer) send(context *gin.Context) {
 		return
 	}
 
-	friendRequest, err := frServer.Manager.Create(body.ToFriendRequestCreateBody())
+	friendRequest, err := server.Manager.Create(body.ToFriendRequestCreateBody())
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err)
@@ -40,7 +40,7 @@ func (frServer *FriendRequestServer) send(context *gin.Context) {
 	context.JSON(http.StatusOK, friendRequest)
 }
 
-func (frServer *FriendRequestServer) pending(context *gin.Context) {
+func (server *FriendRequestServer) pending(context *gin.Context) {
 	userID, err := DeserUUID(context, "user_id")
 
 	if err != nil {
@@ -48,7 +48,7 @@ func (frServer *FriendRequestServer) pending(context *gin.Context) {
 		return
 	}
 
-	friendRequest, err := frServer.Manager.Pending(*userID)
+	friendRequest, err := server.Manager.Pending(*userID)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err)
@@ -58,7 +58,7 @@ func (frServer *FriendRequestServer) pending(context *gin.Context) {
 	context.JSON(http.StatusOK, friendRequest)
 }
 
-func (frServer *FriendRequestServer) accept(context *gin.Context) {
+func (server *FriendRequestServer) accept(context *gin.Context) {
 	var body request.FriendRequestAcceptRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
@@ -66,7 +66,7 @@ func (frServer *FriendRequestServer) accept(context *gin.Context) {
 		return
 	}
 
-	err := frServer.Manager.Accept(body.ID)
+	err := server.Manager.Accept(body.ID)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err)
@@ -76,7 +76,7 @@ func (frServer *FriendRequestServer) accept(context *gin.Context) {
 	context.Status(http.StatusOK)
 }
 
-func (frServer *FriendRequestServer) decline(context *gin.Context) {
+func (server *FriendRequestServer) decline(context *gin.Context) {
 	var body request.FriendRequestDeclineRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
@@ -84,7 +84,7 @@ func (frServer *FriendRequestServer) decline(context *gin.Context) {
 		return
 	}
 
-	err := frServer.Manager.Decline(body.ID)
+	err := server.Manager.Decline(body.ID)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err)
