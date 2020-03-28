@@ -11,12 +11,14 @@ import (
 	"later.co/pkg/later/entity"
 )
 
+// ContentRepository ...
 type ContentRepository interface {
 	Insert(content *entity.Content) (*entity.Content, error)
 	ByID(id uuid.UUID) (*entity.Content, error)
 	All(limit int) ([]entity.Content, error)
 }
 
+// ContentRepositoryImpl ...
 type ContentRepositoryImpl struct {
 	DB *sql.DB
 }

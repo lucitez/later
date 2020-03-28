@@ -1,4 +1,4 @@
-package friendrepo
+package repository
 
 import (
 	"database/sql"
@@ -9,11 +9,18 @@ import (
 	"later.co/pkg/later/entity"
 )
 
-// DB is this repository's database connection
-var DB *sql.DB
+type FriendRepository interface {
+	Insert(friend *entity.Friend) (*entity.Friend, error)
+	SearchByUserID(userID uuid.UUID, search string) ([]entity.Friend, error)
+	ByUserID(userID uuid.UUID) ([]entity.Friend, error)
+}
+
+type FriendRepositoryImpl struct {
+	DB *sql.DB
+}
 
 // Insert inserts a new friend
-func Insert(friend *entity.Friend) (*entity.Friend, error) {
+func (repository *FriendRepositoryImpl) Insert(friend *entity.Friend) (*entity.Friend, error) {
 
 	statement := `
 	INSERT INTO friends (id, user_id, friend_user_id)
@@ -24,7 +31,7 @@ func Insert(friend *entity.Friend) (*entity.Friend, error) {
 	)
 	`
 
-	_, err := DB.Exec(
+	_, err := repository.DB.Exec(
 		statement,
 		friend.ID,
 		friend.UserID,
@@ -38,7 +45,7 @@ func Insert(friend *entity.Friend) (*entity.Friend, error) {
 }
 
 // SearchByUserID gets all friends of a user
-func SearchByUserID(userID uuid.UUID, search string) ([]entity.Friend, error) {
+func (repository *FriendRepositoryImpl) SearchByUserID(userID uuid.UUID, search string) ([]entity.Friend, error) {
 	statement := `
 	SELECT * FROM friends 
 	WHERE user_id = $1
@@ -53,13 +60,13 @@ func SearchByUserID(userID uuid.UUID, search string) ([]entity.Friend, error) {
 	AND deleted_at IS NULL
 	`
 
-	rows, err := DB.Query(statement, userID, search)
+	rows, err := repository.DB.Query(statement, userID, search)
 
 	if err != nil {
 		return nil, err
 	}
 
-	friends, err := scanRows(rows)
+	friends, err := repository.scanRows(rows)
 
 	if err != nil {
 		return nil, err
@@ -69,20 +76,20 @@ func SearchByUserID(userID uuid.UUID, search string) ([]entity.Friend, error) {
 }
 
 // ByUserID gets all friends of a user
-func ByUserID(userID uuid.UUID) ([]entity.Friend, error) {
+func (repository *FriendRepositoryImpl) ByUserID(userID uuid.UUID) ([]entity.Friend, error) {
 	statement := `
 	SELECT * FROM friends 
 	WHERE user_id = $1
 	AND deleted_at IS NULL
 	`
 
-	rows, err := DB.Query(statement, userID)
+	rows, err := repository.DB.Query(statement, userID)
 
 	if err != nil {
 		return nil, err
 	}
 
-	friends, err := scanRows(rows)
+	friends, err := repository.scanRows(rows)
 
 	if err != nil {
 		return nil, err
@@ -91,7 +98,7 @@ func ByUserID(userID uuid.UUID) ([]entity.Friend, error) {
 	return friends, nil
 }
 
-func scanRows(rows *sql.Rows) ([]entity.Friend, error) {
+func (repository *FriendRepositoryImpl) scanRows(rows *sql.Rows) ([]entity.Friend, error) {
 	friends := []entity.Friend{}
 
 	defer rows.Close()

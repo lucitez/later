@@ -1,4 +1,4 @@
-package usercontentserver
+package server
 
 import (
 	"net/http"
@@ -6,16 +6,20 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"later.co/pkg/repository/usercontentrepo"
+	"later.co/pkg/manager"
 	"later.co/pkg/util/stringutil"
 )
 
-// RegisterEndpoints defines handlers for endpoints for the user service
-func RegisterEndpoints(router *gin.Engine) {
-	router.GET("/user-content/feed", feed)
+type UserContentServer struct {
+	Manager manager.UserContentManager
 }
 
-func feed(context *gin.Context) {
+// RegisterEndpoints defines handlers for endpoints for the user service
+func (server *UserContentServer) RegisterEndpoints(router *gin.Engine) {
+	router.GET("/user-content/feed", server.feed)
+}
+
+func (server *UserContentServer) feed(context *gin.Context) {
 
 	userID := context.Query("user_id")
 	senderType := context.Query("sender_type")
@@ -36,7 +40,7 @@ func feed(context *gin.Context) {
 		return
 	}
 
-	userContent, err := usercontentrepo.Feed(
+	userContent, err := server.Manager.Feed(
 		userIDAsUUID,
 		stringutil.NullIfBlank(&senderType),
 		stringutil.NullIfBlank(&contentType),

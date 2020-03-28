@@ -1,24 +1,34 @@
-package domainserver
+package server
 
 import (
 	"net/http"
 	"strconv"
 
+	"later.co/pkg/later/entity"
+	"later.co/pkg/manager"
+
 	"github.com/gin-gonic/gin"
-	"later.co/pkg/later/domain"
-	"later.co/pkg/repository/domainrepo"
 	"later.co/pkg/request"
 )
 
-// RegisterEndpoints defines handlers for endpoints for the domain service
-func RegisterEndpoints(router *gin.Engine) {
-	router.POST("/domains/create", create)
-
-	router.GET("/domains/by-domain", byDomain)
-	router.GET("/domains/all", all)
+func NewDomainServer(m manager.DomainManagerImpl) DomainServer {
+	return DomainServer{m}
 }
 
-func create(context *gin.Context) {
+// DomainServer exposes endpoints for domain related REST requests
+type DomainServer struct {
+	Manager manager.DomainManagerImpl
+}
+
+// RegisterEndpoints defines handlers for endpoints for the domain service
+func (server *DomainServer) RegisterEndpoints(router *gin.Engine) {
+	router.POST("/domains/create", server.create)
+
+	router.GET("/domains/by-domain", server.byDomain)
+	router.GET("/domains/all", server.all)
+}
+
+func (server *DomainServer) create(context *gin.Context) {
 	var json request.DomainCreateRequestBody
 
 	err := context.ShouldBindJSON(&json)
@@ -28,7 +38,7 @@ func create(context *gin.Context) {
 		return
 	}
 
-	domain, err := domain.New(
+	domain, err := entity.NewDomain(
 		json.Domain,
 		json.ContentType)
 
@@ -37,7 +47,7 @@ func create(context *gin.Context) {
 		return
 	}
 
-	createddomain, err := domainrepo.Insert(domain)
+	createddomain, err := server.Manager.Create(domain)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error_type": "On Insert", "error": err.Error()})
@@ -47,7 +57,7 @@ func create(context *gin.Context) {
 	context.JSON(http.StatusOK, createddomain)
 }
 
-func byDomain(context *gin.Context) {
+func (server *DomainServer) byDomain(context *gin.Context) {
 	domainQuery := context.Query("domain")
 
 	if domainQuery == "" {
@@ -55,7 +65,7 @@ func byDomain(context *gin.Context) {
 		return
 	}
 
-	domain, err := domainrepo.ByDomain(domainQuery)
+	domain, err := server.Manager.ByDomain(domainQuery)
 
 	if err != nil {
 		context.JSON(http.StatusNotFound, gin.H{"error": "Domain does not exist"})
@@ -65,7 +75,7 @@ func byDomain(context *gin.Context) {
 	context.JSON(http.StatusOK, domain)
 }
 
-func all(context *gin.Context) {
+func (server *DomainServer) all(context *gin.Context) {
 	limit := context.Query("limit")
 
 	var err error
@@ -82,7 +92,7 @@ func all(context *gin.Context) {
 		return
 	}
 
-	domains, err := domainrepo.All(limitint)
+	domains, err := server.Manager.All(limitint)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

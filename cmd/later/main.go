@@ -5,13 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"later.co/pkg/repository"
-
-	"later.co/pkg/repository/domainrepo"
-	"later.co/pkg/repository/friendrepo"
-	"later.co/pkg/repository/usercontentrepo"
-
-	"later.co/pkg/server/friendserver"
-	"later.co/pkg/server/usercontentserver"
 )
 
 func main() {
@@ -23,12 +16,9 @@ func main() {
 		log.Panic(err)
 	}
 
-	domainrepo.DB = db
-	usercontentrepo.DB = db
-	friendrepo.DB = db
+	domainServer := InitializeDomain(db)
 
-	usercontentserver.RegisterEndpoints(router)
-	friendserver.RegisterEndpoints(router)
+	domainServer.RegisterEndpoints(router)
 
 	router.Run(":8000")
 }

@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"later.co/pkg/repository"
+	"later.co/pkg/manager"
 
 	"github.com/gin-gonic/gin"
 	"later.co/pkg/parse"
@@ -11,12 +11,26 @@ import (
 )
 
 type ContentServer struct {
-	Repository repository.ContentRepository
+	Router  *gin.Engine
+	Parser  parse.Parser
+	Manager manager.ContentManager
+}
+
+func NewContentServer(
+	parser parse.Parser,
+	manager manager.ContentManager) ContentServer {
+	return ContentServer{
+		Parser:  parser,
+		Manager: manager}
+}
+
+func (server *ContentServer) Start() {
+	server.RegisterEndpoints()
 }
 
 // RegisterEndpoints defines handlers for endpoints for the content service
-func (server *ContentServer) RegisterEndpoints(router *gin.Engine) {
-	router.POST("/content/create", server.create)
+func (server *ContentServer) RegisterEndpoints() {
+	server.Router.POST("/content/create", server.create)
 }
 
 func (server *ContentServer) create(context *gin.Context) {
@@ -29,12 +43,12 @@ func (server *ContentServer) create(context *gin.Context) {
 		return
 	}
 
-	content, err := parse.ContentFromURL(json.URL)
+	content, err := server.Parser.ContentFromURL(json.URL)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	server.Repository.Insert(content)
+	server.Manager.Create(content)
 }

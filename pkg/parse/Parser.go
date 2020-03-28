@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"regexp"
 
+	"later.co/pkg/manager"
+
 	"golang.org/x/net/html"
 
 	"later.co/pkg/later/entity"
-	"later.co/pkg/repository/domainrepo"
 	"later.co/pkg/util/wrappers"
 )
 
@@ -24,12 +25,17 @@ type headerContent struct {
 	imageURL    *string
 }
 
+// Parser handles parsingn html at a url to extract content data
+type Parser struct {
+	DomainManager manager.DomainManager
+}
+
 func (headerContent *headerContent) isPopulated() bool {
 	return headerContent.title != nil && headerContent.description != nil && headerContent.imageURL != nil
 }
 
 // ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
-func ContentFromURL(url string) (*entity.Content, error) {
+func (parser *Parser) ContentFromURL(url string) (*entity.Content, error) {
 
 	domainRegex := regexp.MustCompile(`.*[\./]([^\.]+)\.(com|co|org)`)
 	matches := domainRegex.FindStringSubmatch(url)
@@ -37,7 +43,7 @@ func ContentFromURL(url string) (*entity.Content, error) {
 
 	var contentType *string
 
-	domain, err := domainrepo.ByDomain(urlDomain)
+	domain, err := parser.DomainManager.ByDomain(urlDomain)
 
 	if err != nil {
 		return nil, err

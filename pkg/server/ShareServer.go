@@ -1,4 +1,4 @@
-package shareserver
+package server
 
 import (
 	"errors"
@@ -19,6 +19,7 @@ type ShareServer struct {
 	Manager        manager.ShareManager
 	ContentManager manager.ContentManager
 	UserManager    manager.UserManager
+	Parser         parse.Parser
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service
@@ -36,7 +37,7 @@ func (server *ShareServer) getContentFromURLOrContentID(url wrappers.NullString,
 	case contentID.Valid:
 		content, err = server.ContentManager.ByID(contentID.ID)
 	case url.Valid:
-		contentFromURL, err := parse.ContentFromURL(url.String)
+		contentFromURL, err := server.Parser.ContentFromURL(url.String)
 		if err != nil {
 			return nil, err
 		}

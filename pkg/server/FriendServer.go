@@ -1,21 +1,27 @@
-package friendserver
+package server
 
 import (
 	"fmt"
 	"net/http"
+
+	"later.co/pkg/manager"
 
 	"github.com/google/uuid"
 
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterEndpoints defines handlers for endpoints for the user service
-func RegisterEndpoints(router *gin.Engine) {
-	router.GET("/friends/all", all)
-	router.GET("/friends/search", search)
+type FriendServer struct {
+	Manager manager.FriendManager
 }
 
-func all(context *gin.Context) {
+// RegisterEndpoints defines handlers for endpoints for the user service
+func (server *FriendServer) RegisterEndpoints(router *gin.Engine) {
+	router.GET("/friends/all", server.all)
+	router.GET("/friends/search", server.search)
+}
+
+func (server *FriendServer) all(context *gin.Context) {
 	userIDStr := context.Query("user_id")
 
 	userID, err := uuid.Parse(userIDStr)
@@ -27,7 +33,7 @@ func all(context *gin.Context) {
 	context.JSON(http.StatusOK, userID)
 }
 
-func search(context *gin.Context) {
+func (server *FriendServer) search(context *gin.Context) {
 	userID := context.MustGet("user_id")
 	query := context.MustGet("query")
 

@@ -1,4 +1,4 @@
-package usercontentrepo
+package repository
 
 import (
 	"database/sql"
@@ -11,11 +11,23 @@ import (
 	"later.co/pkg/response"
 )
 
-// DB is this repository's database connection
-var DB *sql.DB
+type UserContentRepository interface {
+	Insert(userContent *entity.UserContent) (*entity.UserContent, error)
+	ByID(id uuid.UUID) (*entity.UserContent, error)
+	All(limit int) ([]entity.UserContent, error)
+	Feed(
+		userID uuid.UUID,
+		senderType *string,
+		contentType *string,
+		archived *bool) ([]response.WireUserContent, error)
+}
+
+type UserContentRepositoryImpl struct {
+	DB *sql.DB
+}
 
 // Insert inserts a new userContent
-func Insert(userContent *entity.UserContent) (*entity.UserContent, error) {
+func (repository *UserContentRepositoryImpl) Insert(userContent *entity.UserContent) (*entity.UserContent, error) {
 
 	statement := `
 	INSERT INTO user_content (id, share_id, content_id, user_id, sent_by)
@@ -28,7 +40,7 @@ func Insert(userContent *entity.UserContent) (*entity.UserContent, error) {
 	)
 	`
 
-	_, err := DB.Exec(
+	_, err := repository.DB.Exec(
 		statement,
 		userContent.ID,
 		userContent.ShareID,
@@ -43,40 +55,8 @@ func Insert(userContent *entity.UserContent) (*entity.UserContent, error) {
 	return userContent, nil
 }
 
-func scanRowIntoUserContent(userContent *entity.UserContent, row *sql.Row) error {
-	err := row.Scan(
-		&userContent.ID,
-		&userContent.ShareID,
-		&userContent.ContentID,
-		&userContent.ContentType,
-		&userContent.UserID,
-		&userContent.SentBy,
-		&userContent.CreatedAt,
-		&userContent.UpdatedAt,
-		&userContent.ArchivedAt,
-		&userContent.DeletedAt)
-
-	return err
-}
-
-func scanRowsIntoUserContent(userContent *entity.UserContent, rows *sql.Rows) error {
-	err := rows.Scan(
-		&userContent.ID,
-		&userContent.ShareID,
-		&userContent.ContentID,
-		&userContent.ContentType,
-		&userContent.UserID,
-		&userContent.SentBy,
-		&userContent.CreatedAt,
-		&userContent.UpdatedAt,
-		&userContent.ArchivedAt,
-		&userContent.DeletedAt)
-
-	return err
-}
-
 // ByID gets a userContent by id
-func ByID(id uuid.UUID) (*entity.UserContent, error) {
+func (repository *UserContentRepositoryImpl) ByID(id uuid.UUID) (*entity.UserContent, error) {
 	var userContent entity.UserContent
 
 	statement := `
@@ -84,52 +64,26 @@ func ByID(id uuid.UUID) (*entity.UserContent, error) {
 	WHERE id = $1
 	`
 
-	row := DB.QueryRow(statement, id)
+	row := repository.DB.QueryRow(statement, id)
 
-	err := scanRowIntoUserContent(&userContent, row)
+	err := userContent.ScanRow(row)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return &userContent, nil
+	return &userContent, err
 }
 
 // All returns all userContents
-func All(limit int) ([]entity.UserContent, error) {
-	userContents := []entity.UserContent{}
-
-	rows, err := DB.Query(`SELECT * FROM user_content LIMIT $1`, limit)
+func (repository *UserContentRepositoryImpl) All(limit int) ([]entity.UserContent, error) {
+	rows, err := repository.DB.Query(`SELECT * FROM user_content LIMIT $1`, limit)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer rows.Close()
-
-	for rows.Next() {
-		var userContent entity.UserContent
-		err := scanRowsIntoUserContent(&userContent, rows)
-
-		if err != nil {
-			return nil, err
-		}
-		userContents = append(userContents, userContent)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
-
-	return userContents, nil
+	return repository.scanRows(rows)
 }
 
 // Feed gets usercontent
-func Feed(
+func (repository *UserContentRepositoryImpl) Feed(
 	userID uuid.UUID,
 	senderType *string,
 	contentType *string,
@@ -139,7 +93,7 @@ func Feed(
 
 	args := []string{userIDString}
 
-	testStatement := `
+	statement := `
 		SELECT 	user_content.id,
 				content.id as content_id,
 				content.title,
@@ -157,37 +111,64 @@ func Feed(
 	counter := 2
 
 	if senderType != nil {
-		testStatement += `AND user_content.sender_type = $` + strconv.Itoa(counter) + ` `
+		statement += `AND user_content.sender_type = $` + strconv.Itoa(counter) + ` `
 		args = append(args, *senderType)
 		counter++
 	}
 
 	if contentType != nil {
-		testStatement += `AND user_content.content_type = $` + strconv.Itoa(counter) + ` `
+		statement += `AND user_content.content_type = $` + strconv.Itoa(counter) + ` `
 		args = append(args, *contentType)
 		counter++
 	}
 
 	if archived != nil && *archived == true {
-		testStatement += `
+		statement += `
 		AND user_content.archived_at IS NOT NULL
 		`
 	}
 
 	switch {
 	case archived != nil && *archived == true:
-		testStatement += `ORDER BY user_content.archived_at DESC`
+		statement += `ORDER BY user_content.archived_at DESC`
 	default:
-		testStatement += `ORDER BY user_content.created_at DESC`
+		statement += `ORDER BY user_content.created_at DESC`
 	}
 
-	userContents := []response.WireUserContent{}
-
-	rows, err := DB.Query(testStatement, util.GenerateArguments(args)...)
+	rows, err := repository.DB.Query(statement, util.GenerateArguments(args)...)
 
 	if err != nil {
 		return nil, err
 	}
+
+	return repository.scanRowsIntoWireUserContent(rows)
+}
+
+func (repository *UserContentRepositoryImpl) scanRows(rows *sql.Rows) ([]entity.UserContent, error) {
+	userContents := []entity.UserContent{}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var userContent entity.UserContent
+		err := userContent.ScanRows(rows)
+
+		if err != nil {
+			return nil, err
+		}
+		userContents = append(userContents, userContent)
+	}
+
+	err := rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return userContents, nil
+}
+
+func (repository *UserContentRepositoryImpl) scanRowsIntoWireUserContent(rows *sql.Rows) ([]response.WireUserContent, error) {
+	userContents := []response.WireUserContent{}
 
 	defer rows.Close()
 
@@ -210,7 +191,7 @@ func Feed(
 		userContents = append(userContents, userContent)
 	}
 
-	err = rows.Err()
+	err := rows.Err()
 	if err != nil {
 		return nil, err
 	}

@@ -4,7 +4,6 @@ import (
 	"later.co/pkg/body"
 	"later.co/pkg/later/entity"
 	"later.co/pkg/repository"
-	"later.co/pkg/repository/usercontentrepo"
 )
 
 type ShareManager interface {
@@ -13,7 +12,8 @@ type ShareManager interface {
 }
 
 type ShareManagerImpl struct {
-	Repository repository.ShareRepository
+	Repository         repository.ShareRepository
+	UserContentManager UserContentManager
 }
 
 // CreateMultiple creates multiple shares from multiple bodies
@@ -65,7 +65,7 @@ func (manager *ShareManagerImpl) Create(body body.ShareCreateBody) (*entity.Shar
 		return share, err
 	}
 
-	_, err = usercontentrepo.Insert(usercontent)
+	_, err = manager.UserContentManager.Create(usercontent)
 
 	if err != nil {
 		return nil, err
