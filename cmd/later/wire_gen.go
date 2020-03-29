@@ -8,15 +8,72 @@ package main
 import (
 	"database/sql"
 	"later.co/pkg/manager"
+	"later.co/pkg/parse"
 	"later.co/pkg/repository"
 	"later.co/pkg/server"
 )
 
 // Injectors from wire.go:
 
+func InitializeContent(db *sql.DB) server.ContentServer {
+	domainRepository := repository.NewDomainRepository(db)
+	domainManager := manager.NewDomainManager(domainRepository)
+	parser := parse.NewParser(domainManager)
+	contentRepository := repository.NewContentRepository(db)
+	contentManager := manager.NewContentManager(contentRepository)
+	contentServer := server.NewContentServer(parser, contentManager)
+	return contentServer
+}
+
 func InitializeDomain(db *sql.DB) server.DomainServer {
-	domainRepositoryImpl := repository.NewDomainRepository(db)
-	domainManagerImpl := manager.NewDomainManager(domainRepositoryImpl)
-	domainServer := server.NewDomainServer(domainManagerImpl)
+	domainRepository := repository.NewDomainRepository(db)
+	domainManager := manager.NewDomainManager(domainRepository)
+	domainServer := server.NewDomainServer(domainManager)
 	return domainServer
+}
+
+func InitializeFriend(db *sql.DB) server.FriendServer {
+	userRepository := repository.NewUserRepository(db)
+	userManager := manager.NewUserManager(userRepository)
+	friendRepository := repository.NewFriendRepository(db)
+	friendManager := manager.NewFriendManager(userManager, friendRepository)
+	friendServer := server.NewFriendServer(friendManager)
+	return friendServer
+}
+
+func InitializeFriendRequest(db *sql.DB) server.FriendRequestServer {
+	friendRequestRepository := repository.NewFriendRequestRepository(db)
+	friendRequestManager := manager.NewFriendRequestManager(friendRequestRepository)
+	friendRequestServer := server.NewFriendRequestServer(friendRequestManager)
+	return friendRequestServer
+}
+
+func InitializeShare(db *sql.DB) server.ShareServer {
+	shareRepository := repository.NewShareRepository(db)
+	userContentRepository := repository.NewUserContentRepository(db)
+	userContentManager := manager.NewUserContentManager(userContentRepository)
+	shareManager := manager.NewShareManager(shareRepository, userContentManager)
+	contentRepository := repository.NewContentRepository(db)
+	contentManager := manager.NewContentManager(contentRepository)
+	userRepository := repository.NewUserRepository(db)
+	userManager := manager.NewUserManager(userRepository)
+	domainRepository := repository.NewDomainRepository(db)
+	domainManager := manager.NewDomainManager(domainRepository)
+	parser := parse.NewParser(domainManager)
+	shareServer := server.NewShareServer(shareManager, contentManager, userManager, parser)
+	return shareServer
+}
+
+func InitializeUserContent(db *sql.DB) server.UserContentServer {
+	userContentRepository := repository.NewUserContentRepository(db)
+	userContentManager := manager.NewUserContentManager(userContentRepository)
+	userContentServer := server.NewUserContentServer(userContentManager)
+	return userContentServer
+}
+
+func InitializeUser(db *sql.DB) server.UserServer {
+	userRepository := repository.NewUserRepository(db)
+	userManager := manager.NewUserManager(userRepository)
+	userServer := server.NewUserServer(userManager)
+	return userServer
 }
