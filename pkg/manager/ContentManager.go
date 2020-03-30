@@ -6,24 +6,27 @@ import (
 	"later.co/pkg/repository"
 )
 
-type ContentManager interface {
-	Create(content *entity.Content) (*entity.Content, error)
-	ByID(id uuid.UUID) (*entity.Content, error)
-	All(limit int) ([]entity.Content, error)
-}
-
-type ContentManagerImpl struct {
+// ContentManager ...
+type ContentManager struct {
 	Repository repository.ContentRepository
 }
 
-func (manager *ContentManagerImpl) Create(content *entity.Content) (*entity.Content, error) {
+// NewContentManager for wire generation
+func NewContentManager(repo repository.ContentRepository) ContentManager {
+	return ContentManager{repo}
+}
+
+// Create calls repository to create a new Content entry
+func (manager *ContentManager) Create(content *entity.Content) (*entity.Content, error) {
 	return manager.Repository.Insert(content)
 }
 
-func (manager *ContentManagerImpl) ByID(id uuid.UUID) (*entity.Content, error) {
+// ByID returns Content by ID
+func (manager *ContentManager) ByID(id uuid.UUID) (*entity.Content, error) {
 	return manager.Repository.ByID(id)
 }
 
-func (manager *ContentManagerImpl) All(limit int) ([]entity.Content, error) {
+// All returns all content within a limit
+func (manager *ContentManager) All(limit int) ([]entity.Content, error) {
 	return manager.Repository.All(limit)
 }

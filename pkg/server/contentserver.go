@@ -10,12 +10,13 @@ import (
 	"later.co/pkg/request"
 )
 
+// ContentServer ...
 type ContentServer struct {
-	Router  *gin.Engine
 	Parser  parse.Parser
 	Manager manager.ContentManager
 }
 
+// NewContentServer for wire generation
 func NewContentServer(
 	parser parse.Parser,
 	manager manager.ContentManager) ContentServer {
@@ -24,13 +25,9 @@ func NewContentServer(
 		Manager: manager}
 }
 
-func (server *ContentServer) Start() {
-	server.RegisterEndpoints()
-}
-
 // RegisterEndpoints defines handlers for endpoints for the content service
-func (server *ContentServer) RegisterEndpoints() {
-	server.Router.POST("/content/create", server.create)
+func (server *ContentServer) RegisterEndpoints(router *gin.Engine) {
+	router.POST("/content/create", server.create)
 }
 
 func (server *ContentServer) create(context *gin.Context) {

@@ -9,8 +9,14 @@ import (
 	"later.co/pkg/request"
 )
 
+// UserServer ...
 type UserServer struct {
 	Manager manager.UserManager
+}
+
+// NewUserServer ...
+func NewUserServer(manager manager.UserManager) UserServer {
+	return UserServer{manager}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service

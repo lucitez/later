@@ -30,8 +30,9 @@ type Parser struct {
 	DomainManager manager.DomainManager
 }
 
-func (headerContent *headerContent) isPopulated() bool {
-	return headerContent.title != nil && headerContent.description != nil && headerContent.imageURL != nil
+// NewParser for wire generation
+func NewParser(domainManager manager.DomainManager) Parser {
+	return Parser{DomainManager: domainManager}
 }
 
 // ContentFromURL scrapes the data found at the url's address to find elements to populate Content with

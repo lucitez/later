@@ -10,8 +10,14 @@ import (
 	"later.co/pkg/util/stringutil"
 )
 
+// UserContentServer ...
 type UserContentServer struct {
 	Manager manager.UserContentManager
+}
+
+// NewUserContentServer ...
+func NewUserContentServer(manager manager.UserContentManager) UserContentServer {
+	return UserContentServer{manager}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service

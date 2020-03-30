@@ -7,34 +7,33 @@ import (
 	"later.co/pkg/response"
 )
 
-type UserContentManager interface {
-	Create(userContent *entity.UserContent) (*entity.UserContent, error)
-	ByID(id uuid.UUID) (*entity.UserContent, error)
-	All(limit int) ([]entity.UserContent, error)
-	Feed(
-		userID uuid.UUID,
-		senderType *string,
-		contentType *string,
-		archived *bool) ([]response.WireUserContent, error)
-}
-
-type UserContentManagerImpl struct {
+// UserContentManager ...
+type UserContentManager struct {
 	Repository repository.UserContentRepository
 }
 
-func (manager *UserContentManagerImpl) Create(userContent *entity.UserContent) (*entity.UserContent, error) {
+// NewUserContentManager ...
+func NewUserContentManager(repository repository.UserContentRepository) UserContentManager {
+	return UserContentManager{repository}
+}
+
+// Create ...
+func (manager *UserContentManager) Create(userContent *entity.UserContent) (*entity.UserContent, error) {
 	return manager.Repository.Insert(userContent)
 }
 
-func (manager *UserContentManagerImpl) ByID(id uuid.UUID) (*entity.UserContent, error) {
+// ByID ...
+func (manager *UserContentManager) ByID(id uuid.UUID) (*entity.UserContent, error) {
 	return manager.Repository.ByID(id)
 }
 
-func (manager *UserContentManagerImpl) All(limit int) ([]entity.UserContent, error) {
+// All ...
+func (manager *UserContentManager) All(limit int) ([]entity.UserContent, error) {
 	return manager.Repository.All(limit)
 }
 
-func (manager *UserContentManagerImpl) Feed(
+// Feed ...
+func (manager *UserContentManager) Feed(
 	userID uuid.UUID,
 	senderType *string,
 	contentType *string,

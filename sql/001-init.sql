@@ -18,13 +18,13 @@ CREATE TABLE IF NOT EXISTS users
     email text,
     phone_number text,
 
-    created_at timestamp with time zone NOT NULL default now(),
-    signed_up_at timestamp with time zone,
-    updated_at timestamp with time zone NOT NULL default now(),
-    deleted_at timestamp with time zone
+    created_at timestamptz NOT NULL default now(),
+    signed_up_at timestamptz,
+    updated_at timestamptz NOT NULL default now(),
+    deleted_at timestamptz
 );
 
-CREATE TRIGGER update_users BEFORE INSERT OR UPDATE ON users
+CREATE TRIGGER update_users BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_uniq_users_on_username ON users(username) WHERE deleted_at IS NULL;
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS content (
     updated_at timestamp with time zone NOT NULL default now()
 );
 
-CREATE TRIGGER update_content BEFORE INSERT OR UPDATE ON content
+CREATE TRIGGER update_content BEFORE UPDATE ON content
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- Used to generate a user's feed. Comprised of references to shares.
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS user_content (
     deleted_at timestamp with time zone
 );
 
-CREATE TRIGGER update_user_content BEFORE INSERT OR UPDATE ON user_content
+CREATE TRIGGER update_user_content BEFORE UPDATE ON user_content
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 COMMIT;

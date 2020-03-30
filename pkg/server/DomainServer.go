@@ -11,13 +11,13 @@ import (
 	"later.co/pkg/request"
 )
 
-func NewDomainServer(m manager.DomainManagerImpl) DomainServer {
-	return DomainServer{m}
+func NewDomainServer(manager manager.DomainManager) DomainServer {
+	return DomainServer{manager}
 }
 
 // DomainServer exposes endpoints for domain related REST requests
 type DomainServer struct {
-	Manager manager.DomainManagerImpl
+	Manager manager.DomainManager
 }
 
 // RegisterEndpoints defines handlers for endpoints for the domain service

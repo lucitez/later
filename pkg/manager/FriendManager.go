@@ -8,18 +8,23 @@ import (
 	"github.com/google/uuid"
 )
 
-type FriendManager interface {
-	All(userID uuid.UUID) ([]response.WireFriend, error)
-	Search(userID uuid.UUID, query string) ([]response.WireFriend, error)
-}
-
-type FriendManagerImpl struct {
+// FriendManager ...
+type FriendManager struct {
 	UserManager UserManager
 	Repository  repository.FriendRepository
 }
 
+// NewFriendManager for wire generation
+func NewFriendManager(
+	userManager UserManager,
+	repository repository.FriendRepository) FriendManager {
+	return FriendManager{
+		UserManager: userManager,
+		Repository:  repository}
+}
+
 // All ...
-func (manager *FriendManagerImpl) All(userID uuid.UUID) ([]response.WireFriend, error) {
+func (manager *FriendManager) All(userID uuid.UUID) ([]response.WireFriend, error) {
 	friends, err := manager.Repository.ByUserID(userID)
 
 	if err != nil {
@@ -30,7 +35,7 @@ func (manager *FriendManagerImpl) All(userID uuid.UUID) ([]response.WireFriend, 
 }
 
 // Search ...
-func (manager *FriendManagerImpl) Search(userID uuid.UUID, query string) ([]response.WireFriend, error) {
+func (manager *FriendManager) Search(userID uuid.UUID, query string) ([]response.WireFriend, error) {
 	friends, err := manager.Repository.SearchByUserID(userID, query)
 
 	if err != nil {
@@ -40,7 +45,7 @@ func (manager *FriendManagerImpl) Search(userID uuid.UUID, query string) ([]resp
 	return manager.toWireFriends(friends), nil
 }
 
-func (manager *FriendManagerImpl) toWireFriends(friends []entity.Friend) []response.WireFriend {
+func (manager *FriendManager) toWireFriends(friends []entity.Friend) []response.WireFriend {
 	wireFriends := []response.WireFriend{}
 
 	for _, friend := range friends {

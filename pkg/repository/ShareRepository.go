@@ -9,18 +9,18 @@ import (
 	"later.co/pkg/later/entity"
 )
 
-type ShareRepository interface {
-	Insert(share *entity.Share) (*entity.Share, error)
-	ByID(id uuid.UUID) (*entity.Share, error)
-	All(limit int) ([]entity.Share, error)
-}
-
-type ShareRepositoryImpl struct {
+// ShareRepository ...
+type ShareRepository struct {
 	DB *sql.DB
 }
 
+// NewShareRepository ...
+func NewShareRepository(db *sql.DB) ShareRepository {
+	return ShareRepository{db}
+}
+
 // Insert inserts a new share
-func (repository *ShareRepositoryImpl) Insert(share *entity.Share) (*entity.Share, error) {
+func (repository *ShareRepository) Insert(share *entity.Share) (*entity.Share, error) {
 
 	statement := `
 	INSERT INTO shares (id, content_id, sent_by_user_id, recipient_user_id)
@@ -47,7 +47,7 @@ func (repository *ShareRepositoryImpl) Insert(share *entity.Share) (*entity.Shar
 }
 
 // ByID gets a share by id
-func (repository *ShareRepositoryImpl) ByID(id uuid.UUID) (*entity.Share, error) {
+func (repository *ShareRepository) ByID(id uuid.UUID) (*entity.Share, error) {
 	var share entity.Share
 
 	statement := `
@@ -63,7 +63,7 @@ func (repository *ShareRepositoryImpl) ByID(id uuid.UUID) (*entity.Share, error)
 }
 
 // All returns all shares
-func (repository *ShareRepositoryImpl) All(limit int) ([]entity.Share, error) {
+func (repository *ShareRepository) All(limit int) ([]entity.Share, error) {
 	statement := `
 	SELECT * FROM shares
 	WHERE deleted_at IS NULL
@@ -79,7 +79,7 @@ func (repository *ShareRepositoryImpl) All(limit int) ([]entity.Share, error) {
 	return repository.scanRows(rows)
 }
 
-func (repository *ShareRepositoryImpl) scanRows(rows *sql.Rows) ([]entity.Share, error) {
+func (repository *ShareRepository) scanRows(rows *sql.Rows) ([]entity.Share, error) {
 	shares := []entity.Share{}
 
 	defer rows.Close()

@@ -8,21 +8,18 @@ import (
 	"later.co/pkg/util/wrappers"
 )
 
-type UserManager interface {
-	SignUp(body request.UserSignUpRequestBody) (*entity.User, error)
-	ByID(id uuid.UUID) (*entity.User, error)
-	ByIDs(ids []uuid.UUID) ([]entity.User, error)
-	ByPhoneNumber(phoneNumber string) (*entity.User, error)
-	All(limit int) ([]entity.User, error)
-	NewUserFromPhoneNumber(phoneNumber string) (*entity.User, error)
-}
-
-type UserManagerImpl struct {
+// UserManager ...
+type UserManager struct {
 	Repository repository.UserRepository
 }
 
+// NewUserManager ...
+func NewUserManager(repository repository.UserRepository) UserManager {
+	return UserManager{repository}
+}
+
 // NewUserFromPhoneNumber inserts a new user using just phone number
-func (manager *UserManagerImpl) NewUserFromPhoneNumber(phoneNumber string) (*entity.User, error) {
+func (manager *UserManager) NewUserFromPhoneNumber(phoneNumber string) (*entity.User, error) {
 	newUser, err := entity.NewUserFromShare(
 		wrappers.NewNullString(nil), // user_name
 		wrappers.NewNullString(nil), // email
@@ -41,7 +38,8 @@ func (manager *UserManagerImpl) NewUserFromPhoneNumber(phoneNumber string) (*ent
 	return user, nil
 }
 
-func (manager *UserManagerImpl) SignUp(body request.UserSignUpRequestBody) (*entity.User, error) {
+// SignUp ...
+func (manager *UserManager) SignUp(body request.UserSignUpRequestBody) (*entity.User, error) {
 	user, err := entity.NewUserFromSignUp(
 		body.Username,
 		body.Email,
@@ -54,14 +52,17 @@ func (manager *UserManagerImpl) SignUp(body request.UserSignUpRequestBody) (*ent
 	return manager.Repository.Insert(user)
 }
 
-func (manager *UserManagerImpl) ByID(id uuid.UUID) (*entity.User, error) {
+// ByID ...
+func (manager *UserManager) ByID(id uuid.UUID) (*entity.User, error) {
 	return manager.Repository.ByID(id)
 }
 
-func (manager *UserManagerImpl) ByPhoneNumber(phoneNumber string) (*entity.User, error) {
+// ByPhoneNumber ...
+func (manager *UserManager) ByPhoneNumber(phoneNumber string) (*entity.User, error) {
 	return manager.Repository.ByPhoneNumber(phoneNumber)
 }
 
-func (manager *UserManagerImpl) All(limit int) ([]entity.User, error) {
+// All ...
+func (manager *UserManager) All(limit int) ([]entity.User, error) {
 	return manager.Repository.All(limit)
 }

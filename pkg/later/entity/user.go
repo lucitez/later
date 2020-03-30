@@ -38,14 +38,14 @@ func NewUserFromSignUp(
 		return nil, err
 	}
 
-	now := time.Now()
+	now := time.Now().UTC()
 
 	user := User{
 		ID:          newUUID,
 		Username:    username,
 		Email:       email,
 		PhoneNumber: phoneNumber,
-		SignedUpAt:  *wrappers.NewNullTime(&now),
+		SignedUpAt:  wrappers.NewNullTime(&now),
 
 		CreatedAt: now,
 		UpdatedAt: now}
@@ -78,6 +78,22 @@ func NewUserFromShare(
 		UpdatedAt: now}
 
 	return &user, nil
+}
+
+func UserSelectStatement() string {
+	return `
+	SELECT 
+		id,
+		first_name,
+		last_name,
+		username,
+		email,
+		phone_number,
+		created_at,
+		signed_up_at,
+		updated_at,
+		deleted_at
+	`
 }
 
 // ScanRows ...

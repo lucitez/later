@@ -7,19 +7,18 @@ import (
 	"later.co/pkg/repository"
 )
 
-type FriendRequestManager interface {
-	Create(body body.FriendRequestCreateBody) (*entity.FriendRequest, error)
-	Pending(userID uuid.UUID) ([]entity.FriendRequest, error)
-	Accept(id uuid.UUID) error
-	Decline(id uuid.UUID) error
-}
-
-type FriendRequestManagerImpl struct {
+// FriendRequestManager ...
+type FriendRequestManager struct {
 	Repository repository.FriendRequestRepository
 }
 
+// NewFriendRequestManager for wire generation
+func NewFriendRequestManager(repository repository.FriendRequestRepository) FriendRequestManager {
+	return FriendRequestManager{repository}
+}
+
 // Create ...
-func (manager *FriendRequestManagerImpl) Create(body body.FriendRequestCreateBody) (*entity.FriendRequest, error) {
+func (manager *FriendRequestManager) Create(body body.FriendRequestCreateBody) (*entity.FriendRequest, error) {
 	friendRequest, err := body.ToFriendRequest()
 
 	if err != nil {
@@ -36,7 +35,7 @@ func (manager *FriendRequestManagerImpl) Create(body body.FriendRequestCreateBod
 }
 
 // Pending ...
-func (manager *FriendRequestManagerImpl) Pending(userID uuid.UUID) ([]entity.FriendRequest, error) {
+func (manager *FriendRequestManager) Pending(userID uuid.UUID) ([]entity.FriendRequest, error) {
 	requests, err := manager.Repository.PendingByUserID(userID)
 
 	if err != nil {
@@ -49,11 +48,11 @@ func (manager *FriendRequestManagerImpl) Pending(userID uuid.UUID) ([]entity.Fri
 }
 
 // Accept ...
-func (manager *FriendRequestManagerImpl) Accept(id uuid.UUID) error {
+func (manager *FriendRequestManager) Accept(id uuid.UUID) error {
 	return manager.Repository.Accept(id)
 }
 
 // Decline ...
-func (manager *FriendRequestManagerImpl) Decline(id uuid.UUID) error {
+func (manager *FriendRequestManager) Decline(id uuid.UUID) error {
 	return manager.Repository.Decline(id)
 }

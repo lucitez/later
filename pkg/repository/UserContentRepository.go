@@ -11,23 +11,18 @@ import (
 	"later.co/pkg/response"
 )
 
-type UserContentRepository interface {
-	Insert(userContent *entity.UserContent) (*entity.UserContent, error)
-	ByID(id uuid.UUID) (*entity.UserContent, error)
-	All(limit int) ([]entity.UserContent, error)
-	Feed(
-		userID uuid.UUID,
-		senderType *string,
-		contentType *string,
-		archived *bool) ([]response.WireUserContent, error)
-}
-
-type UserContentRepositoryImpl struct {
+// UserContentRepository ...
+type UserContentRepository struct {
 	DB *sql.DB
 }
 
+// NewUserContentRepository ...
+func NewUserContentRepository(db *sql.DB) UserContentRepository {
+	return UserContentRepository{db}
+}
+
 // Insert inserts a new userContent
-func (repository *UserContentRepositoryImpl) Insert(userContent *entity.UserContent) (*entity.UserContent, error) {
+func (repository *UserContentRepository) Insert(userContent *entity.UserContent) (*entity.UserContent, error) {
 
 	statement := `
 	INSERT INTO user_content (id, share_id, content_id, user_id, sent_by)
@@ -56,7 +51,7 @@ func (repository *UserContentRepositoryImpl) Insert(userContent *entity.UserCont
 }
 
 // ByID gets a userContent by id
-func (repository *UserContentRepositoryImpl) ByID(id uuid.UUID) (*entity.UserContent, error) {
+func (repository *UserContentRepository) ByID(id uuid.UUID) (*entity.UserContent, error) {
 	var userContent entity.UserContent
 
 	statement := `
@@ -72,7 +67,7 @@ func (repository *UserContentRepositoryImpl) ByID(id uuid.UUID) (*entity.UserCon
 }
 
 // All returns all userContents
-func (repository *UserContentRepositoryImpl) All(limit int) ([]entity.UserContent, error) {
+func (repository *UserContentRepository) All(limit int) ([]entity.UserContent, error) {
 	rows, err := repository.DB.Query(`SELECT * FROM user_content LIMIT $1`, limit)
 
 	if err != nil {
@@ -83,7 +78,7 @@ func (repository *UserContentRepositoryImpl) All(limit int) ([]entity.UserConten
 }
 
 // Feed gets usercontent
-func (repository *UserContentRepositoryImpl) Feed(
+func (repository *UserContentRepository) Feed(
 	userID uuid.UUID,
 	senderType *string,
 	contentType *string,
@@ -144,7 +139,7 @@ func (repository *UserContentRepositoryImpl) Feed(
 	return repository.scanRowsIntoWireUserContent(rows)
 }
 
-func (repository *UserContentRepositoryImpl) scanRows(rows *sql.Rows) ([]entity.UserContent, error) {
+func (repository *UserContentRepository) scanRows(rows *sql.Rows) ([]entity.UserContent, error) {
 	userContents := []entity.UserContent{}
 
 	defer rows.Close()
@@ -167,7 +162,7 @@ func (repository *UserContentRepositoryImpl) scanRows(rows *sql.Rows) ([]entity.
 	return userContents, nil
 }
 
-func (repository *UserContentRepositoryImpl) scanRowsIntoWireUserContent(rows *sql.Rows) ([]response.WireUserContent, error) {
+func (repository *UserContentRepository) scanRowsIntoWireUserContent(rows *sql.Rows) ([]response.WireUserContent, error) {
 	userContents := []response.WireUserContent{}
 
 	defer rows.Close()

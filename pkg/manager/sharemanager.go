@@ -6,18 +6,23 @@ import (
 	"later.co/pkg/repository"
 )
 
-type ShareManager interface {
-	CreateMultiple(createBodies []body.ShareCreateBody) ([]entity.Share, error)
-	Create(body body.ShareCreateBody) (*entity.Share, error)
+// ShareManager ...
+type ShareManager struct {
+	UserContentManager UserContentManager
+	Repository         repository.ShareRepository
 }
 
-type ShareManagerImpl struct {
-	Repository         repository.ShareRepository
-	UserContentManager UserContentManager
+// NewShareManager ...
+func NewShareManager(
+	repository repository.ShareRepository,
+	userContentManager UserContentManager) ShareManager {
+	return ShareManager{
+		UserContentManager: userContentManager,
+		Repository:         repository}
 }
 
 // CreateMultiple creates multiple shares from multiple bodies
-func (manager *ShareManagerImpl) CreateMultiple(createBodies []body.ShareCreateBody) ([]entity.Share, error) {
+func (manager *ShareManager) CreateMultiple(createBodies []body.ShareCreateBody) ([]entity.Share, error) {
 	shares := []entity.Share{}
 
 	for _, createBody := range createBodies {
@@ -38,7 +43,7 @@ func (manager *ShareManagerImpl) CreateMultiple(createBodies []body.ShareCreateB
 // TODO Two Goroutines:
 // Update _body.Content.shares_ total by getting count(shares distinct on user_id with this content_id)
 // Send Push notification if user has signed up <-- maybe move this to usercontent
-func (manager *ShareManagerImpl) Create(body body.ShareCreateBody) (*entity.Share, error) {
+func (manager *ShareManager) Create(body body.ShareCreateBody) (*entity.Share, error) {
 	share, err := entity.NewShare(
 		body.Content.ID,
 		body.SenderUserID,

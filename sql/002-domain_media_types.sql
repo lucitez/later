@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS domains (
     deleted_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE TRIGGER update_domains BEFORE INSERT OR UPDATE ON domains
+CREATE TRIGGER update_domains BEFORE UPDATE ON domains
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 CREATE UNIQUE INDEX idx_uniq_domains_on_domain ON domains(domain)

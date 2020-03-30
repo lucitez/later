@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -39,4 +40,37 @@ func NewDomain(
 		UpdatedAt: now}
 
 	return &newDomain, nil
+}
+
+// ScanRows ...
+func (domain *Domain) ScanRows(rows *sql.Rows) error {
+	err := rows.Scan(
+		&domain.ID,
+		&domain.Domain,
+		&domain.ContentType,
+		&domain.CreatedAt,
+		&domain.UpdatedAt,
+		&domain.DeletedAt)
+
+	return err
+}
+
+// ScanRow ...
+func (domain *Domain) ScanRow(row *sql.Row) error {
+	err := row.Scan(
+		&domain.ID,
+		&domain.Domain,
+		&domain.ContentType,
+		&domain.CreatedAt,
+		&domain.UpdatedAt,
+		&domain.DeletedAt)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
+	}
+
+	return err
 }

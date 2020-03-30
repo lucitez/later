@@ -15,11 +15,26 @@ import (
 	"later.co/pkg/request"
 )
 
+// ShareServer ...
 type ShareServer struct {
 	Manager        manager.ShareManager
 	ContentManager manager.ContentManager
 	UserManager    manager.UserManager
 	Parser         parse.Parser
+}
+
+// NewShareServer ...
+func NewShareServer(
+	manager manager.ShareManager,
+	contentManager manager.ContentManager,
+	userManager manager.UserManager,
+	parser parse.Parser) ShareServer {
+	return ShareServer{
+		Manager:        manager,
+		ContentManager: contentManager,
+		UserManager:    userManager,
+		Parser:         parser,
+	}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service

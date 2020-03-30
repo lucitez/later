@@ -12,19 +12,17 @@ import (
 )
 
 // ContentRepository ...
-type ContentRepository interface {
-	Insert(content *entity.Content) (*entity.Content, error)
-	ByID(id uuid.UUID) (*entity.Content, error)
-	All(limit int) ([]entity.Content, error)
-}
-
-// ContentRepositoryImpl ...
-type ContentRepositoryImpl struct {
+type ContentRepository struct {
 	DB *sql.DB
 }
 
+// NewContentRepository for wire generation
+func NewContentRepository(db *sql.DB) ContentRepository {
+	return ContentRepository{db}
+}
+
 // Insert inserts new content
-func (repository *ContentRepositoryImpl) Insert(content *entity.Content) (*entity.Content, error) {
+func (repository *ContentRepository) Insert(content *entity.Content) (*entity.Content, error) {
 
 	statement := `
 	INSERT INTO content (
@@ -68,7 +66,7 @@ func (repository *ContentRepositoryImpl) Insert(content *entity.Content) (*entit
 }
 
 // ByID gets a content by id
-func (repository *ContentRepositoryImpl) ByID(id uuid.UUID) (*entity.Content, error) {
+func (repository *ContentRepository) ByID(id uuid.UUID) (*entity.Content, error) {
 	var content entity.Content
 
 	statement := `
@@ -84,7 +82,7 @@ func (repository *ContentRepositoryImpl) ByID(id uuid.UUID) (*entity.Content, er
 }
 
 // All returns all content
-func (repository *ContentRepositoryImpl) All(limit int) ([]entity.Content, error) {
+func (repository *ContentRepository) All(limit int) ([]entity.Content, error) {
 	statement := `
 	SELECT * FROM content
 	WHERE deleted_at IS NULL
@@ -100,7 +98,7 @@ func (repository *ContentRepositoryImpl) All(limit int) ([]entity.Content, error
 	return repository.scanRows(rows)
 }
 
-func (repository *ContentRepositoryImpl) scanRows(rows *sql.Rows) ([]entity.Content, error) {
+func (repository *ContentRepository) scanRows(rows *sql.Rows) ([]entity.Content, error) {
 	contents := []entity.Content{}
 
 	defer rows.Close()

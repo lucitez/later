@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"database/sql"
 	"time"
 
 	"later.co/pkg/response"
@@ -52,4 +53,37 @@ func (friend *Friend) ToWire(friendUser *User) response.WireFriend {
 		LastName:  friendUser.LastName,
 		Username:  friendUser.Username,
 		CreatedAt: friend.CreatedAt}
+}
+
+// ScanRows ...
+func (friend *Friend) ScanRows(rows *sql.Rows) error {
+	err := rows.Scan(
+		&friend.ID,
+		&friend.UserID,
+		&friend.FriendUserID,
+		&friend.CreatedAt,
+		&friend.UpdatedAt,
+		&friend.DeletedAt)
+
+	return err
+}
+
+// ScanRow ...
+func (friend *Friend) ScanRow(row *sql.Row) error {
+	err := row.Scan(
+		&friend.ID,
+		&friend.UserID,
+		&friend.FriendUserID,
+		&friend.CreatedAt,
+		&friend.UpdatedAt,
+		&friend.DeletedAt)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		return err
+	}
+
+	return nil
 }

@@ -11,8 +11,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// FriendServer ...
 type FriendServer struct {
 	Manager manager.FriendManager
+}
+
+// NewFriendServer for wire generation
+func NewFriendServer(manager manager.FriendManager) FriendServer {
+	return FriendServer{manager}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service

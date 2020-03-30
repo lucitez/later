@@ -9,18 +9,18 @@ import (
 	"later.co/pkg/later/entity"
 )
 
-type FriendRepository interface {
-	Insert(friend *entity.Friend) (*entity.Friend, error)
-	SearchByUserID(userID uuid.UUID, search string) ([]entity.Friend, error)
-	ByUserID(userID uuid.UUID) ([]entity.Friend, error)
-}
-
-type FriendRepositoryImpl struct {
+// FriendRepository ...
+type FriendRepository struct {
 	DB *sql.DB
 }
 
+// NewFriendRepository for wire generation
+func NewFriendRepository(db *sql.DB) FriendRepository {
+	return FriendRepository{db}
+}
+
 // Insert inserts a new friend
-func (repository *FriendRepositoryImpl) Insert(friend *entity.Friend) (*entity.Friend, error) {
+func (repository *FriendRepository) Insert(friend *entity.Friend) (*entity.Friend, error) {
 
 	statement := `
 	INSERT INTO friends (id, user_id, friend_user_id)
@@ -45,7 +45,7 @@ func (repository *FriendRepositoryImpl) Insert(friend *entity.Friend) (*entity.F
 }
 
 // SearchByUserID gets all friends of a user
-func (repository *FriendRepositoryImpl) SearchByUserID(userID uuid.UUID, search string) ([]entity.Friend, error) {
+func (repository *FriendRepository) SearchByUserID(userID uuid.UUID, search string) ([]entity.Friend, error) {
 	statement := `
 	SELECT * FROM friends 
 	WHERE user_id = $1
@@ -76,7 +76,7 @@ func (repository *FriendRepositoryImpl) SearchByUserID(userID uuid.UUID, search 
 }
 
 // ByUserID gets all friends of a user
-func (repository *FriendRepositoryImpl) ByUserID(userID uuid.UUID) ([]entity.Friend, error) {
+func (repository *FriendRepository) ByUserID(userID uuid.UUID) ([]entity.Friend, error) {
 	statement := `
 	SELECT * FROM friends 
 	WHERE user_id = $1
@@ -98,20 +98,14 @@ func (repository *FriendRepositoryImpl) ByUserID(userID uuid.UUID) ([]entity.Fri
 	return friends, nil
 }
 
-func (repository *FriendRepositoryImpl) scanRows(rows *sql.Rows) ([]entity.Friend, error) {
+func (repository *FriendRepository) scanRows(rows *sql.Rows) ([]entity.Friend, error) {
 	friends := []entity.Friend{}
 
 	defer rows.Close()
 
 	for rows.Next() {
 		var friend entity.Friend
-		err := rows.Scan(
-			&friend.ID,
-			&friend.UserID,
-			&friend.FriendUserID,
-			&friend.CreatedAt,
-			&friend.UpdatedAt,
-			&friend.DeletedAt)
+		err := friend.ScanRows(rows)
 
 		if err != nil {
 			return nil, err

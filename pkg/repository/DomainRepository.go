@@ -8,25 +8,18 @@ import (
 	"later.co/pkg/later/entity"
 )
 
-// NewDomainRepository for wire generation
-func NewDomainRepository(db *sql.DB) DomainRepositoryImpl {
-	return DomainRepositoryImpl{db}
-}
-
 // DomainRepository ...
-type DomainRepository interface {
-	Insert(domain *entity.Domain) (*entity.Domain, error)
-	ByDomain(domainName string) (*entity.Domain, error)
-	All(limit int) ([]entity.Domain, error)
-}
-
-// DomainRepositoryImpl ...
-type DomainRepositoryImpl struct {
+type DomainRepository struct {
 	DB *sql.DB
 }
 
+// NewDomainRepository for wire generation
+func NewDomainRepository(db *sql.DB) DomainRepository {
+	return DomainRepository{db}
+}
+
 // Insert inserts a new domain
-func (repository *DomainRepositoryImpl) Insert(domain *entity.Domain) (*entity.Domain, error) {
+func (repository *DomainRepository) Insert(domain *entity.Domain) (*entity.Domain, error) {
 
 	statement := `
 	INSERT INTO domains (id, domain, content_type)
@@ -51,7 +44,7 @@ func (repository *DomainRepositoryImpl) Insert(domain *entity.Domain) (*entity.D
 }
 
 // ByDomain gets a domain by the domain name
-func (repository *DomainRepositoryImpl) ByDomain(domainName string) (*entity.Domain, error) {
+func (repository *DomainRepository) ByDomain(domainName string) (*entity.Domain, error) {
 	var domain entity.Domain
 
 	statement := `
@@ -80,7 +73,7 @@ func (repository *DomainRepositoryImpl) ByDomain(domainName string) (*entity.Dom
 }
 
 // All returns all domains
-func (repository *DomainRepositoryImpl) All(limit int) ([]entity.Domain, error) {
+func (repository *DomainRepository) All(limit int) ([]entity.Domain, error) {
 	domains := []entity.Domain{}
 
 	rows, err := repository.DB.Query(`SELECT * FROM domains LIMIT $1`, limit)
@@ -93,13 +86,7 @@ func (repository *DomainRepositoryImpl) All(limit int) ([]entity.Domain, error) 
 
 	for rows.Next() {
 		var domain entity.Domain
-		err := rows.Scan(
-			&domain.ID,
-			&domain.Domain,
-			&domain.ContentType,
-			&domain.CreatedAt,
-			&domain.UpdatedAt,
-			&domain.DeletedAt)
+		err := domain.ScanRows(rows)
 
 		if err != nil {
 			return nil, err

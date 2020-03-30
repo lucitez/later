@@ -5,46 +5,64 @@ import (
 
 	"github.com/google/uuid"
 
-	// Postgres driver
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 	"later.co/pkg/later/entity"
 )
 
 /*
-UserRepository defines the interface for user related database queries
+UserRepository is the struct that implements the UserRepository interface and provides the database connection
 */
-type UserRepository interface {
-	Insert(user *entity.User) (*entity.User, error)
-	ByID(id uuid.UUID) (*entity.User, error)
-	ByIDs(ids []uuid.UUID) ([]entity.User, error)
-	ByPhoneNumber(phoneNumber string) (*entity.User, error)
-	All(limit int) ([]entity.User, error)
-}
-
-/*
-UserRepositoryImpl is the struct that implements the UserRepository interface and provides the database connection
-*/
-type UserRepositoryImpl struct {
+type UserRepository struct {
 	DB *sql.DB
 }
 
+// NewUserRepository ...
+func NewUserRepository(db *sql.DB) UserRepository {
+	return UserRepository{db}
+}
+
 // Insert inserts a new user
-func (repository *UserRepositoryImpl) Insert(user *entity.User) (*entity.User, error) {
+func (repository *UserRepository) Insert(user *entity.User) (*entity.User, error) {
 
 	statement := `
-	INSERT INTO users (username, email, phone_number)
+	INSERT INTO users (
+		id,
+		first_name,
+		last_name,
+		username,
+		email,
+		phone_number,
+		created_at,
+		signed_up_at,
+		updated_at,
+		deleted_at
+	)
 	VALUES (
 		$1,
 		$2,
-		$3
+		$3,
+		$4,
+		$5,
+		$6,
+		$7,
+		$8,
+		$9,
+		$10
 	)
 	`
 
 	_, err := repository.DB.Exec(
 		statement,
+		user.ID,
+		user.FirstName,
+		user.LastName,
 		user.Username,
 		user.Email,
-		user.PhoneNumber)
+		user.PhoneNumber,
+		user.CreatedAt,
+		user.SignedUpAt,
+		user.UpdatedAt,
+		user.DeletedAt)
 
 	if err != nil {
 		return nil, err
@@ -54,11 +72,11 @@ func (repository *UserRepositoryImpl) Insert(user *entity.User) (*entity.User, e
 }
 
 // ByID gets a user by id
-func (repository *UserRepositoryImpl) ByID(id uuid.UUID) (*entity.User, error) {
+func (repository *UserRepository) ByID(id uuid.UUID) (*entity.User, error) {
 	var user entity.User
 
-	statement := `
-	SELECT * FROM users 
+	statement := entity.UserSelectStatement() + `
+	FROM users 
 	WHERE id = $1;
 	`
 
@@ -70,14 +88,14 @@ func (repository *UserRepositoryImpl) ByID(id uuid.UUID) (*entity.User, error) {
 }
 
 // ByIDs ...
-func (repository *UserRepositoryImpl) ByIDs(ids []uuid.UUID) ([]entity.User, error) {
-	statement := `
-	SELECT * FROM users
-	WHERE id in $1
+func (repository *UserRepository) ByIDs(ids []uuid.UUID) ([]entity.User, error) {
+	statement := entity.UserSelectStatement() + `
+	FROM users
+	WHERE id = ANY($1)
 	AND deleted_at IS NULL;
 	`
 
-	rows, err := repository.DB.Query(statement, ids)
+	rows, err := repository.DB.Query(statement, pq.Array(ids))
 
 	if err != nil {
 		return nil, err
@@ -93,11 +111,11 @@ func (repository *UserRepositoryImpl) ByIDs(ids []uuid.UUID) ([]entity.User, err
 }
 
 // ByPhoneNumber gets a user by their phone number
-func (repository *UserRepositoryImpl) ByPhoneNumber(phoneNumber string) (*entity.User, error) {
+func (repository *UserRepository) ByPhoneNumber(phoneNumber string) (*entity.User, error) {
 	var user entity.User
 
-	statement := `
-	SELECT * FROM users 
+	statement := entity.UserSelectStatement() + `
+	FROM users
 	WHERE phone_number = $1;
 	`
 
@@ -113,10 +131,11 @@ func (repository *UserRepositoryImpl) ByPhoneNumber(phoneNumber string) (*entity
 }
 
 // All returns all users with a limit
-func (repository *UserRepositoryImpl) All(limit int) ([]entity.User, error) {
-	statement := `
-	SELECT * FROM users
+func (repository *UserRepository) All(limit int) ([]entity.User, error) {
+	statement := entity.UserSelectStatement() + `
+	FROM users
 	WHERE deleted_at IS NULL
+	ORDER BY created_at desc
 	LIMIT $1;
 	`
 
@@ -135,7 +154,7 @@ func (repository *UserRepositoryImpl) All(limit int) ([]entity.User, error) {
 	return users, nil
 }
 
-func (repository *UserRepositoryImpl) scanRows(rows *sql.Rows) ([]entity.User, error) {
+func (repository *UserRepository) scanRows(rows *sql.Rows) ([]entity.User, error) {
 	users := []entity.User{}
 
 	defer rows.Close()
