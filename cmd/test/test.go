@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
-	"later.co/pkg/parse"
-	"later.co/pkg/repository"
-	"later.co/pkg/repository/domainrepo"
+	"later/pkg/parse"
+	"later/pkg/repository"
+	"later/pkg/repository/domainrepo"
 )
 
 func main() {

@@ -24,3 +24,56 @@ func InitializeContent(db *sql.DB) server.Content {
 	serverContent := server.NewContent(content, contentManager)
 	return serverContent
 }
+
+func InitializeDomain(db *sql.DB) server.DomainServer {
+	domainRepository := repository.NewDomainRepository(db)
+	domainManager := service.NewDomainManager(domainRepository)
+	domainServer := server.NewDomainServer(domainManager)
+	return domainServer
+}
+
+func InitializeFriend(db *sql.DB) server.FriendServer {
+	userRepository := repository.NewUserRepository(db)
+	userManager := service.NewUserManager(userRepository)
+	friendRepository := repository.NewFriendRepository(db)
+	friendManager := service.NewFriendManager(userManager, friendRepository)
+	friendServer := server.NewFriendServer(friendManager)
+	return friendServer
+}
+
+func InitializeFriendRequest(db *sql.DB) server.FriendRequestServer {
+	friendRequestRepository := repository.NewFriendRequestRepository(db)
+	friendRequestManager := service.NewFriendRequestManager(friendRequestRepository)
+	friendRequestServer := server.NewFriendRequestServer(friendRequestManager)
+	return friendRequestServer
+}
+
+func InitializeShare(db *sql.DB) server.ShareServer {
+	shareRepository := repository.NewShareRepository(db)
+	userContentRepository := repository.NewUserContentRepository(db)
+	userContentManager := service.NewUserContentManager(userContentRepository)
+	shareManager := service.NewShareManager(shareRepository, userContentManager)
+	contentRepository := repository.NewContentRepository(db)
+	contentManager := service.NewContentManager(contentRepository)
+	userRepository := repository.NewUserRepository(db)
+	userManager := service.NewUserManager(userRepository)
+	domainRepository := repository.NewDomainRepository(db)
+	domainManager := service.NewDomainManager(domainRepository)
+	content := parse.NewContent(domainManager)
+	shareServer := server.NewShareServer(shareManager, contentManager, userManager, content)
+	return shareServer
+}
+
+func InitializeUserContent(db *sql.DB) server.UserContentServer {
+	userContentRepository := repository.NewUserContentRepository(db)
+	userContentManager := service.NewUserContentManager(userContentRepository)
+	userContentServer := server.NewUserContentServer(userContentManager)
+	return userContentServer
+}
+
+func InitializeUser(db *sql.DB) server.UserServer {
+	userRepository := repository.NewUserRepository(db)
+	userManager := service.NewUserManager(userRepository)
+	userServer := server.NewUserServer(userManager)
+	return userServer
+}

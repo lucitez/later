@@ -1,4 +1,4 @@
-module later.co
+module later
 
 go 1.13
 
