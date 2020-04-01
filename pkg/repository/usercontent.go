@@ -5,33 +5,52 @@ import (
 	"strconv"
 
 	// Postgres driver
-	"github.com/google/uuid"
 	"later/pkg/model"
 	"later/pkg/repository/util"
 	"later/pkg/response"
+
+	"github.com/google/uuid"
 )
 
-// UserContentRepository ...
-type UserContentRepository struct {
+// UserContent ...
+type UserContent struct {
 	DB *sql.DB
 }
 
-// NewUserContentRepository ...
-func NewUserContentRepository(db *sql.DB) UserContentRepository {
-	return UserContentRepository{db}
+// NewUserContent ...
+func NewUserContent(db *sql.DB) UserContent {
+	return UserContent{db}
 }
 
+var selectUserContent = util.GenerateSelectStatement(model.UserContent{}, "user_content")
+
 // Insert inserts a new userContent
-func (repository *UserContentRepository) Insert(userContent *model.UserContent) (*model.UserContent, error) {
+func (repository *UserContent) Insert(userContent *model.UserContent) (*model.UserContent, error) {
 
 	statement := `
-	INSERT INTO user_content (id, share_id, content_id, user_id, sent_by)
+	INSERT INTO user_content (
+		id,
+		share_id,
+		content_id,
+		content_type,
+		user_id,
+		sent_by_user_id,
+		created_at,
+		updated_at,
+		archived_at,
+		deleted_at
+	)
 	VALUES (
 		$1,
 		$2,
 		$3,
 		$4,
-		$5
+		$5,
+		$6,
+		$7,
+		$8,
+		$9,
+		$10
 	)
 	`
 
@@ -40,8 +59,13 @@ func (repository *UserContentRepository) Insert(userContent *model.UserContent) 
 		userContent.ID,
 		userContent.ShareID,
 		userContent.ContentID,
+		userContent.ContentType,
 		userContent.UserID,
-		userContent.SentBy)
+		userContent.SentByUserID,
+		userContent.CreatedAt,
+		userContent.UpdatedAt,
+		userContent.ArchivedAt,
+		userContent.DeletedAt)
 
 	if err != nil {
 		return nil, err
@@ -51,12 +75,11 @@ func (repository *UserContentRepository) Insert(userContent *model.UserContent) 
 }
 
 // ByID gets a userContent by id
-func (repository *UserContentRepository) ByID(id uuid.UUID) (*model.UserContent, error) {
+func (repository *UserContent) ByID(id uuid.UUID) (*model.UserContent, error) {
 	var userContent model.UserContent
 
-	statement := `
-	SELECT * FROM user_content 
-	WHERE id = $1
+	statement := selectUserContent + `
+	WHERE id = $1;
 	`
 
 	row := repository.DB.QueryRow(statement, id)
@@ -67,8 +90,11 @@ func (repository *UserContentRepository) ByID(id uuid.UUID) (*model.UserContent,
 }
 
 // All returns all userContents
-func (repository *UserContentRepository) All(limit int) ([]model.UserContent, error) {
-	rows, err := repository.DB.Query(`SELECT * FROM user_content LIMIT $1`, limit)
+func (repository *UserContent) All(limit int) ([]model.UserContent, error) {
+	statement := selectUserContent + `
+	LIMIT $1
+	`
+	rows, err := repository.DB.Query(statement, limit)
 
 	if err != nil {
 		return nil, err
@@ -78,7 +104,8 @@ func (repository *UserContentRepository) All(limit int) ([]model.UserContent, er
 }
 
 // Feed gets usercontent
-func (repository *UserContentRepository) Feed(
+// TODO: refactor me to remove join
+func (repository *UserContent) Feed(
 	userID uuid.UUID,
 	senderType *string,
 	contentType *string,
@@ -139,7 +166,7 @@ func (repository *UserContentRepository) Feed(
 	return repository.scanRowsIntoWireUserContent(rows)
 }
 
-func (repository *UserContentRepository) scanRows(rows *sql.Rows) ([]model.UserContent, error) {
+func (repository *UserContent) scanRows(rows *sql.Rows) ([]model.UserContent, error) {
 	userContents := []model.UserContent{}
 
 	defer rows.Close()
@@ -162,7 +189,7 @@ func (repository *UserContentRepository) scanRows(rows *sql.Rows) ([]model.UserC
 	return userContents, nil
 }
 
-func (repository *UserContentRepository) scanRowsIntoWireUserContent(rows *sql.Rows) ([]response.WireUserContent, error) {
+func (repository *UserContent) scanRowsIntoWireUserContent(rows *sql.Rows) ([]response.WireUserContent, error) {
 	userContents := []response.WireUserContent{}
 
 	defer rows.Close()

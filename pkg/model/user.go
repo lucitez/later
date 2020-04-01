@@ -80,22 +80,6 @@ func NewUserFromShare(
 	return &user, nil
 }
 
-func UserSelectStatement() string {
-	return `
-	SELECT 
-		id,
-		first_name,
-		last_name,
-		username,
-		email,
-		phone_number,
-		created_at,
-		signed_up_at,
-		updated_at,
-		deleted_at
-	`
-}
-
 // ScanRows ...
 func (user *User) ScanRows(rows *sql.Rows) error {
 	err := rows.Scan(

@@ -1,8 +1,6 @@
 package repository_test
 
 import (
-	"fmt"
-	"os"
 	"testing"
 
 	// Postgres driver
@@ -15,55 +13,24 @@ import (
 	"later/pkg/util/wrappers"
 )
 
-var testUtil util.RepositoryTestUtil
-var repo repository.UserRepository
-var tableNames = []string{"users"}
+var userRepository repository.User
 
 var user, err = model.NewUserFromSignUp(
 	wrappers.NewNullStringFromString("test_username"),
 	wrappers.NewNullStringFromString("test_email"),
 	"1111111111")
 
-func TestMain(m *testing.M) {
-	db, err := util.InitTestDB()
-
-	if err != nil {
-		fmt.Println(err)
-		panic("Error creating test db connection")
-	}
-
-	defer repo.DB.Close()
-	defer afterAll()
-
-	repo = repository.UserRepository{db}
-	testUtil = util.RepositoryTestUtil{DB: db}
-
-	os.Exit(m.Run())
-}
-
-func beforeEach() {
-	testUtil.TruncateTables(tableNames)
-}
-
-func afterAll() {
-	testUtil.TruncateTables(tableNames)
-}
-
-func TestInsertAndByID(t *testing.T) {
+func TestInsertUserAndById(t *testing.T) {
 	beforeEach()
 
-	repo.Insert(user)
+	userRepository.Insert(user)
 
-	actual, err := repo.ByID(user.ID)
-
-	if err != nil {
-		t.Error(err)
-	}
+	actual, _ := userRepository.ByID(user.ID)
 
 	util.AssertEquals(t, actual, user)
 }
 
-func TestByIDs(t *testing.T) {
+func TestUsersByIDs(t *testing.T) {
 	beforeEach()
 
 	user2, _ := model.NewUserFromSignUp(
@@ -71,10 +38,10 @@ func TestByIDs(t *testing.T) {
 		wrappers.NewNullStringFromString("test_email_2"),
 		"0000000000")
 
-	repo.Insert(user)
-	repo.Insert(user2)
+	userRepository.Insert(user)
+	userRepository.Insert(user2)
 
-	actual, err := repo.ByIDs([]uuid.UUID{user.ID, user2.ID})
+	actual, err := userRepository.ByIDs([]uuid.UUID{user.ID, user2.ID})
 
 	if err != nil {
 		t.Error(err)
@@ -83,12 +50,12 @@ func TestByIDs(t *testing.T) {
 	util.AssertEquals(t, actual, []model.User{*user, *user2})
 }
 
-func TestByPhoneNumber(t *testing.T) {
+func TestUserByPhoneNumber(t *testing.T) {
 	beforeEach()
 
-	repo.Insert(user)
+	userRepository.Insert(user)
 
-	actual, err := repo.ByPhoneNumber(user.PhoneNumber)
+	actual, err := userRepository.ByPhoneNumber(user.PhoneNumber)
 
 	if err != nil {
 		t.Error(err)
@@ -97,7 +64,7 @@ func TestByPhoneNumber(t *testing.T) {
 	util.AssertEquals(t, actual, user)
 }
 
-func TestAll(t *testing.T) {
+func TestAllUsers(t *testing.T) {
 	beforeEach()
 
 	user2, _ := model.NewUserFromSignUp(
@@ -105,10 +72,10 @@ func TestAll(t *testing.T) {
 		wrappers.NewNullStringFromString("test_email_2"),
 		"0000000000")
 
-	repo.Insert(user)
-	repo.Insert(user2)
+	userRepository.Insert(user)
+	userRepository.Insert(user2)
 
-	actual, err := repo.All(1)
+	actual, err := userRepository.All(1)
 
 	if err != nil {
 		t.Error(err)

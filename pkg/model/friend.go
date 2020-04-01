@@ -6,8 +6,9 @@ import (
 
 	"later/pkg/response"
 
-	"github.com/google/uuid"
 	"later/pkg/util/wrappers"
+
+	"github.com/google/uuid"
 )
 
 // Friend object

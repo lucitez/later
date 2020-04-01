@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/google/uuid"
 	"later/pkg/util/wrappers"
+
+	"github.com/google/uuid"
 )
 
 // Share object
@@ -31,7 +32,7 @@ func NewShare(
 		return nil, err
 	}
 
-	now := time.Now()
+	now := time.Now().UTC()
 
 	newShare := Share{
 		ID:              uuid,

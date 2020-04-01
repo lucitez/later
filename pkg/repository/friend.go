@@ -11,18 +11,18 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// FriendRepository ...
-type FriendRepository struct {
+// Friend ...
+type Friend struct {
 	DB *sql.DB
 }
 
-// NewFriendRepository for wire generation
-func NewFriendRepository(db *sql.DB) FriendRepository {
-	return FriendRepository{db}
+// NewFriend for wire generation
+func NewFriend(db *sql.DB) Friend {
+	return Friend{db}
 }
 
 // Insert inserts a new friend
-func (repository *FriendRepository) Insert(friend *model.Friend) (*model.Friend, error) {
+func (repository *Friend) Insert(friend *model.Friend) (*model.Friend, error) {
 
 	statement := `
 	INSERT INTO friends (id, user_id, friend_user_id)
@@ -47,7 +47,7 @@ func (repository *FriendRepository) Insert(friend *model.Friend) (*model.Friend,
 }
 
 // SearchByUserID gets all friends of a user
-func (repository *FriendRepository) SearchByUserID(userID uuid.UUID, search string) ([]model.Friend, error) {
+func (repository *Friend) SearchByUserID(userID uuid.UUID, search string) ([]model.Friend, error) {
 	statement := `
 	SELECT * FROM friends 
 	WHERE user_id = $1
@@ -78,7 +78,7 @@ func (repository *FriendRepository) SearchByUserID(userID uuid.UUID, search stri
 }
 
 // ByUserID gets all friends of a user
-func (repository *FriendRepository) ByUserID(userID uuid.UUID) ([]model.Friend, error) {
+func (repository *Friend) ByUserID(userID uuid.UUID) ([]model.Friend, error) {
 	statement := `
 	SELECT * FROM friends 
 	WHERE user_id = $1
@@ -100,7 +100,7 @@ func (repository *FriendRepository) ByUserID(userID uuid.UUID) ([]model.Friend, 
 	return friends, nil
 }
 
-func (repository *FriendRepository) scanRows(rows *sql.Rows) ([]model.Friend, error) {
+func (repository *Friend) scanRows(rows *sql.Rows) ([]model.Friend, error) {
 	friends := []model.Friend{}
 
 	defer rows.Close()

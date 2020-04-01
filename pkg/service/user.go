@@ -10,11 +10,11 @@ import (
 
 // UserManager ...
 type UserManager struct {
-	Repository repository.UserRepository
+	Repository repository.User
 }
 
 // NewUserManager ...
-func NewUserManager(repository repository.UserRepository) UserManager {
+func NewUserManager(repository repository.User) UserManager {
 	return UserManager{repository}
 }
 

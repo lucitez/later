@@ -4,25 +4,28 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
-
 	"github.com/lib/pq"
+
 	"later/pkg/model"
+	"later/pkg/repository/util"
 )
 
 /*
-UserRepository is the struct that implements the UserRepository interface and provides the database connection
+User is the struct that implements the User interface and provides the database connection
 */
-type UserRepository struct {
+type User struct {
 	DB *sql.DB
 }
 
-// NewUserRepository ...
-func NewUserRepository(db *sql.DB) UserRepository {
-	return UserRepository{db}
+// NewUser ...
+func NewUser(db *sql.DB) User {
+	return User{db}
 }
 
+var selectStatement = util.GenerateSelectStatement(model.User{}, "users")
+
 // Insert inserts a new user
-func (repository *UserRepository) Insert(user *model.User) (*model.User, error) {
+func (repository *User) Insert(user *model.User) (*model.User, error) {
 
 	statement := `
 	INSERT INTO users (
@@ -72,13 +75,10 @@ func (repository *UserRepository) Insert(user *model.User) (*model.User, error) 
 }
 
 // ByID gets a user by id
-func (repository *UserRepository) ByID(id uuid.UUID) (*model.User, error) {
+func (repository *User) ByID(id uuid.UUID) (*model.User, error) {
 	var user model.User
 
-	statement := model.UserSelectStatement() + `
-	FROM users 
-	WHERE id = $1;
-	`
+	statement := selectStatement + ` WHERE id = $1;`
 
 	row := repository.DB.QueryRow(statement, id)
 
@@ -88,9 +88,8 @@ func (repository *UserRepository) ByID(id uuid.UUID) (*model.User, error) {
 }
 
 // ByIDs ...
-func (repository *UserRepository) ByIDs(ids []uuid.UUID) ([]model.User, error) {
-	statement := model.UserSelectStatement() + `
-	FROM users
+func (repository *User) ByIDs(ids []uuid.UUID) ([]model.User, error) {
+	statement := selectStatement + `
 	WHERE id = ANY($1)
 	AND deleted_at IS NULL;
 	`
@@ -111,11 +110,10 @@ func (repository *UserRepository) ByIDs(ids []uuid.UUID) ([]model.User, error) {
 }
 
 // ByPhoneNumber gets a user by their phone number
-func (repository *UserRepository) ByPhoneNumber(phoneNumber string) (*model.User, error) {
+func (repository *User) ByPhoneNumber(phoneNumber string) (*model.User, error) {
 	var user model.User
 
-	statement := model.UserSelectStatement() + `
-	FROM users
+	statement := selectStatement + `
 	WHERE phone_number = $1;
 	`
 
@@ -131,9 +129,8 @@ func (repository *UserRepository) ByPhoneNumber(phoneNumber string) (*model.User
 }
 
 // All returns all users with a limit
-func (repository *UserRepository) All(limit int) ([]model.User, error) {
-	statement := model.UserSelectStatement() + `
-	FROM users
+func (repository *User) All(limit int) ([]model.User, error) {
+	statement := selectStatement + `
 	WHERE deleted_at IS NULL
 	ORDER BY created_at desc
 	LIMIT $1;
@@ -154,7 +151,7 @@ func (repository *UserRepository) All(limit int) ([]model.User, error) {
 	return users, nil
 }
 
-func (repository *UserRepository) scanRows(rows *sql.Rows) ([]model.User, error) {
+func (repository *User) scanRows(rows *sql.Rows) ([]model.User, error) {
 	users := []model.User{}
 
 	defer rows.Close()

@@ -11,13 +11,13 @@ import (
 // FriendManager ...
 type FriendManager struct {
 	UserManager UserManager
-	Repository  repository.FriendRepository
+	Repository  repository.Friend
 }
 
 // NewFriendManager for wire generation
 func NewFriendManager(
 	userManager UserManager,
-	repository repository.FriendRepository) FriendManager {
+	repository repository.Friend) FriendManager {
 	return FriendManager{
 		UserManager: userManager,
 		Repository:  repository}

@@ -9,12 +9,12 @@ import (
 // ShareManager ...
 type ShareManager struct {
 	UserContentManager UserContentManager
-	Repository         repository.ShareRepository
+	Repository         repository.Share
 }
 
 // NewShareManager ...
 func NewShareManager(
-	repository repository.ShareRepository,
+	repository repository.Share,
 	userContentManager UserContentManager) ShareManager {
 	return ShareManager{
 		UserContentManager: userContentManager,

@@ -4,18 +4,19 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/google/uuid"
 	"later/pkg/util/wrappers"
+
+	"github.com/google/uuid"
 )
 
 // UserContent is the struct representing content that has been shared to a user. This is what shows up in their various feeds
 type UserContent struct {
-	ID          uuid.UUID
-	ShareID     uuid.UUID
-	ContentID   uuid.UUID
-	ContentType wrappers.NullString
-	UserID      uuid.UUID
-	SentBy      uuid.UUID
+	ID           uuid.UUID
+	ShareID      uuid.UUID
+	ContentID    uuid.UUID
+	ContentType  wrappers.NullString
+	UserID       uuid.UUID
+	SentByUserID uuid.UUID
 
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
@@ -29,7 +30,7 @@ func NewUserContent(
 	contentID uuid.UUID,
 	contentType wrappers.NullString,
 	userID uuid.UUID,
-	sentBy uuid.UUID) (*UserContent, error) {
+	sentByUserID uuid.UUID) (*UserContent, error) {
 
 	id, err := uuid.NewRandom()
 
@@ -37,15 +38,15 @@ func NewUserContent(
 		return nil, err
 	}
 
-	now := time.Now()
+	now := time.Now().UTC()
 
 	userContent := UserContent{
-		ID:          id,
-		ShareID:     shareID,
-		ContentID:   contentID,
-		ContentType: contentType,
-		UserID:      userID,
-		SentBy:      sentBy,
+		ID:           id,
+		ShareID:      shareID,
+		ContentID:    contentID,
+		ContentType:  contentType,
+		UserID:       userID,
+		SentByUserID: sentByUserID,
 
 		CreatedAt: now,
 		UpdatedAt: now}
@@ -61,7 +62,7 @@ func (userContent *UserContent) ScanRows(rows *sql.Rows) error {
 		&userContent.ContentID,
 		&userContent.ContentType,
 		&userContent.UserID,
-		&userContent.SentBy,
+		&userContent.SentByUserID,
 		&userContent.CreatedAt,
 		&userContent.UpdatedAt,
 		&userContent.ArchivedAt,
@@ -78,7 +79,7 @@ func (userContent *UserContent) ScanRow(row *sql.Row) error {
 		&userContent.ContentID,
 		&userContent.ContentType,
 		&userContent.UserID,
-		&userContent.SentBy,
+		&userContent.SentByUserID,
 		&userContent.CreatedAt,
 		&userContent.UpdatedAt,
 		&userContent.ArchivedAt,
