@@ -8,11 +8,11 @@ import (
 
 // ContentManager ...
 type ContentManager struct {
-	Repository repository.ContentRepository
+	Repository repository.Content
 }
 
 // NewContentManager for wire generation
-func NewContentManager(repo repository.ContentRepository) ContentManager {
+func NewContentManager(repo repository.Content) ContentManager {
 	return ContentManager{repo}
 }
 

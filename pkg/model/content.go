@@ -38,7 +38,7 @@ func NewContent(
 		return nil, err
 	}
 
-	now := time.Now()
+	now := time.Now().UTC()
 
 	content := Content{
 		ID:          id,

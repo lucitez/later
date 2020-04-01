@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"later/pkg/model"
+	"later/pkg/repository/util"
 
 	"github.com/google/uuid"
 
@@ -10,41 +11,22 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// ContentRepository ...
-type ContentRepository struct {
+// Content ...
+type Content struct {
 	DB *sql.DB
 }
 
-// NewContentRepository for wire generation
-func NewContentRepository(db *sql.DB) ContentRepository {
-	return ContentRepository{db}
+// NewContent for wire generation
+func NewContent(db *sql.DB) Content {
+	return Content{db}
 }
 
-// Insert inserts new content
-func (repository *ContentRepository) Insert(content *model.Content) (*model.Content, error) {
+var contentSelectStatement = util.GenerateSelectStatement(model.Content{}, "content")
 
-	statement := `
-	INSERT INTO content (
-		id,
-		title,
-		description,
-		image_url,
-		content_type,
-		url,
-		domain,
-		shares
-	)
-	VALUES (
-		$1,
-		$2,
-		$3,
-		$4,
-		$5,
-		$6,
-		$7,
-		$8
-	)
-	`
+// Insert inserts new content
+func (repository *Content) Insert(content *model.Content) (*model.Content, error) {
+
+	statement := util.GenerateInsertStatement(*content, "content")
 
 	_, err := repository.DB.Exec(
 		statement,
@@ -55,7 +37,9 @@ func (repository *ContentRepository) Insert(content *model.Content) (*model.Cont
 		content.ContentType,
 		content.URL,
 		content.Domain,
-		content.Shares)
+		content.Shares,
+		content.CreatedAt,
+		content.UpdatedAt)
 
 	if err != nil {
 		return nil, err
@@ -65,13 +49,10 @@ func (repository *ContentRepository) Insert(content *model.Content) (*model.Cont
 }
 
 // ByID gets a content by id
-func (repository *ContentRepository) ByID(id uuid.UUID) (*model.Content, error) {
+func (repository *Content) ByID(id uuid.UUID) (*model.Content, error) {
 	var content model.Content
 
-	statement := `
-	SELECT * FROM content 
-	WHERE id = $1
-	`
+	statement := contentSelectStatement + " WHERE id = $1;"
 
 	row := repository.DB.QueryRow(statement, id)
 
@@ -81,10 +62,8 @@ func (repository *ContentRepository) ByID(id uuid.UUID) (*model.Content, error) 
 }
 
 // All returns all content
-func (repository *ContentRepository) All(limit int) ([]model.Content, error) {
-	statement := `
-	SELECT * FROM content
-	WHERE deleted_at IS NULL
+func (repository *Content) All(limit int) ([]model.Content, error) {
+	statement := contentSelectStatement + `
 	LIMIT $1;
 	`
 
@@ -97,7 +76,7 @@ func (repository *ContentRepository) All(limit int) ([]model.Content, error) {
 	return repository.scanRows(rows)
 }
 
-func (repository *ContentRepository) scanRows(rows *sql.Rows) ([]model.Content, error) {
+func (repository *Content) scanRows(rows *sql.Rows) ([]model.Content, error) {
 	contents := []model.Content{}
 
 	defer rows.Close()

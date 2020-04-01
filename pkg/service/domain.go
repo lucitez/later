@@ -7,11 +7,11 @@ import (
 
 // DomainManager ...
 type DomainManager struct {
-	Repository repository.DomainRepository
+	Repository repository.Domain
 }
 
 // NewDomainManager for wire generation
-func NewDomainManager(repository repository.DomainRepository) DomainManager {
+func NewDomainManager(repository repository.Domain) DomainManager {
 	return DomainManager{repository}
 }
 

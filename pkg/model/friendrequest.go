@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/google/uuid"
 	"later/pkg/util/wrappers"
+
+	"github.com/google/uuid"
 )
 
 // FriendRequest object
@@ -31,7 +32,7 @@ func NewFriendRequest(
 		return nil, err
 	}
 
-	now := time.Now()
+	now := time.Now().UTC()
 
 	FriendRequest := FriendRequest{
 		ID:              uuid,

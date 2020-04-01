@@ -16,17 +16,17 @@ import (
 // Injectors from wire.go:
 
 func InitializeContent(db *sql.DB) server.Content {
-	domainRepository := repository.NewDomainRepository(db)
+	domainRepository := repository.NewDomain(db)
 	domainManager := service.NewDomainManager(domainRepository)
 	content := parse.NewContent(domainManager)
-	contentRepository := repository.NewContentRepository(db)
+	contentRepository := repository.NewContent(db)
 	contentManager := service.NewContentManager(contentRepository)
 	serverContent := server.NewContent(content, contentManager)
 	return serverContent
 }
 
 func InitializeDomain(db *sql.DB) server.DomainServer {
-	domainRepository := repository.NewDomainRepository(db)
+	domainRepository := repository.NewDomain(db)
 	domainManager := service.NewDomainManager(domainRepository)
 	domainServer := server.NewDomainServer(domainManager)
 	return domainServer
@@ -42,7 +42,7 @@ func InitializeFriend(db *sql.DB) server.FriendServer {
 }
 
 func InitializeFriendRequest(db *sql.DB) server.FriendRequestServer {
-	friendRequestRepository := repository.NewFriendRequestRepository(db)
+	friendRequestRepository := repository.NewFriendRequest(db)
 	friendRequestManager := service.NewFriendRequestManager(friendRequestRepository)
 	friendRequestServer := server.NewFriendRequestServer(friendRequestManager)
 	return friendRequestServer
@@ -53,11 +53,11 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	userContent := repository.NewUserContent(db)
 	userContentManager := service.NewUserContentManager(userContent)
 	shareManager := service.NewShareManager(share, userContentManager)
-	contentRepository := repository.NewContentRepository(db)
+	contentRepository := repository.NewContent(db)
 	contentManager := service.NewContentManager(contentRepository)
 	user := repository.NewUser(db)
 	userManager := service.NewUserManager(user)
-	domainRepository := repository.NewDomainRepository(db)
+	domainRepository := repository.NewDomain(db)
 	domainManager := service.NewDomainManager(domainRepository)
 	content := parse.NewContent(domainManager)
 	shareServer := server.NewShareServer(shareManager, contentManager, userManager, content)

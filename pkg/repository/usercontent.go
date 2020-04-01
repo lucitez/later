@@ -27,32 +27,7 @@ var selectUserContent = util.GenerateSelectStatement(model.UserContent{}, "user_
 // Insert inserts a new userContent
 func (repository *UserContent) Insert(userContent *model.UserContent) (*model.UserContent, error) {
 
-	statement := `
-	INSERT INTO user_content (
-		id,
-		share_id,
-		content_id,
-		content_type,
-		user_id,
-		sent_by_user_id,
-		created_at,
-		updated_at,
-		archived_at,
-		deleted_at
-	)
-	VALUES (
-		$1,
-		$2,
-		$3,
-		$4,
-		$5,
-		$6,
-		$7,
-		$8,
-		$9,
-		$10
-	)
-	`
+	statement := util.GenerateInsertStatement(*userContent, "user_content")
 
 	_, err := repository.DB.Exec(
 		statement,

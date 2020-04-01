@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"later/pkg/model"
+	"later/pkg/repository/util"
 
 	"github.com/google/uuid"
 
@@ -21,23 +22,21 @@ func NewFriend(db *sql.DB) Friend {
 	return Friend{db}
 }
 
+var friendSelectStatement = util.GenerateSelectStatement(model.Friend{}, "friends")
+
 // Insert inserts a new friend
 func (repository *Friend) Insert(friend *model.Friend) (*model.Friend, error) {
 
-	statement := `
-	INSERT INTO friends (id, user_id, friend_user_id)
-	VALUES (
-		$1,
-		$2,
-		$3
-	)
-	`
+	statement := util.GenerateInsertStatement(*friend, "friends")
 
 	_, err := repository.DB.Exec(
 		statement,
 		friend.ID,
 		friend.UserID,
-		friend.FriendUserID)
+		friend.FriendUserID,
+		friend.CreatedAt,
+		friend.UpdatedAt,
+		friend.DeletedAt)
 
 	if err != nil {
 		return nil, err
@@ -48,18 +47,17 @@ func (repository *Friend) Insert(friend *model.Friend) (*model.Friend, error) {
 
 // SearchByUserID gets all friends of a user
 func (repository *Friend) SearchByUserID(userID uuid.UUID, search string) ([]model.Friend, error) {
-	statement := `
-	SELECT * FROM friends 
-	WHERE user_id = $1
+	search = "%" + search + "%"
+	statement := friendSelectStatement + `
+	JOIN users on users.id = friends.friend_user_id
+	WHERE friends.user_id = $1
 	AND (
-		OR (
-			users.username ilike %$2%,
-			users.email ilike %$2%,
-			users.first_name ilike %$2%,
-			users.last_name ilike %$2%
-		)
+		users.username ILIKE $2
+		OR users.email ILIKE $2
+		OR users.first_name ILIKE $2
+		OR users.last_name ILIKE $2
 	)
-	AND deleted_at IS NULL
+	AND friends.deleted_at IS NULL;
 	`
 
 	rows, err := repository.DB.Query(statement, userID, search)
@@ -79,8 +77,7 @@ func (repository *Friend) SearchByUserID(userID uuid.UUID, search string) ([]mod
 
 // ByUserID gets all friends of a user
 func (repository *Friend) ByUserID(userID uuid.UUID) ([]model.Friend, error) {
-	statement := `
-	SELECT * FROM friends 
+	statement := friendSelectStatement + `
 	WHERE user_id = $1
 	AND deleted_at IS NULL
 	`

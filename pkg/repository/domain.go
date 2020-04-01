@@ -2,39 +2,39 @@ package repository
 
 import (
 	"database/sql"
+	"later/pkg/repository/util"
+
+	"later/pkg/model"
 
 	// Postgres driver
 	_ "github.com/lib/pq"
-	"later/pkg/model"
 )
 
-// DomainRepository ...
-type DomainRepository struct {
+// Domain ...
+type Domain struct {
 	DB *sql.DB
 }
 
-// NewDomainRepository for wire generation
-func NewDomainRepository(db *sql.DB) DomainRepository {
-	return DomainRepository{db}
+// NewDomain for wire generation
+func NewDomain(db *sql.DB) Domain {
+	return Domain{db}
 }
 
-// Insert inserts a new domain
-func (repository *DomainRepository) Insert(domain *model.Domain) (*model.Domain, error) {
+var domainSelectStatement = util.GenerateSelectStatement(model.Domain{}, "domains")
 
-	statement := `
-	INSERT INTO domains (id, domain, content_type)
-	VALUES (
-		$1,
-		$2,
-		$3
-	)
-	`
+// Insert inserts a new domain
+func (repository *Domain) Insert(domain *model.Domain) (*model.Domain, error) {
+
+	statement := util.GenerateInsertStatement(*domain, "domains")
 
 	_, err := repository.DB.Exec(
 		statement,
 		domain.ID,
 		domain.Domain,
-		domain.ContentType)
+		domain.ContentType,
+		domain.CreatedAt,
+		domain.UpdatedAt,
+		domain.DeletedAt)
 
 	if err != nil {
 		return nil, err
@@ -44,43 +44,38 @@ func (repository *DomainRepository) Insert(domain *model.Domain) (*model.Domain,
 }
 
 // ByDomain gets a domain by the domain name
-func (repository *DomainRepository) ByDomain(domainName string) (*model.Domain, error) {
+func (repository *Domain) ByDomain(domainName string) (*model.Domain, error) {
 	var domain model.Domain
 
-	statement := `
-	SELECT * FROM domains 
+	statement := domainSelectStatement + `
 	WHERE domain = $1
+	AND deleted_at IS NULL;
 	`
 
 	row := repository.DB.QueryRow(statement, domainName)
 
-	err := row.Scan(
-		&domain.ID,
-		&domain.Domain,
-		&domain.ContentType,
-		&domain.CreatedAt,
-		&domain.UpdatedAt,
-		&domain.DeletedAt)
+	err := domain.ScanRow(row)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return &domain, nil
+	return &domain, err
 }
 
 // All returns all domains
-func (repository *DomainRepository) All(limit int) ([]model.Domain, error) {
-	domains := []model.Domain{}
-
-	rows, err := repository.DB.Query(`SELECT * FROM domains LIMIT $1`, limit)
+func (repository *Domain) All(limit int) ([]model.Domain, error) {
+	statement := domainSelectStatement + `
+	WHERE deleted_at IS NULL
+	LIMIT $1;
+	`
+	rows, err := repository.DB.Query(statement, limit)
 
 	if err != nil {
 		return nil, err
 	}
+
+	return repository.scanRows(rows)
+}
+
+func (repository *Domain) scanRows(rows *sql.Rows) ([]model.Domain, error) {
+	domains := []model.Domain{}
 
 	defer rows.Close()
 
@@ -94,7 +89,7 @@ func (repository *DomainRepository) All(limit int) ([]model.Domain, error) {
 		domains = append(domains, domain)
 	}
 
-	err = rows.Err()
+	err := rows.Err()
 	if err != nil {
 		return nil, err
 	}

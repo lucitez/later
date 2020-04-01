@@ -13,7 +13,10 @@ import (
 var tableNames = []string{
 	"users",
 	"user_content",
-	"shares"}
+	"shares",
+	"friends",
+	"friend_requests",
+	"content"}
 
 var testUtil util.RepositoryTestUtil
 
@@ -23,6 +26,7 @@ var testUtil util.RepositoryTestUtil
 var shareID, _ = uuid.NewRandom()
 var contentID, _ = uuid.NewRandom()
 var userID, _ = uuid.NewRandom()
+var userID2, _ = uuid.NewRandom()
 
 func TestMain(m *testing.M) {
 	db, err := util.InitTestDB()
@@ -35,9 +39,12 @@ func TestMain(m *testing.M) {
 	defer testUtil.DB.Close()
 	defer afterAll()
 
-	userRepository = repository.NewUser(db)
-	userContentRepository = repository.NewUserContent(db)
+	userRepo = repository.NewUser(db)
+	userContentRepo = repository.NewUserContent(db)
+	contentRepo = repository.NewContent(db)
 	shareRepo = repository.NewShare(db)
+	friendRepo = repository.NewFriend(db)
+	friendRequestRepo = repository.NewFriendRequest(db)
 	testUtil = util.RepositoryTestUtil{DB: db}
 
 	os.Exit(m.Run())

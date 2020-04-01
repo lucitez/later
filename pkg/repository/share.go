@@ -27,24 +27,7 @@ var selectShares = util.GenerateSelectStatement(model.Share{}, "shares")
 // Insert inserts a new share
 func (repository *Share) Insert(share *model.Share) (*model.Share, error) {
 
-	statement := `
-	INSERT INTO shares (
-		id,
-		content_id,
-		sent_by_user_id,
-		recipient_user_id,
-		created_at,
-		opened_at
-	)
-	VALUES (
-		$1,
-		$2,
-		$3,
-		$4,
-		$5,
-		$6
-	)
-	`
+	statement := util.GenerateInsertStatement(*share, "shares")
 
 	_, err := repository.DB.Exec(
 		statement,

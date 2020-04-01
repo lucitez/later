@@ -13,9 +13,9 @@ import (
 	"later/pkg/util/wrappers"
 )
 
-var userRepository repository.User
+var userRepo repository.User
 
-var user, err = model.NewUserFromSignUp(
+var user, _ = model.NewUserFromSignUp(
 	wrappers.NewNullStringFromString("test_username"),
 	wrappers.NewNullStringFromString("test_email"),
 	"1111111111")
@@ -23,9 +23,9 @@ var user, err = model.NewUserFromSignUp(
 func TestInsertUserAndById(t *testing.T) {
 	beforeEach()
 
-	userRepository.Insert(user)
+	userRepo.Insert(user)
 
-	actual, _ := userRepository.ByID(user.ID)
+	actual, _ := userRepo.ByID(user.ID)
 
 	util.AssertEquals(t, actual, user)
 }
@@ -33,29 +33,23 @@ func TestInsertUserAndById(t *testing.T) {
 func TestUsersByIDs(t *testing.T) {
 	beforeEach()
 
-	user2, _ := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("test_username_2"),
-		wrappers.NewNullStringFromString("test_email_2"),
-		"0000000000")
+	userRepo.Insert(user)
 
-	userRepository.Insert(user)
-	userRepository.Insert(user2)
-
-	actual, err := userRepository.ByIDs([]uuid.UUID{user.ID, user2.ID})
+	actual, err := userRepo.ByIDs([]uuid.UUID{user.ID})
 
 	if err != nil {
 		t.Error(err)
 	}
 
-	util.AssertEquals(t, actual, []model.User{*user, *user2})
+	util.AssertContainsOne(t, actual, *user)
 }
 
 func TestUserByPhoneNumber(t *testing.T) {
 	beforeEach()
 
-	userRepository.Insert(user)
+	userRepo.Insert(user)
 
-	actual, err := userRepository.ByPhoneNumber(user.PhoneNumber)
+	actual, err := userRepo.ByPhoneNumber(user.PhoneNumber)
 
 	if err != nil {
 		t.Error(err)
@@ -72,10 +66,10 @@ func TestAllUsers(t *testing.T) {
 		wrappers.NewNullStringFromString("test_email_2"),
 		"0000000000")
 
-	userRepository.Insert(user)
-	userRepository.Insert(user2)
+	userRepo.Insert(user)
+	userRepo.Insert(user2)
 
-	actual, err := userRepository.All(1)
+	actual, err := userRepo.All(1)
 
 	if err != nil {
 		t.Error(err)

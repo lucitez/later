@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-var userContentRepository repository.UserContent
+var userContentRepo repository.UserContent
 
 var userContent, _ = model.NewUserContent(
 	shareID,
@@ -20,9 +20,9 @@ var userContent, _ = model.NewUserContent(
 func TestUserContentInsertAndByID(t *testing.T) {
 	beforeEach()
 
-	userContentRepository.Insert(userContent)
+	userContentRepo.Insert(userContent)
 
-	actual, _ := userContentRepository.ByID(userContent.ID)
+	actual, _ := userContentRepo.ByID(userContent.ID)
 
 	util.AssertEquals(t, actual, userContent)
 }
@@ -30,8 +30,8 @@ func TestUserContentInsertAndByID(t *testing.T) {
 func TestAllUserContent(t *testing.T) {
 	beforeEach()
 
-	userContentRepository.Insert(userContent)
-	actual, _ := userContentRepository.All(1)
+	userContentRepo.Insert(userContent)
+	actual, _ := userContentRepo.All(1)
 
 	util.AssertContainsOne(t, actual, *userContent)
 }

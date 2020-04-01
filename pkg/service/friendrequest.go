@@ -10,11 +10,11 @@ import (
 
 // FriendRequestManager ...
 type FriendRequestManager struct {
-	Repository repository.FriendRequestRepository
+	Repository repository.FriendRequest
 }
 
 // NewFriendRequestManager for wire generation
-func NewFriendRequestManager(repository repository.FriendRequestRepository) FriendRequestManager {
+func NewFriendRequestManager(repository repository.FriendRequest) FriendRequestManager {
 	return FriendRequestManager{repository}
 }
 

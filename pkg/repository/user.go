@@ -22,37 +22,12 @@ func NewUser(db *sql.DB) User {
 	return User{db}
 }
 
-var selectStatement = util.GenerateSelectStatement(model.User{}, "users")
+var userSelectStatement = util.GenerateSelectStatement(model.User{}, "users")
 
 // Insert inserts a new user
 func (repository *User) Insert(user *model.User) (*model.User, error) {
 
-	statement := `
-	INSERT INTO users (
-		id,
-		first_name,
-		last_name,
-		username,
-		email,
-		phone_number,
-		created_at,
-		signed_up_at,
-		updated_at,
-		deleted_at
-	)
-	VALUES (
-		$1,
-		$2,
-		$3,
-		$4,
-		$5,
-		$6,
-		$7,
-		$8,
-		$9,
-		$10
-	)
-	`
+	statement := util.GenerateInsertStatement(*user, "users")
 
 	_, err := repository.DB.Exec(
 		statement,
@@ -78,7 +53,7 @@ func (repository *User) Insert(user *model.User) (*model.User, error) {
 func (repository *User) ByID(id uuid.UUID) (*model.User, error) {
 	var user model.User
 
-	statement := selectStatement + ` WHERE id = $1;`
+	statement := userSelectStatement + ` WHERE id = $1;`
 
 	row := repository.DB.QueryRow(statement, id)
 
@@ -89,7 +64,7 @@ func (repository *User) ByID(id uuid.UUID) (*model.User, error) {
 
 // ByIDs ...
 func (repository *User) ByIDs(ids []uuid.UUID) ([]model.User, error) {
-	statement := selectStatement + `
+	statement := userSelectStatement + `
 	WHERE id = ANY($1)
 	AND deleted_at IS NULL;
 	`
@@ -113,7 +88,7 @@ func (repository *User) ByIDs(ids []uuid.UUID) ([]model.User, error) {
 func (repository *User) ByPhoneNumber(phoneNumber string) (*model.User, error) {
 	var user model.User
 
-	statement := selectStatement + `
+	statement := userSelectStatement + `
 	WHERE phone_number = $1;
 	`
 
@@ -130,7 +105,7 @@ func (repository *User) ByPhoneNumber(phoneNumber string) (*model.User, error) {
 
 // All returns all users with a limit
 func (repository *User) All(limit int) ([]model.User, error) {
-	statement := selectStatement + `
+	statement := userSelectStatement + `
 	WHERE deleted_at IS NULL
 	ORDER BY created_at desc
 	LIMIT $1;

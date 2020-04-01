@@ -32,7 +32,7 @@ func NewFriend(
 		return nil, err
 	}
 
-	now := time.Now()
+	now := time.Now().UTC()
 
 	friend := Friend{
 		ID:           uuid,
