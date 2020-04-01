@@ -33,10 +33,10 @@ func InitializeDomain(db *sql.DB) server.DomainServer {
 }
 
 func InitializeFriend(db *sql.DB) server.FriendServer {
-	userRepository := repository.NewUserRepository(db)
-	userManager := service.NewUserManager(userRepository)
-	friendRepository := repository.NewFriendRepository(db)
-	friendManager := service.NewFriendManager(userManager, friendRepository)
+	user := repository.NewUser(db)
+	userManager := service.NewUserManager(user)
+	friend := repository.NewFriend(db)
+	friendManager := service.NewFriendManager(userManager, friend)
 	friendServer := server.NewFriendServer(friendManager)
 	return friendServer
 }
@@ -49,14 +49,14 @@ func InitializeFriendRequest(db *sql.DB) server.FriendRequestServer {
 }
 
 func InitializeShare(db *sql.DB) server.ShareServer {
-	shareRepository := repository.NewShareRepository(db)
-	userContentRepository := repository.NewUserContentRepository(db)
-	userContentManager := service.NewUserContentManager(userContentRepository)
-	shareManager := service.NewShareManager(shareRepository, userContentManager)
+	share := repository.NewShare(db)
+	userContent := repository.NewUserContent(db)
+	userContentManager := service.NewUserContentManager(userContent)
+	shareManager := service.NewShareManager(share, userContentManager)
 	contentRepository := repository.NewContentRepository(db)
 	contentManager := service.NewContentManager(contentRepository)
-	userRepository := repository.NewUserRepository(db)
-	userManager := service.NewUserManager(userRepository)
+	user := repository.NewUser(db)
+	userManager := service.NewUserManager(user)
 	domainRepository := repository.NewDomainRepository(db)
 	domainManager := service.NewDomainManager(domainRepository)
 	content := parse.NewContent(domainManager)
@@ -65,15 +65,15 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 }
 
 func InitializeUserContent(db *sql.DB) server.UserContentServer {
-	userContentRepository := repository.NewUserContentRepository(db)
-	userContentManager := service.NewUserContentManager(userContentRepository)
+	userContent := repository.NewUserContent(db)
+	userContentManager := service.NewUserContentManager(userContent)
 	userContentServer := server.NewUserContentServer(userContentManager)
 	return userContentServer
 }
 
 func InitializeUser(db *sql.DB) server.UserServer {
-	userRepository := repository.NewUserRepository(db)
-	userManager := service.NewUserManager(userRepository)
+	user := repository.NewUser(db)
+	userManager := service.NewUserManager(user)
 	userServer := server.NewUserServer(userManager)
 	return userServer
 }
