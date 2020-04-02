@@ -30,7 +30,7 @@ func NewDomain(
 		return nil, err
 	}
 
-	now := time.Now()
+	now := time.Now().UTC()
 
 	newDomain := Domain{
 		ID:          uuid,

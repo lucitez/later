@@ -16,7 +16,8 @@ var tableNames = []string{
 	"shares",
 	"friends",
 	"friend_requests",
-	"content"}
+	"content",
+	"domains"}
 
 var testUtil util.RepositoryTestUtil
 
@@ -39,13 +40,14 @@ func TestMain(m *testing.M) {
 	defer testUtil.DB.Close()
 	defer afterAll()
 
-	userRepo = repository.NewUser(db)
-	userContentRepo = repository.NewUserContent(db)
 	contentRepo = repository.NewContent(db)
-	shareRepo = repository.NewShare(db)
+	domainRepo = repository.NewDomain(db)
 	friendRepo = repository.NewFriend(db)
 	friendRequestRepo = repository.NewFriendRequest(db)
+	shareRepo = repository.NewShare(db)
 	testUtil = util.RepositoryTestUtil{DB: db}
+	userRepo = repository.NewUser(db)
+	userContentRepo = repository.NewUserContent(db)
 
 	os.Exit(m.Run())
 }
