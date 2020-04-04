@@ -4,19 +4,19 @@ import (
 	"net/http"
 	"strconv"
 
-	"later/pkg/service"
 	"later/pkg/request"
+	"later/pkg/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 // UserServer ...
 type UserServer struct {
-	Manager service.UserManager
+	Manager service.User
 }
 
 // NewUserServer ...
-func NewUserServer(manager service.UserManager) UserServer {
+func NewUserServer(manager service.User) UserServer {
 	return UserServer{manager}
 }
 
@@ -38,12 +38,7 @@ func (server *UserServer) signUp(context *gin.Context) {
 		return
 	}
 
-	user, err := server.Manager.SignUp(json)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error_type": "On Insert", "error": err.Error()})
-		return
-	}
+	user := server.Manager.SignUp(json)
 
 	context.JSON(http.StatusOK, user)
 }
@@ -56,12 +51,7 @@ func (server *UserServer) byID(context *gin.Context) {
 		return
 	}
 
-	user, err := server.Manager.ByID(*userID)
-
-	if err != nil {
-		context.JSON(http.StatusNotFound, gin.H{"error": "User does not exist"})
-		return
-	}
+	user := server.Manager.ByID(*userID)
 
 	context.JSON(http.StatusOK, user)
 }
@@ -71,7 +61,7 @@ func (server *UserServer) allUsers(context *gin.Context) {
 
 	limit, err := strconv.Atoi(limitstr)
 
-	users, err := server.Manager.All(limit)
+	users := server.Manager.All(limit)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

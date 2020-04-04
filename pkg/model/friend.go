@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"log"
 	"time"
 
 	"later/pkg/response"
@@ -57,7 +58,7 @@ func (friend *Friend) ToWire(friendUser *User) response.WireFriend {
 }
 
 // ScanRows ...
-func (friend *Friend) ScanRows(rows *sql.Rows) error {
+func (friend *Friend) ScanRows(rows *sql.Rows) {
 	err := rows.Scan(
 		&friend.ID,
 		&friend.UserID,
@@ -66,25 +67,23 @@ func (friend *Friend) ScanRows(rows *sql.Rows) error {
 		&friend.UpdatedAt,
 		&friend.DeletedAt)
 
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // ScanRow ...
-func (friend *Friend) ScanRow(row *sql.Row) error {
+func (friend *Friend) ScanRow(row *sql.Row) {
 	err := row.Scan(
 		&friend.ID,
 		&friend.UserID,
 		&friend.FriendUserID,
 		&friend.CreatedAt,
 		&friend.UpdatedAt,
-		&friend.DeletedAt)
+		&friend.DeletedAt,
+	)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil
-		}
-		return err
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatal(err)
 	}
-
-	return nil
 }

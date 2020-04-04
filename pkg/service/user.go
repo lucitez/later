@@ -1,68 +1,59 @@
 package service
 
 import (
-	"github.com/google/uuid"
 	"later/pkg/model"
 	"later/pkg/repository"
 	"later/pkg/request"
 	"later/pkg/util/wrappers"
+
+	"github.com/google/uuid"
 )
 
-// UserManager ...
-type UserManager struct {
+// User ...
+type User struct {
 	Repository repository.User
 }
 
-// NewUserManager ...
-func NewUserManager(repository repository.User) UserManager {
-	return UserManager{repository}
+// NewUser ...
+func NewUser(repository repository.User) User {
+	return User{repository}
 }
 
 // NewUserFromPhoneNumber inserts a new user using just phone number
-func (manager *UserManager) NewUserFromPhoneNumber(phoneNumber string) (*model.User, error) {
-	newUser, err := model.NewUserFromShare(
+func (manager *User) NewUserFromPhoneNumber(phoneNumber string) model.User {
+	newUser := model.NewUserFromShare(
 		wrappers.NewNullString(nil), // user_name
 		wrappers.NewNullString(nil), // email
-		phoneNumber)
+		phoneNumber,
+	)
 
-	if err != nil {
-		return nil, err
-	}
+	user := manager.Repository.Insert(newUser)
 
-	user, err := manager.Repository.Insert(newUser)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return user
 }
 
 // SignUp ...
-func (manager *UserManager) SignUp(body request.UserSignUpRequestBody) (*model.User, error) {
-	user, err := model.NewUserFromSignUp(
+func (manager *User) SignUp(body request.UserSignUpRequestBody) model.User {
+	user := model.NewUserFromSignUp(
 		body.Username,
 		body.Email,
-		body.PhoneNumber)
-
-	if err != nil {
-		return nil, err
-	}
+		body.PhoneNumber,
+	)
 
 	return manager.Repository.Insert(user)
 }
 
 // ByID ...
-func (manager *UserManager) ByID(id uuid.UUID) (*model.User, error) {
+func (manager *User) ByID(id uuid.UUID) *model.User {
 	return manager.Repository.ByID(id)
 }
 
 // ByPhoneNumber ...
-func (manager *UserManager) ByPhoneNumber(phoneNumber string) (*model.User, error) {
+func (manager *User) ByPhoneNumber(phoneNumber string) (*model.User, error) {
 	return manager.Repository.ByPhoneNumber(phoneNumber)
 }
 
 // All ...
-func (manager *UserManager) All(limit int) ([]model.User, error) {
+func (manager *User) All(limit int) []model.User {
 	return manager.Repository.All(limit)
 }

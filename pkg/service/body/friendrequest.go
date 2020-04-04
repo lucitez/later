@@ -1,8 +1,9 @@
 package body
 
 import (
-	"github.com/google/uuid"
 	"later/pkg/model"
+
+	"github.com/google/uuid"
 )
 
 // FriendRequestCreateBody ...

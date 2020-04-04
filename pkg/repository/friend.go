@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"log"
 
 	"later/pkg/model"
 	"later/pkg/repository/util"
@@ -46,7 +47,7 @@ func (repository *Friend) Insert(friend *model.Friend) (*model.Friend, error) {
 }
 
 // SearchByUserID gets all friends of a user
-func (repository *Friend) SearchByUserID(userID uuid.UUID, search string) ([]model.Friend, error) {
+func (repository *Friend) SearchByUserID(userID uuid.UUID, search string) []model.Friend {
 	search = "%" + search + "%"
 	statement := friendSelectStatement + `
 	JOIN users on users.id = friends.friend_user_id
@@ -63,20 +64,14 @@ func (repository *Friend) SearchByUserID(userID uuid.UUID, search string) ([]mod
 	rows, err := repository.DB.Query(statement, userID, search)
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	friends, err := repository.scanRows(rows)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return friends, nil
+	return repository.scanRows(rows)
 }
 
 // ByUserID gets all friends of a user
-func (repository *Friend) ByUserID(userID uuid.UUID) ([]model.Friend, error) {
+func (repository *Friend) ByUserID(userID uuid.UUID) []model.Friend {
 	statement := friendSelectStatement + `
 	WHERE user_id = $1
 	AND deleted_at IS NULL
@@ -85,37 +80,30 @@ func (repository *Friend) ByUserID(userID uuid.UUID) ([]model.Friend, error) {
 	rows, err := repository.DB.Query(statement, userID)
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	friends, err := repository.scanRows(rows)
+	friends := repository.scanRows(rows)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return friends, nil
+	return friends
 }
 
-func (repository *Friend) scanRows(rows *sql.Rows) ([]model.Friend, error) {
+func (repository *Friend) scanRows(rows *sql.Rows) []model.Friend {
 	friends := []model.Friend{}
 
 	defer rows.Close()
 
 	for rows.Next() {
 		var friend model.Friend
-		err := friend.ScanRows(rows)
+		friend.ScanRows(rows)
 
-		if err != nil {
-			return nil, err
-		}
 		friends = append(friends, friend)
 	}
 
 	err := rows.Err()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	return friends, nil
+	return friends
 }

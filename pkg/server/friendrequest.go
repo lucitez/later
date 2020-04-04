@@ -1,6 +1,7 @@
 package server
 
 import (
+	"later/pkg/transfer"
 	"net/http"
 
 	"later/pkg/request"
@@ -11,12 +12,19 @@ import (
 
 // FriendRequestServer ...
 type FriendRequestServer struct {
-	Manager service.FriendRequestManager
+	Manager  service.FriendRequest
+	Transfer transfer.FriendRequest
 }
 
 // NewFriendRequestServer ...
-func NewFriendRequestServer(manager service.FriendRequestManager) FriendRequestServer {
-	return FriendRequestServer{manager}
+func NewFriendRequestServer(
+	manager service.FriendRequest,
+	transfer transfer.FriendRequest,
+) FriendRequestServer {
+	return FriendRequestServer{
+		manager,
+		transfer,
+	}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service
@@ -31,14 +39,14 @@ func (server *FriendRequestServer) send(context *gin.Context) {
 	var body request.FriendRequestCreateRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
-		context.JSON(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	friendRequest, err := server.Manager.Create(body.ToFriendRequestCreateBody())
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -49,32 +57,34 @@ func (server *FriendRequestServer) pending(context *gin.Context) {
 	userID, err := DeserUUID(context, "user_id")
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	friendRequest, err := server.Manager.Pending(*userID)
+	friendRequests, err := server.Manager.Pending(*userID)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	context.JSON(http.StatusOK, friendRequest)
+	wireFriendRequests := server.Transfer.WireFriendRequestsFrom(friendRequests)
+
+	context.JSON(http.StatusOK, wireFriendRequests)
 }
 
 func (server *FriendRequestServer) accept(context *gin.Context) {
 	var body request.FriendRequestAcceptRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
-		context.JSON(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	err := server.Manager.Accept(body.ID)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -85,14 +95,14 @@ func (server *FriendRequestServer) decline(context *gin.Context) {
 	var body request.FriendRequestDeclineRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
-		context.JSON(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	err := server.Manager.Decline(body.ID)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, err)
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 

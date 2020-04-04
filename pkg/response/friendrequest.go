@@ -3,8 +3,9 @@ package response
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"later/pkg/util/wrappers"
+
+	"github.com/google/uuid"
 )
 
 type WireFriendRequest struct {

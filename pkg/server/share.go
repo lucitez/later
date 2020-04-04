@@ -19,7 +19,7 @@ import (
 type ShareServer struct {
 	Manager        service.ShareManager
 	ContentManager service.ContentManager
-	UserManager    service.UserManager
+	User           service.User
 	Parser         parse.Content
 }
 
@@ -27,12 +27,12 @@ type ShareServer struct {
 func NewShareServer(
 	manager service.ShareManager,
 	contentManager service.ContentManager,
-	userManager service.UserManager,
+	userManager service.User,
 	parser parse.Content) ShareServer {
 	return ShareServer{
 		Manager:        manager,
 		ContentManager: contentManager,
-		UserManager:    userManager,
+		User:           userManager,
 		Parser:         parser,
 	}
 }
@@ -164,7 +164,7 @@ func (server *ShareServer) newByPhoneNumber(context *gin.Context) {
 *	send SMS with URL, Title, and link to us in app store
  */
 func (server *ShareServer) userFromPhoneNumber(phoneNumber string) (*model.User, error) {
-	user, err := server.UserManager.ByPhoneNumber(phoneNumber)
+	user, err := server.User.ByPhoneNumber(phoneNumber)
 
 	if err != nil {
 		return nil, err
@@ -175,12 +175,9 @@ func (server *ShareServer) userFromPhoneNumber(phoneNumber string) (*model.User,
 	}
 
 	if user == nil {
-		user, err = server.UserManager.NewUserFromPhoneNumber(phoneNumber)
+		newUser := server.User.NewUserFromPhoneNumber(phoneNumber)
+		return &newUser, nil
 	}
 
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return nil, err
 }

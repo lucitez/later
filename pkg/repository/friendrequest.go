@@ -35,7 +35,8 @@ func (repository *FriendRequest) Insert(friendRequest *model.FriendRequest) (*mo
 		friendRequest.UpdatedAt,
 		friendRequest.AcceptedAt,
 		friendRequest.DeclinedAt,
-		friendRequest.DeletedAt)
+		friendRequest.DeletedAt,
+	)
 
 	if err != nil {
 		return nil, err

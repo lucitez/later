@@ -8,18 +8,28 @@ import (
 	"github.com/google/uuid"
 )
 
-// FriendRequestManager ...
-type FriendRequestManager struct {
-	Repository repository.FriendRequest
+// FriendRequest ...
+type FriendRequest struct {
+	Repository    repository.FriendRequest
+	FriendService Friend
+	UserService   User
 }
 
-// NewFriendRequestManager for wire generation
-func NewFriendRequestManager(repository repository.FriendRequest) FriendRequestManager {
-	return FriendRequestManager{repository}
+// NewFriendRequest for wire generation
+func NewFriendRequest(
+	repository repository.FriendRequest,
+	friendService Friend,
+	userService User,
+) FriendRequest {
+	return FriendRequest{
+		repository,
+		friendService,
+		userService,
+	}
 }
 
 // Create ...
-func (manager *FriendRequestManager) Create(body body.FriendRequestCreateBody) (*model.FriendRequest, error) {
+func (manager *FriendRequest) Create(body body.FriendRequestCreateBody) (*model.FriendRequest, error) {
 	friendRequest, err := body.ToFriendRequest()
 
 	if err != nil {
@@ -36,24 +46,35 @@ func (manager *FriendRequestManager) Create(body body.FriendRequestCreateBody) (
 }
 
 // Pending ...
-func (manager *FriendRequestManager) Pending(userID uuid.UUID) ([]model.FriendRequest, error) {
+func (manager *FriendRequest) Pending(userID uuid.UUID) ([]model.FriendRequest, error) {
 	requests, err := manager.Repository.PendingByUserID(userID)
 
 	if err != nil {
 		return nil, err
 	}
 
-	// wireFriendRequests := make([]response.WireFriendRequest, len(requests))
-
 	return requests, err
 }
 
 // Accept ...
-func (manager *FriendRequestManager) Accept(id uuid.UUID) error {
-	return manager.Repository.Accept(id)
+func (manager *FriendRequest) Accept(id uuid.UUID) error {
+	var err error
+
+	request, err := manager.Repository.ByID(id)
+
+	if err != nil {
+		return err
+	}
+
+	if request != nil {
+		err = manager.Repository.Accept(id)
+		err = manager.FriendService.HandleAcceptedFriendRequest(*request)
+	}
+
+	return err
 }
 
 // Decline ...
-func (manager *FriendRequestManager) Decline(id uuid.UUID) error {
+func (manager *FriendRequest) Decline(id uuid.UUID) error {
 	return manager.Repository.Decline(id)
 }

@@ -3,58 +3,47 @@ package service
 import (
 	"later/pkg/model"
 	"later/pkg/repository"
-	"later/pkg/response"
 
 	"github.com/google/uuid"
 )
 
-// FriendManager ...
-type FriendManager struct {
-	UserManager UserManager
-	Repository  repository.Friend
+// Friend ...
+type Friend struct {
+	User       User
+	Repository repository.Friend
 }
 
-// NewFriendManager for wire generation
-func NewFriendManager(
-	userManager UserManager,
-	repository repository.Friend) FriendManager {
-	return FriendManager{
-		UserManager: userManager,
-		Repository:  repository}
+// NewFriend for wire generation
+func NewFriend(
+	userManager User,
+	repository repository.Friend) Friend {
+	return Friend{
+		User:       userManager,
+		Repository: repository}
+}
+
+// HandleAcceptedFriendRequest creates two new friend entries. One for the requester, one for the requestee.
+func (manager *Friend) HandleAcceptedFriendRequest(request model.FriendRequest) error {
+	requester, err := model.NewFriend(
+		request.SentByUserID,
+		request.RecipientUserID,
+	)
+	requestee, err := model.NewFriend(
+		request.RecipientUserID,
+		request.SentByUserID,
+	)
+	_, err = manager.Repository.Insert(requester)
+	_, err = manager.Repository.Insert(requestee)
+
+	return err
 }
 
 // All ...
-func (manager *FriendManager) All(userID uuid.UUID) ([]response.WireFriend, error) {
-	friends, err := manager.Repository.ByUserID(userID)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return manager.toWireFriends(friends), nil
+func (manager *Friend) All(userID uuid.UUID) []model.Friend {
+	return manager.Repository.ByUserID(userID)
 }
 
 // Search ...
-func (manager *FriendManager) Search(userID uuid.UUID, query string) ([]response.WireFriend, error) {
-	friends, err := manager.Repository.SearchByUserID(userID, query)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return manager.toWireFriends(friends), nil
-}
-
-func (manager *FriendManager) toWireFriends(friends []model.Friend) []response.WireFriend {
-	wireFriends := []response.WireFriend{}
-
-	for _, friend := range friends {
-		friendUser, _ := manager.UserManager.ByID(friend.ID)
-		if friendUser != nil {
-			wireFriend := friend.ToWire(friendUser)
-			wireFriends = append(wireFriends, wireFriend)
-		}
-	}
-
-	return wireFriends
+func (manager *Friend) Search(userID uuid.UUID, query string) []model.Friend {
+	return manager.Repository.SearchByUserID(userID, query)
 }

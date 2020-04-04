@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/google/uuid"
 
@@ -30,17 +31,14 @@ type User struct {
 func NewUserFromSignUp(
 	username wrappers.NullString,
 	email wrappers.NullString,
-	phoneNumber string) (*User, error) {
+	phoneNumber string,
+) User {
 
-	newUUID, err := uuid.NewRandom()
-
-	if err != nil {
-		return nil, err
-	}
+	newUUID, _ := uuid.NewRandom()
 
 	now := time.Now().UTC()
 
-	user := User{
+	return User{
 		ID:          newUUID,
 		Username:    username,
 		Email:       email,
@@ -48,9 +46,8 @@ func NewUserFromSignUp(
 		SignedUpAt:  wrappers.NewNullTime(&now),
 
 		CreatedAt: now,
-		UpdatedAt: now}
-
-	return &user, nil
+		UpdatedAt: now,
+	}
 }
 
 // NewUserFromShare constructor for creating a new user
@@ -58,30 +55,26 @@ func NewUserFromSignUp(
 func NewUserFromShare(
 	username wrappers.NullString,
 	email wrappers.NullString,
-	phoneNumber string) (*User, error) {
+	phoneNumber string,
+) User {
 
-	newUUID, err := uuid.NewRandom()
-
-	if err != nil {
-		return nil, err
-	}
+	newUUID, _ := uuid.NewRandom()
 
 	now := time.Now()
 
-	user := User{
+	return User{
 		ID:          newUUID,
 		Username:    username,
 		Email:       email,
 		PhoneNumber: phoneNumber,
 
 		CreatedAt: now,
-		UpdatedAt: now}
-
-	return &user, nil
+		UpdatedAt: now,
+	}
 }
 
 // ScanRows ...
-func (user *User) ScanRows(rows *sql.Rows) error {
+func (user *User) ScanRows(rows *sql.Rows) {
 	err := rows.Scan(
 		&user.ID,
 		&user.FirstName,
@@ -94,11 +87,13 @@ func (user *User) ScanRows(rows *sql.Rows) error {
 		&user.UpdatedAt,
 		&user.DeletedAt)
 
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // ScanRow ...
-func (user *User) ScanRow(row *sql.Row) error {
+func (user *User) ScanRow(row *sql.Row) {
 	err := row.Scan(
 		&user.ID,
 		&user.FirstName,
@@ -111,12 +106,7 @@ func (user *User) ScanRow(row *sql.Row) error {
 		&user.UpdatedAt,
 		&user.DeletedAt)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil
-		}
-		return err
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatal(err)
 	}
-
-	return nil
 }
