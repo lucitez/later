@@ -6,8 +6,8 @@ import (
 
 // DomainCreateRequestBody Binding from json
 type DomainCreateRequestBody struct {
-	Domain      string `form:"user_name" json:"user_name" binding:"required"`
-	ContentType string `form:"email" json:"email" binding:"required"`
+	Domain      string `form:"domain" json:"domain" binding:"required"`
+	ContentType string `form:"content_type" json:"content_type" binding:"required"`
 }
 
 func (requestBody *DomainCreateRequestBody) ToDomainCreateBody() body.DomainCreateBody {

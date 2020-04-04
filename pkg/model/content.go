@@ -74,7 +74,7 @@ func (content *Content) ScanRows(rows *sql.Rows) {
 }
 
 // ScanRow ...
-func (content *Content) ScanRow(row *sql.Row) {
+func (content *Content) ScanRow(row *sql.Row) *Content {
 	err := row.Scan(
 		&content.ID,
 		&content.Title,
@@ -87,7 +87,12 @@ func (content *Content) ScanRow(row *sql.Row) {
 		&content.CreatedAt,
 		&content.UpdatedAt)
 
-	if err != nil && err != sql.ErrNoRows {
-		log.Fatal(err)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		panic(err)
 	}
+
+	return content
 }

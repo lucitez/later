@@ -62,7 +62,7 @@ func (friendRequest *FriendRequest) ScanRows(rows *sql.Rows) {
 }
 
 // ScanRow ...
-func (friendRequest *FriendRequest) ScanRow(row *sql.Row) {
+func (friendRequest *FriendRequest) ScanRow(row *sql.Row) *FriendRequest {
 	err := row.Scan(
 		&friendRequest.ID,
 		&friendRequest.SentByUserID,
@@ -74,7 +74,12 @@ func (friendRequest *FriendRequest) ScanRow(row *sql.Row) {
 		&friendRequest.DeletedAt,
 	)
 
-	if err != nil && err != sql.ErrNoRows {
-		log.Fatal(err)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		panic(err)
 	}
+
+	return friendRequest
 }

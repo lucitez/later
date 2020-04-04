@@ -53,15 +53,12 @@ func (repository *Content) ByID(id uuid.UUID) *model.Content {
 
 	row := repository.DB.QueryRow(statement, id)
 
-	content.ScanRow(row)
-
-	return &content
+	return content.ScanRow(row)
 }
 
 // All returns all content
 func (repository *Content) All(limit int) []model.Content {
 	statement := contentSelectStatement + `
-	WHERE deleted_at IS NULL
 	LIMIT $1;
 	`
 

@@ -1,0 +1,6 @@
+POST http://localhost:8000/domains/create
+
+{
+    "domain": "soundcloud",
+    "content_type": "music"
+}

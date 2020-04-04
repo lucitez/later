@@ -93,7 +93,7 @@ func (user *User) ScanRows(rows *sql.Rows) {
 }
 
 // ScanRow ...
-func (user *User) ScanRow(row *sql.Row) {
+func (user *User) ScanRow(row *sql.Row) *User {
 	err := row.Scan(
 		&user.ID,
 		&user.FirstName,
@@ -106,7 +106,12 @@ func (user *User) ScanRow(row *sql.Row) {
 		&user.UpdatedAt,
 		&user.DeletedAt)
 
-	if err != nil && err != sql.ErrNoRows {
-		log.Fatal(err)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		panic(err)
 	}
+
+	return user
 }

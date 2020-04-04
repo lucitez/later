@@ -52,9 +52,7 @@ func (repository *Share) ByID(id uuid.UUID) *model.Share {
 
 	row := repository.DB.QueryRow(statement, id)
 
-	share.ScanRow(row)
-
-	return &share
+	return share.ScanRow(row)
 }
 
 // All returns all shares

@@ -3,49 +3,44 @@ package repository_test
 import (
 	"later/pkg/model"
 	"later/pkg/repository"
-	"later/pkg/repository/util"
 	"later/pkg/util/wrappers"
 	"testing"
 )
 
 var friendRepo repository.Friend
 
-var friend, _ = model.NewFriend(
+var friend = model.NewFriend(
 	userID,
-	userID2)
+	userID2,
+)
 
 func TestInsertAndByUserID(t *testing.T) {
-	beforeEach()
-	_, err := friendRepo.Insert(friend)
+	beforeEach(t)
 
-	if err != nil {
-		t.Error(err)
-	}
+	friendRepo.Insert(friend)
 
-	actual, err := friendRepo.ByUserID(friend.UserID)
+	actual := friendRepo.ByUserID(friend.UserID)
 
-	if err != nil {
-		t.Error(err)
-	}
-
-	util.AssertContainsOne(t, actual, *friend)
+	testUtil.Assert.Contains(actual, friend)
 }
 
 func TestSearchByUserID(t *testing.T) {
-	beforeEach()
-	user, _ := model.NewUserFromSignUp(
+	beforeEach(t)
+	user := model.NewUserFromSignUp(
 		wrappers.NewNullStringFromString("test"),
 		wrappers.NewNullStringFromString("test"),
-		"2222222222")
+		"2222222222",
+	)
 
-	friend, _ := model.NewFriend(
+	friend := model.NewFriend(
 		userID,
-		user.ID)
+		user.ID,
+	)
 
 	friendRepo.Insert(friend)
 	userRepo.Insert(user)
 
-	actual, _ := friendRepo.SearchByUserID(friend.UserID, "TES")
+	actual := friendRepo.SearchByUserID(friend.UserID, "TES")
 
-	util.AssertContainsOne(t, actual, *friend)
+	testUtil.Assert.Contains(actual, friend)
 }

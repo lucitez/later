@@ -71,7 +71,7 @@ func (domain *Domain) ScanRow(row *sql.Row) *Domain {
 		if err == sql.ErrNoRows {
 			return nil
 		}
-		log.Fatal(err)
+		panic(err)
 	}
 
 	return domain

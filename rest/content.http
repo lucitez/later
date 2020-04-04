@@ -1,5 +1,5 @@
 POST http://localhost:8000/content/create
 
 {
-    "url": "https://golangbot.com/variadic-functions/"
+    "url": "https://soundcloud.com/itskforest/stwo-kmh-lovin-u"
 }

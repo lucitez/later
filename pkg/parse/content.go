@@ -2,7 +2,6 @@ package parse
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 
@@ -64,17 +63,13 @@ func (parser *Content) ContentFromURL(url string, domain *model.Domain) model.Co
 	switch {
 	case domain == nil:
 		parser.contentMetadataDefault(&contentMetadata, url)
+	default:
+		parser.contentMetadataDefault(&contentMetadata, url)
 	}
 
 	if domain != nil {
 		contentType = &domain.ContentType
 	}
-
-	fmt.Println("DOMAIN IS:")
-	fmt.Printf("%+v\n", domain)
-
-	fmt.Println("METADATA IS:")
-	fmt.Printf("%+v\n", contentMetadata)
 
 	newContent := model.NewContent(
 		wrappers.NewNullString(contentMetadata.title),

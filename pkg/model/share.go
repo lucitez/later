@@ -60,7 +60,7 @@ func (share *Share) ScanRows(rows *sql.Rows) {
 }
 
 // ScanRow ...
-func (share *Share) ScanRow(row *sql.Row) {
+func (share *Share) ScanRow(row *sql.Row) *Share {
 	err := row.Scan(
 		&share.ID,
 		&share.ContentID,
@@ -69,7 +69,12 @@ func (share *Share) ScanRow(row *sql.Row) {
 		&share.CreatedAt,
 		&share.OpenedAt)
 
-	if err != nil && err != sql.ErrNoRows {
-		log.Fatal(err)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		panic(err)
 	}
+
+	return share
 }

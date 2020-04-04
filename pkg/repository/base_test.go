@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 var tableNames = []string{
@@ -52,8 +53,9 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func beforeEach() {
+func beforeEach(t *testing.T) {
 	testUtil.TruncateTables(tableNames)
+	testUtil.Assert = assert.New(t)
 }
 
 func afterAll() {

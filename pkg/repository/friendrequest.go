@@ -49,9 +49,7 @@ func (repository *FriendRequest) ByID(id uuid.UUID) *model.FriendRequest {
 
 	row := repository.DB.QueryRow(statement, id)
 
-	friendRequest.ScanRow(row)
-
-	return &friendRequest
+	return friendRequest.ScanRow(row)
 }
 
 // PendingByUserID gets all pending friend requests for a user

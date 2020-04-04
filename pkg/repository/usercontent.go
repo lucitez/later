@@ -56,9 +56,7 @@ func (repository *UserContent) ByID(id uuid.UUID) *model.UserContent {
 
 	row := repository.DB.QueryRow(statement, id)
 
-	userContent.ScanRow(row)
-
-	return &userContent
+	return userContent.ScanRow(row)
 }
 
 // All returns all userContents

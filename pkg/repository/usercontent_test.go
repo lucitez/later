@@ -3,35 +3,47 @@ package repository_test
 import (
 	"later/pkg/model"
 	"later/pkg/repository"
-	"later/pkg/repository/util"
 	"later/pkg/util/wrappers"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 var userContentRepo repository.UserContent
 
-var userContent, _ = model.NewUserContent(
+var userContent = model.NewUserContent(
 	shareID,
 	contentID,
 	wrappers.NewNullStringFromString("jpeg"),
 	userID,
-	userID)
+	userID,
+)
 
 func TestUserContentInsertAndByID(t *testing.T) {
-	beforeEach()
+	beforeEach(t)
 
 	userContentRepo.Insert(userContent)
 
-	actual, _ := userContentRepo.ByID(userContent.ID)
+	actual := userContentRepo.ByID(userContent.ID)
 
-	util.AssertEquals(t, actual, userContent)
+	testUtil.Assert.Equal(*actual, userContent)
+}
+
+func TestUserContentByIDNull(t *testing.T) {
+	beforeEach(t)
+
+	id, _ := uuid.NewRandom()
+
+	actual := userContentRepo.ByID(id)
+
+	testUtil.Assert.Nil(actual)
 }
 
 func TestAllUserContent(t *testing.T) {
-	beforeEach()
+	beforeEach(t)
 
 	userContentRepo.Insert(userContent)
-	actual, _ := userContentRepo.All(1)
+	actual := userContentRepo.All(1)
 
-	util.AssertContainsOne(t, actual, *userContent)
+	testUtil.Assert.Contains(actual, userContent)
 }

@@ -54,9 +54,7 @@ func (repository *User) ByID(id uuid.UUID) *model.User {
 
 	row := repository.DB.QueryRow(statement, id)
 
-	user.ScanRow(row)
-
-	return &user
+	return user.ScanRow(row)
 }
 
 // ByIDs ...
@@ -86,9 +84,7 @@ func (repository *User) ByPhoneNumber(phoneNumber string) *model.User {
 
 	row := repository.DB.QueryRow(statement, phoneNumber)
 
-	user.ScanRow(row)
-
-	return &user
+	return user.ScanRow(row)
 }
 
 // All returns all users with a limit

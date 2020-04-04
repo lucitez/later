@@ -73,7 +73,7 @@ func (userContent *UserContent) ScanRows(rows *sql.Rows) {
 }
 
 // ScanRow ...
-func (userContent *UserContent) ScanRow(row *sql.Row) {
+func (userContent *UserContent) ScanRow(row *sql.Row) *UserContent {
 	err := row.Scan(
 		&userContent.ID,
 		&userContent.ShareID,
@@ -86,7 +86,12 @@ func (userContent *UserContent) ScanRow(row *sql.Row) {
 		&userContent.ArchivedAt,
 		&userContent.DeletedAt)
 
-	if err != nil && err != sql.ErrNoRows {
-		log.Fatal(err)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		panic(err)
 	}
+
+	return userContent
 }
