@@ -7,6 +7,7 @@ import (
 	"later/pkg/parse"
 	"later/pkg/server"
 	"later/pkg/service"
+	"later/pkg/transfer"
 
 	"later/pkg/repository"
 
@@ -20,7 +21,8 @@ func InitializeContent(db *sql.DB) server.Content {
 		service.NewContentManager,
 		service.NewDomainManager,
 		repository.NewContent,
-		repository.NewDomain)
+		repository.NewDomain,
+	)
 	return server.Content{}
 }
 
@@ -28,25 +30,34 @@ func InitializeDomain(db *sql.DB) server.DomainServer {
 	wire.Build(
 		server.NewDomainServer,
 		service.NewDomainManager,
-		repository.NewDomain)
+		repository.NewDomain,
+	)
 	return server.DomainServer{}
 }
 
 func InitializeFriend(db *sql.DB) server.FriendServer {
 	wire.Build(
 		server.NewFriendServer,
-		service.NewFriendManager,
-		service.NewUserManager,
+		service.NewFriend,
+		service.NewUser,
 		repository.NewFriend,
-		repository.NewUser)
+		repository.NewUser,
+		transfer.NewFriend,
+	)
 	return server.FriendServer{}
 }
 
 func InitializeFriendRequest(db *sql.DB) server.FriendRequestServer {
 	wire.Build(
 		server.NewFriendRequestServer,
-		service.NewFriendRequestManager,
-		repository.NewFriendRequest)
+		service.NewFriendRequest,
+		service.NewFriend,
+		service.NewUser,
+		repository.NewFriend,
+		repository.NewFriendRequest,
+		repository.NewUser,
+		transfer.NewFriendRequest,
+	)
 	return server.FriendRequestServer{}
 }
 
@@ -57,13 +68,14 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 		service.NewDomainManager,
 		service.NewShareManager,
 		service.NewUserContentManager,
-		service.NewUserManager,
+		service.NewUser,
 		repository.NewContent,
 		repository.NewDomain,
 		repository.NewShare,
 		repository.NewUserContent,
 		repository.NewUser,
-		parse.NewContent)
+		parse.NewContent,
+	)
 	return server.ShareServer{}
 }
 
@@ -71,14 +83,16 @@ func InitializeUserContent(db *sql.DB) server.UserContentServer {
 	wire.Build(
 		server.NewUserContentServer,
 		service.NewUserContentManager,
-		repository.NewUserContent)
+		repository.NewUserContent,
+	)
 	return server.UserContentServer{}
 }
 
 func InitializeUser(db *sql.DB) server.UserServer {
 	wire.Build(
 		server.NewUserServer,
-		service.NewUserManager,
-		repository.NewUser)
+		service.NewUser,
+		repository.NewUser,
+	)
 	return server.UserServer{}
 }

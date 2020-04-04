@@ -11,40 +11,47 @@ import (
 	"later/pkg/repository"
 	"later/pkg/server"
 	"later/pkg/service"
+	"later/pkg/transfer"
 )
 
 // Injectors from wire.go:
 
 func InitializeContent(db *sql.DB) server.Content {
-	domainRepository := repository.NewDomain(db)
-	domainManager := service.NewDomainManager(domainRepository)
+	domain := repository.NewDomain(db)
+	domainManager := service.NewDomainManager(domain)
 	content := parse.NewContent(domainManager)
-	contentRepository := repository.NewContent(db)
-	contentManager := service.NewContentManager(contentRepository)
+	repositoryContent := repository.NewContent(db)
+	contentManager := service.NewContentManager(repositoryContent)
 	serverContent := server.NewContent(content, contentManager)
 	return serverContent
 }
 
 func InitializeDomain(db *sql.DB) server.DomainServer {
-	domainRepository := repository.NewDomain(db)
-	domainManager := service.NewDomainManager(domainRepository)
+	domain := repository.NewDomain(db)
+	domainManager := service.NewDomainManager(domain)
 	domainServer := server.NewDomainServer(domainManager)
 	return domainServer
 }
 
 func InitializeFriend(db *sql.DB) server.FriendServer {
 	user := repository.NewUser(db)
-	userManager := service.NewUserManager(user)
+	serviceUser := service.NewUser(user)
 	friend := repository.NewFriend(db)
-	friendManager := service.NewFriendManager(userManager, friend)
-	friendServer := server.NewFriendServer(friendManager)
+	serviceFriend := service.NewFriend(serviceUser, friend)
+	transferFriend := transfer.NewFriend(serviceUser)
+	friendServer := server.NewFriendServer(serviceFriend, transferFriend)
 	return friendServer
 }
 
 func InitializeFriendRequest(db *sql.DB) server.FriendRequestServer {
-	friendRequestRepository := repository.NewFriendRequest(db)
-	friendRequestManager := service.NewFriendRequestManager(friendRequestRepository)
-	friendRequestServer := server.NewFriendRequestServer(friendRequestManager)
+	friendRequest := repository.NewFriendRequest(db)
+	user := repository.NewUser(db)
+	serviceUser := service.NewUser(user)
+	friend := repository.NewFriend(db)
+	serviceFriend := service.NewFriend(serviceUser, friend)
+	serviceFriendRequest := service.NewFriendRequest(friendRequest, serviceFriend, serviceUser)
+	transferFriendRequest := transfer.NewFriendRequest(serviceUser)
+	friendRequestServer := server.NewFriendRequestServer(serviceFriendRequest, transferFriendRequest)
 	return friendRequestServer
 }
 
@@ -53,14 +60,14 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	userContent := repository.NewUserContent(db)
 	userContentManager := service.NewUserContentManager(userContent)
 	shareManager := service.NewShareManager(share, userContentManager)
-	contentRepository := repository.NewContent(db)
-	contentManager := service.NewContentManager(contentRepository)
+	content := repository.NewContent(db)
+	contentManager := service.NewContentManager(content)
 	user := repository.NewUser(db)
-	userManager := service.NewUserManager(user)
-	domainRepository := repository.NewDomain(db)
-	domainManager := service.NewDomainManager(domainRepository)
-	content := parse.NewContent(domainManager)
-	shareServer := server.NewShareServer(shareManager, contentManager, userManager, content)
+	serviceUser := service.NewUser(user)
+	domain := repository.NewDomain(db)
+	domainManager := service.NewDomainManager(domain)
+	parseContent := parse.NewContent(domainManager)
+	shareServer := server.NewShareServer(shareManager, contentManager, serviceUser, parseContent)
 	return shareServer
 }
 
@@ -73,7 +80,7 @@ func InitializeUserContent(db *sql.DB) server.UserContentServer {
 
 func InitializeUser(db *sql.DB) server.UserServer {
 	user := repository.NewUser(db)
-	userManager := service.NewUserManager(user)
-	userServer := server.NewUserServer(userManager)
+	serviceUser := service.NewUser(user)
+	userServer := server.NewUserServer(serviceUser)
 	return userServer
 }
