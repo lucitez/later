@@ -16,26 +16,32 @@ type Friend struct {
 // NewFriend for wire generation
 func NewFriend(
 	userManager User,
-	repository repository.Friend) Friend {
+	repository repository.Friend,
+) Friend {
 	return Friend{
 		User:       userManager,
-		Repository: repository}
+		Repository: repository,
+	}
 }
 
 // HandleAcceptedFriendRequest creates two new friend entries. One for the requester, one for the requestee.
 func (manager *Friend) HandleAcceptedFriendRequest(request model.FriendRequest) error {
-	requester, err := model.NewFriend(
+	requester := model.NewFriend(
 		request.SentByUserID,
 		request.RecipientUserID,
 	)
-	requestee, err := model.NewFriend(
+	requestee := model.NewFriend(
 		request.RecipientUserID,
 		request.SentByUserID,
 	)
-	_, err = manager.Repository.Insert(requester)
-	_, err = manager.Repository.Insert(requestee)
+	if err := manager.Repository.Insert(requester); err != nil {
+		return err
+	}
+	if err := manager.Repository.Insert(requestee); err != nil {
+		return err
+	}
 
-	return err
+	return nil
 }
 
 // All ...

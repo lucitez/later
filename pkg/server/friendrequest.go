@@ -8,34 +8,35 @@ import (
 	"later/pkg/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
-// FriendRequestServer ...
-type FriendRequestServer struct {
+// FriendRequest ...
+type FriendRequest struct {
 	Manager  service.FriendRequest
 	Transfer transfer.FriendRequest
 }
 
-// NewFriendRequestServer ...
-func NewFriendRequestServer(
+// NewFriendRequest ...
+func NewFriendRequest(
 	manager service.FriendRequest,
 	transfer transfer.FriendRequest,
-) FriendRequestServer {
-	return FriendRequestServer{
+) FriendRequest {
+	return FriendRequest{
 		manager,
 		transfer,
 	}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service
-func (server *FriendRequestServer) RegisterEndpoints(router *gin.Engine) {
+func (server *FriendRequest) RegisterEndpoints(router *gin.Engine) {
 	router.POST("/friend-requests/send", server.send)
 	router.GET("/friend-requests/pending", server.pending)
 	router.PUT("/friend-requests/accept", server.accept)
 	router.PUT("/friend-requests/declilne", server.decline)
 }
 
-func (server *FriendRequestServer) send(context *gin.Context) {
+func (server *FriendRequest) send(context *gin.Context) {
 	var body request.FriendRequestCreateRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
@@ -53,27 +54,23 @@ func (server *FriendRequestServer) send(context *gin.Context) {
 	context.JSON(http.StatusOK, friendRequest)
 }
 
-func (server *FriendRequestServer) pending(context *gin.Context) {
-	userID, err := DeserUUID(context, "user_id")
+func (server *FriendRequest) pending(context *gin.Context) {
+	deser := NewDeser(
+		context,
+		QueryParameter{"user_id", UUID, nil},
+	)
 
-	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
-		return
+	if qp, ok := deser.DeserQueryParams(); ok {
+		userID := qp["user_id"].(uuid.UUID)
+		friendRequests := server.Manager.Pending(userID)
+
+		wireFriendRequests := server.Transfer.WireFriendRequestsFrom(friendRequests)
+
+		context.JSON(http.StatusOK, wireFriendRequests)
 	}
-
-	friendRequests, err := server.Manager.Pending(*userID)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	wireFriendRequests := server.Transfer.WireFriendRequestsFrom(friendRequests)
-
-	context.JSON(http.StatusOK, wireFriendRequests)
 }
 
-func (server *FriendRequestServer) accept(context *gin.Context) {
+func (server *FriendRequest) accept(context *gin.Context) {
 	var body request.FriendRequestAcceptRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
@@ -91,7 +88,7 @@ func (server *FriendRequestServer) accept(context *gin.Context) {
 	context.Status(http.StatusOK)
 }
 
-func (server *FriendRequestServer) decline(context *gin.Context) {
+func (server *FriendRequest) decline(context *gin.Context) {
 	var body request.FriendRequestDeclineRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
@@ -99,12 +96,7 @@ func (server *FriendRequestServer) decline(context *gin.Context) {
 		return
 	}
 
-	err := server.Manager.Decline(body.ID)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
+	server.Manager.Decline(body.ID)
 
 	context.Status(http.StatusOK)
 }

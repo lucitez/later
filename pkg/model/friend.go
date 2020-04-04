@@ -26,12 +26,9 @@ type Friend struct {
 // NewFriend constructor for Friend
 func NewFriend(
 	userID uuid.UUID,
-	friendUserID uuid.UUID) (*Friend, error) {
-	uuid, err := uuid.NewRandom()
-
-	if err != nil {
-		return nil, err
-	}
+	friendUserID uuid.UUID,
+) Friend {
+	uuid, _ := uuid.NewRandom()
 
 	now := time.Now().UTC()
 
@@ -41,9 +38,10 @@ func NewFriend(
 		FriendUserID: friendUserID,
 
 		CreatedAt: now,
-		UpdatedAt: now}
+		UpdatedAt: now,
+	}
 
-	return &friend, nil
+	return friend
 }
 
 // ToWire transforms a Friend to a WireFriend
@@ -54,7 +52,8 @@ func (friend *Friend) ToWire(friendUser *User) response.WireFriend {
 		FirstName: friendUser.FirstName,
 		LastName:  friendUser.LastName,
 		Username:  friendUser.Username,
-		CreatedAt: friend.CreatedAt}
+		CreatedAt: friend.CreatedAt,
+	}
 }
 
 // ScanRows ...
@@ -65,7 +64,8 @@ func (friend *Friend) ScanRows(rows *sql.Rows) {
 		&friend.FriendUserID,
 		&friend.CreatedAt,
 		&friend.UpdatedAt,
-		&friend.DeletedAt)
+		&friend.DeletedAt,
+	)
 
 	if err != nil {
 		log.Fatal(err)

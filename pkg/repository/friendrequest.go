@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/google/uuid"
 
@@ -22,9 +23,8 @@ func NewFriendRequest(db *sql.DB) FriendRequest {
 var friendRequestSelectStatement = util.GenerateSelectStatement(model.FriendRequest{}, "friend_requests")
 
 // Insert inserts a new friend
-func (repository *FriendRequest) Insert(friendRequest *model.FriendRequest) (*model.FriendRequest, error) {
-
-	statement := util.GenerateInsertStatement(*friendRequest, "friend_requests")
+func (repository *FriendRequest) Insert(friendRequest model.FriendRequest) error {
+	statement := util.GenerateInsertStatement(friendRequest, "friend_requests")
 
 	_, err := repository.DB.Exec(
 		statement,
@@ -38,28 +38,24 @@ func (repository *FriendRequest) Insert(friendRequest *model.FriendRequest) (*mo
 		friendRequest.DeletedAt,
 	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return friendRequest, nil
+	return err
 }
 
 // ByID gets a friend request by id
-func (repository *FriendRequest) ByID(id uuid.UUID) (*model.FriendRequest, error) {
+func (repository *FriendRequest) ByID(id uuid.UUID) *model.FriendRequest {
 	var friendRequest model.FriendRequest
 
 	statement := friendRequestSelectStatement + ` WHERE id = $1;`
 
 	row := repository.DB.QueryRow(statement, id)
 
-	err := friendRequest.ScanRow(row)
+	friendRequest.ScanRow(row)
 
-	return &friendRequest, err
+	return &friendRequest
 }
 
 // PendingByUserID gets all pending friend requests for a user
-func (repository *FriendRequest) PendingByUserID(userID uuid.UUID) ([]model.FriendRequest, error) {
+func (repository *FriendRequest) PendingByUserID(userID uuid.UUID) []model.FriendRequest {
 	statement := friendRequestSelectStatement + `
 	WHERE recipient_user_id = $1
 	AND accepted_at IS NULL
@@ -70,63 +66,54 @@ func (repository *FriendRequest) PendingByUserID(userID uuid.UUID) ([]model.Frie
 	rows, err := repository.DB.Query(statement, userID)
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	friendRequests, err := repository.scanRows(rows)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return friendRequests, nil
+	return repository.scanRows(rows)
 }
 
 // Accept updates accepted_at
-func (repository *FriendRequest) Accept(ID uuid.UUID) error {
+func (repository *FriendRequest) Accept(ID uuid.UUID) {
 	statement := `
 	UPDATE friend_requests
 	SET accepted_at = now()
 	WHERE id = $1;
 	`
 
-	_, err := repository.DB.Exec(statement, ID)
-
-	return err
+	if _, err := repository.DB.Exec(statement, ID); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Decline updates accepted_at
-func (repository *FriendRequest) Decline(ID uuid.UUID) error {
+func (repository *FriendRequest) Decline(ID uuid.UUID) {
 	statement := `
 	UPDATE friend_requests
 	SET declined_at = now()
 	WHERE id = $1;
 	`
 
-	_, err := repository.DB.Exec(statement, ID)
-
-	return err
+	if _, err := repository.DB.Exec(statement, ID); err != nil {
+		log.Fatal(err)
+	}
 }
 
-func (repository *FriendRequest) scanRows(rows *sql.Rows) ([]model.FriendRequest, error) {
+func (repository *FriendRequest) scanRows(rows *sql.Rows) []model.FriendRequest {
 	friendRequests := []model.FriendRequest{}
 
 	defer rows.Close()
 
 	for rows.Next() {
 		var friendRequest model.FriendRequest
-		err := friendRequest.ScanRows(rows)
+		friendRequest.ScanRows(rows)
 
-		if err != nil {
-			return nil, err
-		}
 		friendRequests = append(friendRequests, friendRequest)
 	}
 
 	err := rows.Err()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	return friendRequests, nil
+	return friendRequests
 }

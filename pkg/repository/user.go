@@ -26,7 +26,7 @@ func NewUser(db *sql.DB) User {
 var userSelectStatement = util.GenerateSelectStatement(model.User{}, "users")
 
 // Insert inserts a new user
-func (repository *User) Insert(user model.User) model.User {
+func (repository *User) Insert(user model.User) error {
 	statement := util.GenerateInsertStatement(user, "users")
 
 	_, err := repository.DB.Exec(
@@ -40,14 +40,10 @@ func (repository *User) Insert(user model.User) model.User {
 		user.CreatedAt,
 		user.SignedUpAt,
 		user.UpdatedAt,
-		user.DeletedAt)
+		user.DeletedAt,
+	)
 
-	if err != nil {
-		log.Fatal(err)
-		panic(err)
-	}
-
-	return user
+	return err
 }
 
 // ByID gets a user by id
@@ -80,18 +76,19 @@ func (repository *User) ByIDs(ids []uuid.UUID) []model.User {
 }
 
 // ByPhoneNumber gets a user by their phone number
-func (repository *User) ByPhoneNumber(phoneNumber string) (*model.User, error) {
+func (repository *User) ByPhoneNumber(phoneNumber string) *model.User {
 	var user model.User
 
 	statement := userSelectStatement + `
-	WHERE phone_number = $1;
+	WHERE phone_number = $1
+	AND deleted_at IS NULL;
 	`
 
 	row := repository.DB.QueryRow(statement, phoneNumber)
 
 	user.ScanRow(row)
 
-	return &user, nil
+	return &user
 }
 
 // All returns all users with a limit

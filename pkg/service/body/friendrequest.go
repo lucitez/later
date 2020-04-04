@@ -13,8 +13,9 @@ type FriendRequestCreateBody struct {
 }
 
 // ToFriendRequest ...
-func (body *FriendRequestCreateBody) ToFriendRequest() (*model.FriendRequest, error) {
+func (body *FriendRequestCreateBody) ToFriendRequest() model.FriendRequest {
 	return model.NewFriendRequest(
 		body.SenderUserID,
-		body.RecipientUserID)
+		body.RecipientUserID,
+	)
 }

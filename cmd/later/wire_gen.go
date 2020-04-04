@@ -33,17 +33,17 @@ func InitializeDomain(db *sql.DB) server.DomainServer {
 	return domainServer
 }
 
-func InitializeFriend(db *sql.DB) server.FriendServer {
+func InitializeFriend(db *sql.DB) server.Friend {
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
 	friend := repository.NewFriend(db)
 	serviceFriend := service.NewFriend(serviceUser, friend)
 	transferFriend := transfer.NewFriend(serviceUser)
-	friendServer := server.NewFriendServer(serviceFriend, transferFriend)
+	friendServer := server.NewFriend(serviceFriend, transferFriend)
 	return friendServer
 }
 
-func InitializeFriendRequest(db *sql.DB) server.FriendRequestServer {
+func InitializeFriendRequest(db *sql.DB) server.FriendRequest {
 	friendRequest := repository.NewFriendRequest(db)
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
@@ -51,7 +51,7 @@ func InitializeFriendRequest(db *sql.DB) server.FriendRequestServer {
 	serviceFriend := service.NewFriend(serviceUser, friend)
 	serviceFriendRequest := service.NewFriendRequest(friendRequest, serviceFriend, serviceUser)
 	transferFriendRequest := transfer.NewFriendRequest(serviceUser)
-	friendRequestServer := server.NewFriendRequestServer(serviceFriendRequest, transferFriendRequest)
+	friendRequestServer := server.NewFriendRequest(serviceFriendRequest, transferFriendRequest)
 	return friendRequestServer
 }
 
@@ -59,7 +59,7 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	share := repository.NewShare(db)
 	userContent := repository.NewUserContent(db)
 	userContentManager := service.NewUserContentManager(userContent)
-	shareManager := service.NewShareManager(share, userContentManager)
+	shareManager := service.NewShare(share, userContentManager)
 	content := repository.NewContent(db)
 	contentManager := service.NewContentManager(content)
 	user := repository.NewUser(db)
@@ -78,9 +78,9 @@ func InitializeUserContent(db *sql.DB) server.UserContentServer {
 	return userContentServer
 }
 
-func InitializeUser(db *sql.DB) server.UserServer {
+func InitializeUser(db *sql.DB) server.User {
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
-	userServer := server.NewUserServer(serviceUser)
+	userServer := server.NewUser(serviceUser)
 	return userServer
 }

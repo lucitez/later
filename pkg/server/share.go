@@ -17,7 +17,7 @@ import (
 
 // ShareServer ...
 type ShareServer struct {
-	Manager        service.ShareManager
+	Manager        service.Share
 	ContentManager service.ContentManager
 	User           service.User
 	Parser         parse.Content
@@ -25,10 +25,11 @@ type ShareServer struct {
 
 // NewShareServer ...
 func NewShareServer(
-	manager service.ShareManager,
+	manager service.Share,
 	contentManager service.ContentManager,
 	userManager service.User,
-	parser parse.Content) ShareServer {
+	parser parse.Content,
+) ShareServer {
 	return ShareServer{
 		Manager:        manager,
 		ContentManager: contentManager,
@@ -75,18 +76,19 @@ func (server *ShareServer) new(context *gin.Context) {
 	err := context.ShouldBindJSON(&requestBody)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error_parsing": err.Error()})
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
 	if len(requestBody.RecipientUserIDs) == 0 {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Must include at least one recipient"})
+		context.JSON(http.StatusBadRequest, errors.New("Must include at least one recipient"))
 		return
 	}
 
 	content, err := server.getContentFromURLOrContentID(requestBody.URL, requestBody.ContentID)
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -98,7 +100,8 @@ func (server *ShareServer) new(context *gin.Context) {
 		createBody := body.ShareCreateBody{
 			Content:         *content,
 			SenderUserID:    requestBody.SenderUserID,
-			RecipientUserID: recipientUserID}
+			RecipientUserID: recipientUserID,
+		}
 
 		createBodies = append(createBodies, createBody)
 	}
@@ -164,20 +167,14 @@ func (server *ShareServer) newByPhoneNumber(context *gin.Context) {
 *	send SMS with URL, Title, and link to us in app store
  */
 func (server *ShareServer) userFromPhoneNumber(phoneNumber string) (*model.User, error) {
-	user, err := server.User.ByPhoneNumber(phoneNumber)
+	user := server.User.ByPhoneNumber(phoneNumber)
 
-	if err != nil {
-		return nil, err
+	if user != nil {
+		if user.SignedUpAt.Valid {
+			return nil, errors.New("existing_user_not_friend")
+		}
+		return user, nil
 	}
 
-	if user != nil && user.SignedUpAt.Valid {
-		return nil, errors.New("existing_user_not_friend")
-	}
-
-	if user == nil {
-		newUser := server.User.NewUserFromPhoneNumber(phoneNumber)
-		return &newUser, nil
-	}
-
-	return nil, err
+	return server.User.NewUserFromPhoneNumber(phoneNumber)
 }

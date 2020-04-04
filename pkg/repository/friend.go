@@ -26,9 +26,9 @@ func NewFriend(db *sql.DB) Friend {
 var friendSelectStatement = util.GenerateSelectStatement(model.Friend{}, "friends")
 
 // Insert inserts a new friend
-func (repository *Friend) Insert(friend *model.Friend) (*model.Friend, error) {
+func (repository *Friend) Insert(friend model.Friend) error {
 
-	statement := util.GenerateInsertStatement(*friend, "friends")
+	statement := util.GenerateInsertStatement(friend, "friends")
 
 	_, err := repository.DB.Exec(
 		statement,
@@ -37,13 +37,10 @@ func (repository *Friend) Insert(friend *model.Friend) (*model.Friend, error) {
 		friend.FriendUserID,
 		friend.CreatedAt,
 		friend.UpdatedAt,
-		friend.DeletedAt)
+		friend.DeletedAt,
+	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return friend, nil
+	return err
 }
 
 // SearchByUserID gets all friends of a user

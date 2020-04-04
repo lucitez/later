@@ -1,5 +1,3 @@
-# GET http://localhost:8000/users/all
-
 # POST http://localhost:8000/friend-requests/send
 
 # {
@@ -15,4 +13,6 @@
 #     "id": "8e5cd2ba-1074-4224-917c-f7d40004bb4d"
 # }
 
-GET http://localhost:8000/friends/all?user_id=683fca78-1a29-4570-8e3c-d39d07483551
+# GET http://localhost:8000/friends/all?user_id=683fca78-1a29-4570-8e3c-d39d07483551
+
+GET http://localhost:8000/friends/search?search=test&user_id=683fca78-1a29-4570-8e3c-d39d07483551

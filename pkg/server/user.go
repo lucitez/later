@@ -2,71 +2,76 @@ package server
 
 import (
 	"net/http"
-	"strconv"
 
 	"later/pkg/request"
 	"later/pkg/service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
-// UserServer ...
-type UserServer struct {
+// User ...
+type User struct {
 	Manager service.User
 }
 
-// NewUserServer ...
-func NewUserServer(manager service.User) UserServer {
-	return UserServer{manager}
+// NewUser ...
+func NewUser(manager service.User) User {
+	return User{manager}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service
-func (server *UserServer) RegisterEndpoints(router *gin.Engine) {
+func (server *User) RegisterEndpoints(router *gin.Engine) {
 	router.POST("/users/sign-up", server.signUp)
 
 	router.GET("/users/by-id", server.byID)
 	router.GET("/users/all", server.allUsers)
 }
 
-func (server *UserServer) signUp(context *gin.Context) {
-	var json request.UserSignUpRequestBody
+func (server *User) signUp(context *gin.Context) {
+	var body request.UserSignUpRequestBody
 
-	err := context.ShouldBindJSON(&json)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := context.BindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	user := server.Manager.SignUp(json)
+	user, err := server.Manager.SignUp(body)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
 
 	context.JSON(http.StatusOK, user)
 }
 
-func (server *UserServer) byID(context *gin.Context) {
-	userID, err := DeserUUID(context, "user_id")
+func (server *User) byID(context *gin.Context) {
+	deser := NewDeser(
+		context,
+		QueryParameter{"id", UUID, nil},
+	)
 
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter id must be a uuid"})
-		return
+	if qp, ok := deser.DeserQueryParams(); ok {
+		userID := qp["id"].(uuid.UUID)
+		user := server.Manager.ByID(userID)
+
+		context.JSON(http.StatusOK, user)
 	}
-
-	user := server.Manager.ByID(*userID)
-
-	context.JSON(http.StatusOK, user)
 }
 
-func (server *UserServer) allUsers(context *gin.Context) {
-	limitstr := context.DefaultQuery("limit", "100")
+func (server *User) allUsers(context *gin.Context) {
+	defaultLimit := "100"
 
-	limit, err := strconv.Atoi(limitstr)
+	deser := NewDeser(
+		context,
+		QueryParameter{"limit", Int, &defaultLimit},
+	)
 
-	users := server.Manager.All(limit)
+	if qp, ok := deser.DeserQueryParams(); ok {
+		limit := qp["limit"].(int)
+		users := server.Manager.All(limit)
 
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		context.JSON(http.StatusOK, users)
 	}
-
-	context.JSON(http.StatusOK, users)
 }

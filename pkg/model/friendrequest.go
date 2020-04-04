@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"log"
 	"time"
 
 	"later/pkg/util/wrappers"
@@ -25,12 +26,9 @@ type FriendRequest struct {
 // NewFriendRequest constructor for FriendRequest
 func NewFriendRequest(
 	userID uuid.UUID,
-	recipientUserID uuid.UUID) (*FriendRequest, error) {
-	uuid, err := uuid.NewRandom()
-
-	if err != nil {
-		return nil, err
-	}
+	recipientUserID uuid.UUID,
+) FriendRequest {
+	uuid, _ := uuid.NewRandom()
 
 	now := time.Now().UTC()
 
@@ -42,11 +40,11 @@ func NewFriendRequest(
 		CreatedAt: now,
 		UpdatedAt: now}
 
-	return &FriendRequest, nil
+	return FriendRequest
 }
 
 // ScanRows ...
-func (friendRequest *FriendRequest) ScanRows(rows *sql.Rows) error {
+func (friendRequest *FriendRequest) ScanRows(rows *sql.Rows) {
 	err := rows.Scan(
 		&friendRequest.ID,
 		&friendRequest.SentByUserID,
@@ -55,13 +53,16 @@ func (friendRequest *FriendRequest) ScanRows(rows *sql.Rows) error {
 		&friendRequest.UpdatedAt,
 		&friendRequest.AcceptedAt,
 		&friendRequest.DeclinedAt,
-		&friendRequest.DeletedAt)
+		&friendRequest.DeletedAt,
+	)
 
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // ScanRow ...
-func (friendRequest *FriendRequest) ScanRow(row *sql.Row) error {
+func (friendRequest *FriendRequest) ScanRow(row *sql.Row) {
 	err := row.Scan(
 		&friendRequest.ID,
 		&friendRequest.SentByUserID,
@@ -70,7 +71,10 @@ func (friendRequest *FriendRequest) ScanRow(row *sql.Row) error {
 		&friendRequest.UpdatedAt,
 		&friendRequest.AcceptedAt,
 		&friendRequest.DeclinedAt,
-		&friendRequest.DeletedAt)
+		&friendRequest.DeletedAt,
+	)
 
-	return err
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatal(err)
+	}
 }

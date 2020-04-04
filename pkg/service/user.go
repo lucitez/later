@@ -20,27 +20,29 @@ func NewUser(repository repository.User) User {
 }
 
 // NewUserFromPhoneNumber inserts a new user using just phone number
-func (manager *User) NewUserFromPhoneNumber(phoneNumber string) model.User {
-	newUser := model.NewUserFromShare(
+func (manager *User) NewUserFromPhoneNumber(phoneNumber string) (*model.User, error) {
+	user := model.NewUserFromShare(
 		wrappers.NewNullString(nil), // user_name
 		wrappers.NewNullString(nil), // email
 		phoneNumber,
 	)
 
-	user := manager.Repository.Insert(newUser)
+	if err := manager.Repository.Insert(user); err != nil {
+		return nil, err
+	}
 
-	return user
+	return &user, nil
 }
 
 // SignUp ...
-func (manager *User) SignUp(body request.UserSignUpRequestBody) model.User {
-	user := model.NewUserFromSignUp(
-		body.Username,
-		body.Email,
-		body.PhoneNumber,
-	)
+func (manager *User) SignUp(body request.UserSignUpRequestBody) (*model.User, error) {
+	user := body.ToUser()
 
-	return manager.Repository.Insert(user)
+	if err := manager.Repository.Insert(user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 // ByID ...
@@ -49,7 +51,7 @@ func (manager *User) ByID(id uuid.UUID) *model.User {
 }
 
 // ByPhoneNumber ...
-func (manager *User) ByPhoneNumber(phoneNumber string) (*model.User, error) {
+func (manager *User) ByPhoneNumber(phoneNumber string) *model.User {
 	return manager.Repository.ByPhoneNumber(phoneNumber)
 }
 

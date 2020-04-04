@@ -9,35 +9,33 @@ import (
 	"github.com/google/uuid"
 )
 
-// FriendServer ...
-type FriendServer struct {
+// Friend ...
+type Friend struct {
 	Manager  service.Friend
 	Transfer transfer.Friend
 }
 
-// NewFriendServer for wire generation
-func NewFriendServer(
+// NewFriend for wire generation
+func NewFriend(
 	manager service.Friend,
 	transfer transfer.Friend,
-) FriendServer {
-	return FriendServer{
+) Friend {
+	return Friend{
 		manager,
 		transfer,
 	}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service
-func (server *FriendServer) RegisterEndpoints(router *gin.Engine) {
+func (server *Friend) RegisterEndpoints(router *gin.Engine) {
 	router.GET("/friends/all", server.all)
 	router.GET("/friends/search", server.search)
 }
 
-func (server *FriendServer) all(context *gin.Context) {
+func (server *Friend) all(context *gin.Context) {
 	deser := NewDeser(
-		map[string]Kind{
-			"user_id": UUID,
-		},
 		context,
+		QueryParameter{"user_id", UUID, nil},
 	)
 
 	if parameters, ok := deser.DeserQueryParams(); ok {
@@ -50,13 +48,11 @@ func (server *FriendServer) all(context *gin.Context) {
 	}
 }
 
-func (server *FriendServer) search(context *gin.Context) {
+func (server *Friend) search(context *gin.Context) {
 	deser := NewDeser(
-		map[string]Kind{
-			"user_id": UUID,
-			"search":  Str,
-		},
 		context,
+		QueryParameter{"user_id", UUID, nil},
+		QueryParameter{"search", Str, nil},
 	)
 
 	if parameters, ok := deser.DeserQueryParams(); ok {
