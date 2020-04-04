@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"log"
 	"time"
 
 	"later/pkg/util/wrappers"
@@ -23,12 +24,9 @@ type Domain struct {
 // NewDomain constructor for Domain
 func NewDomain(
 	domain string,
-	contentType string) (*Domain, error) {
-	uuid, err := uuid.NewRandom()
-
-	if err != nil {
-		return nil, err
-	}
+	contentType string,
+) Domain {
+	uuid, _ := uuid.NewRandom()
 
 	now := time.Now().UTC()
 
@@ -38,13 +36,14 @@ func NewDomain(
 		ContentType: contentType,
 
 		CreatedAt: now,
-		UpdatedAt: now}
+		UpdatedAt: now,
+	}
 
-	return &newDomain, nil
+	return newDomain
 }
 
 // ScanRows ...
-func (domain *Domain) ScanRows(rows *sql.Rows) error {
+func (domain *Domain) ScanRows(rows *sql.Rows) {
 	err := rows.Scan(
 		&domain.ID,
 		&domain.Domain,
@@ -53,11 +52,13 @@ func (domain *Domain) ScanRows(rows *sql.Rows) error {
 		&domain.UpdatedAt,
 		&domain.DeletedAt)
 
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // ScanRow ...
-func (domain *Domain) ScanRow(row *sql.Row) error {
+func (domain *Domain) ScanRow(row *sql.Row) *Domain {
 	err := row.Scan(
 		&domain.ID,
 		&domain.Domain,
@@ -70,8 +71,8 @@ func (domain *Domain) ScanRow(row *sql.Row) error {
 		if err == sql.ErrNoRows {
 			return nil
 		}
-		return err
+		log.Fatal(err)
 	}
 
-	return err
+	return domain
 }

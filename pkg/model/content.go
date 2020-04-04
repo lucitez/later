@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"log"
 	"time"
 
 	"later/pkg/util/wrappers"
@@ -12,7 +13,7 @@ import (
 // Content object
 type Content struct {
 	ID          uuid.UUID           `json:"id"`
-	Title       string              `json:"title"`
+	Title       wrappers.NullString `json:"title"`
 	Description wrappers.NullString `json:"description"`
 	ImageURL    wrappers.NullString `json:"image_url"`
 	ContentType wrappers.NullString `json:"content_type"`
@@ -26,17 +27,14 @@ type Content struct {
 
 // NewContent constructor for Content
 func NewContent(
-	title string,
+	title wrappers.NullString,
 	description wrappers.NullString,
 	imageURL wrappers.NullString,
 	contentType wrappers.NullString,
 	url string,
-	domain string) (*Content, error) {
-	id, err := uuid.NewRandom()
-
-	if err != nil {
-		return nil, err
-	}
+	domain string,
+) Content {
+	id, _ := uuid.NewRandom()
 
 	now := time.Now().UTC()
 
@@ -50,13 +48,14 @@ func NewContent(
 		Domain:      domain,
 		Shares:      0,
 		CreatedAt:   now,
-		UpdatedAt:   now}
+		UpdatedAt:   now,
+	}
 
-	return &content, nil
+	return content
 }
 
 // ScanRows ...
-func (content *Content) ScanRows(rows *sql.Rows) error {
+func (content *Content) ScanRows(rows *sql.Rows) {
 	err := rows.Scan(
 		&content.ID,
 		&content.Title,
@@ -69,11 +68,13 @@ func (content *Content) ScanRows(rows *sql.Rows) error {
 		&content.CreatedAt,
 		&content.UpdatedAt)
 
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // ScanRow ...
-func (content *Content) ScanRow(row *sql.Row) error {
+func (content *Content) ScanRow(row *sql.Row) {
 	err := row.Scan(
 		&content.ID,
 		&content.Title,
@@ -86,12 +87,7 @@ func (content *Content) ScanRow(row *sql.Row) error {
 		&content.CreatedAt,
 		&content.UpdatedAt)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil
-		}
-		return err
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatal(err)
 	}
-
-	return nil
 }

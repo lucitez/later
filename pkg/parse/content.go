@@ -2,13 +2,13 @@ package parse
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
 
 	"golang.org/x/net/html"
 
 	"later/pkg/model"
-	"later/pkg/service"
 	"later/pkg/util/wrappers"
 )
 
@@ -26,116 +26,116 @@ type headerContent struct {
 
 // Content handles parsing html at a url to extract content data
 type Content struct {
-	DomainManager service.DomainManager
+	valid   bool
+	message string
 }
 
 // NewContent for wire generation
-func NewContent(domainManager service.DomainManager) Content {
-	return Content{DomainManager: domainManager}
+func NewContent() Content {
+	return Content{
+		valid: true,
+	}
 }
 
-// ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
-func (parser *Content) ContentFromURL(url string) (*model.Content, error) {
-
+// DomainFromURL extracts the domain from the url
+func DomainFromURL(url string) string {
 	domainRegex := regexp.MustCompile(`.*[\./]([^\.]+)\.(com|co|org)`)
 	matches := domainRegex.FindStringSubmatch(url)
 	urlDomain := string(matches[1])
 
-	var contentType *string
+	return urlDomain
+}
 
-	domain, err := parser.DomainManager.ByDomain(urlDomain)
-
-	if err != nil {
-		return nil, err
+// Err was there an error that occured while parsing
+func (parser *Content) Err() error {
+	if parser.valid {
+		return nil
 	}
 
-	var contentMetadata *contentMetadata
+	return errors.New(parser.message)
+}
+
+// ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
+func (parser *Content) ContentFromURL(url string, domain *model.Domain) model.Content {
+	var contentType *string
+	var contentMetadata contentMetadata
 
 	// TODO just pass a pointer in as an argument
 	switch {
 	case domain == nil:
-		contentMetadata, err = contentMetadataDefault(url, urlDomain)
-	}
-
-	if err != nil {
-		return nil, err
+		parser.contentMetadataDefault(&contentMetadata, url)
 	}
 
 	if domain != nil {
 		contentType = &domain.ContentType
 	}
 
-	newContent, err := model.NewContent(
-		*contentMetadata.title,
+	fmt.Println("DOMAIN IS:")
+	fmt.Printf("%+v\n", domain)
+
+	fmt.Println("METADATA IS:")
+	fmt.Printf("%+v\n", contentMetadata)
+
+	newContent := model.NewContent(
+		wrappers.NewNullString(contentMetadata.title),
 		wrappers.NewNullString(contentMetadata.description),
 		wrappers.NewNullString(contentMetadata.imageURL),
 		wrappers.NewNullString(contentType),
 		url,
-		urlDomain)
+		DomainFromURL(url),
+	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return newContent, nil
+	return newContent
 }
 
-func contentMetadataDefault(url string, urlDomain string) (*contentMetadata, error) {
+func (parser *Content) contentMetadataDefault(metadata *contentMetadata, url string) {
 	resp, err := http.Get(url)
 
 	if resp.StatusCode != 200 {
-		return nil, err
+		parser.valid = false
+		parser.message = "Failed to retrieve URL content"
+		return
 	}
 
 	doc, err := html.Parse(resp.Body)
 
 	if err != nil {
-		return nil, err
+		parser.valid = false
+		parser.message = "Failed to parse URL content"
+		return
 	}
 
-	head, err := findHead(doc)
+	head := findHead(doc)
 
-	if err != nil {
-		return nil, err
-	}
+	headContent := parseHead(head)
 
-	headContent, err := parseHead(head)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if headContent.title == nil {
-		return nil, errors.New("Title could not be found")
-	}
-
-	contentMetadata := contentMetadata{
-		title:       headContent.title,
-		description: headContent.description,
-		imageURL:    headContent.imageURL}
-
-	return &contentMetadata, nil
+	metadata.title = headContent.title
+	metadata.description = headContent.description
+	metadata.imageURL = headContent.imageURL
 }
 
-func findHead(node *html.Node) (*html.Node, error) {
-
+func findHead(node *html.Node) *html.Node {
 	if node.Type == html.ElementNode && node.Data == "head" {
-		return node, nil
+		return node
 	}
 
 	if node.FirstChild == nil {
 		if node.NextSibling != nil {
 			return findHead(node.NextSibling)
 		}
-		return nil, errors.New("Head could not be found")
+		return nil
 	}
 
 	return findHead(node.FirstChild)
 }
 
-func parseHead(head *html.Node) (headerContent, error) {
+func parseHead(head *html.Node) headerContent {
 
 	var headerContent headerContent
+
+	if head == nil {
+		return headerContent
+	}
 
 	for currNode := head.FirstChild; currNode != nil; currNode = currNode.NextSibling {
 
@@ -169,5 +169,5 @@ func parseHead(head *html.Node) (headerContent, error) {
 		}
 	}
 
-	return headerContent, nil
+	return headerContent
 }

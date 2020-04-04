@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"later/pkg/repository/util"
+	"log"
 
 	"later/pkg/model"
 
@@ -23,9 +24,9 @@ func NewDomain(db *sql.DB) Domain {
 var domainSelectStatement = util.GenerateSelectStatement(model.Domain{}, "domains")
 
 // Insert inserts a new domain
-func (repository *Domain) Insert(domain *model.Domain) (*model.Domain, error) {
+func (repository *Domain) Insert(domain model.Domain) error {
 
-	statement := util.GenerateInsertStatement(*domain, "domains")
+	statement := util.GenerateInsertStatement(domain, "domains")
 
 	_, err := repository.DB.Exec(
 		statement,
@@ -34,17 +35,14 @@ func (repository *Domain) Insert(domain *model.Domain) (*model.Domain, error) {
 		domain.ContentType,
 		domain.CreatedAt,
 		domain.UpdatedAt,
-		domain.DeletedAt)
+		domain.DeletedAt,
+	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return domain, nil
+	return err
 }
 
 // ByDomain gets a domain by the domain name
-func (repository *Domain) ByDomain(domainName string) (*model.Domain, error) {
+func (repository *Domain) ByDomain(domainName string) *model.Domain {
 	var domain model.Domain
 
 	statement := domainSelectStatement + `
@@ -54,13 +52,11 @@ func (repository *Domain) ByDomain(domainName string) (*model.Domain, error) {
 
 	row := repository.DB.QueryRow(statement, domainName)
 
-	err := domain.ScanRow(row)
-
-	return &domain, err
+	return domain.ScanRow(row)
 }
 
 // All returns all domains
-func (repository *Domain) All(limit int) ([]model.Domain, error) {
+func (repository *Domain) All(limit int) []model.Domain {
 	statement := domainSelectStatement + `
 	WHERE deleted_at IS NULL
 	LIMIT $1;
@@ -68,31 +64,27 @@ func (repository *Domain) All(limit int) ([]model.Domain, error) {
 	rows, err := repository.DB.Query(statement, limit)
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
 	return repository.scanRows(rows)
 }
 
-func (repository *Domain) scanRows(rows *sql.Rows) ([]model.Domain, error) {
+func (repository *Domain) scanRows(rows *sql.Rows) []model.Domain {
 	domains := []model.Domain{}
 
 	defer rows.Close()
 
 	for rows.Next() {
 		var domain model.Domain
-		err := domain.ScanRows(rows)
-
-		if err != nil {
-			return nil, err
-		}
+		domain.ScanRows(rows)
 		domains = append(domains, domain)
 	}
 
 	err := rows.Err()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	return domains, nil
+	return domains
 }

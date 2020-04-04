@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"log"
 	"time"
 
 	"later/pkg/util/wrappers"
@@ -30,13 +31,10 @@ func NewUserContent(
 	contentID uuid.UUID,
 	contentType wrappers.NullString,
 	userID uuid.UUID,
-	sentByUserID uuid.UUID) (*UserContent, error) {
+	sentByUserID uuid.UUID,
+) UserContent {
 
-	id, err := uuid.NewRandom()
-
-	if err != nil {
-		return nil, err
-	}
+	id, _ := uuid.NewRandom()
 
 	now := time.Now().UTC()
 
@@ -49,13 +47,14 @@ func NewUserContent(
 		SentByUserID: sentByUserID,
 
 		CreatedAt: now,
-		UpdatedAt: now}
+		UpdatedAt: now,
+	}
 
-	return &userContent, nil
+	return userContent
 }
 
 // ScanRows ...
-func (userContent *UserContent) ScanRows(rows *sql.Rows) error {
+func (userContent *UserContent) ScanRows(rows *sql.Rows) {
 	err := rows.Scan(
 		&userContent.ID,
 		&userContent.ShareID,
@@ -68,11 +67,13 @@ func (userContent *UserContent) ScanRows(rows *sql.Rows) error {
 		&userContent.ArchivedAt,
 		&userContent.DeletedAt)
 
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // ScanRow ...
-func (userContent *UserContent) ScanRow(row *sql.Row) error {
+func (userContent *UserContent) ScanRow(row *sql.Row) {
 	err := row.Scan(
 		&userContent.ID,
 		&userContent.ShareID,
@@ -85,11 +86,7 @@ func (userContent *UserContent) ScanRow(row *sql.Row) error {
 		&userContent.ArchivedAt,
 		&userContent.DeletedAt)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil
-		}
-		return err
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatal(err)
 	}
-	return nil
 }

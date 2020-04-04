@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"later/pkg/model"
 	"later/pkg/repository/util"
+	"log"
 
 	"github.com/google/uuid"
 
@@ -24,9 +25,8 @@ func NewContent(db *sql.DB) Content {
 var contentSelectStatement = util.GenerateSelectStatement(model.Content{}, "content")
 
 // Insert inserts new content
-func (repository *Content) Insert(content *model.Content) (*model.Content, error) {
-
-	statement := util.GenerateInsertStatement(*content, "content")
+func (repository *Content) Insert(content model.Content) error {
+	statement := util.GenerateInsertStatement(content, "content")
 
 	_, err := repository.DB.Exec(
 		statement,
@@ -39,62 +39,57 @@ func (repository *Content) Insert(content *model.Content) (*model.Content, error
 		content.Domain,
 		content.Shares,
 		content.CreatedAt,
-		content.UpdatedAt)
+		content.UpdatedAt,
+	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return content, nil
+	return err
 }
 
 // ByID gets a content by id
-func (repository *Content) ByID(id uuid.UUID) (*model.Content, error) {
+func (repository *Content) ByID(id uuid.UUID) *model.Content {
 	var content model.Content
 
 	statement := contentSelectStatement + " WHERE id = $1;"
 
 	row := repository.DB.QueryRow(statement, id)
 
-	err := content.ScanRow(row)
+	content.ScanRow(row)
 
-	return &content, err
+	return &content
 }
 
 // All returns all content
-func (repository *Content) All(limit int) ([]model.Content, error) {
+func (repository *Content) All(limit int) []model.Content {
 	statement := contentSelectStatement + `
+	WHERE deleted_at IS NULL
 	LIMIT $1;
 	`
 
 	rows, err := repository.DB.Query(statement, limit)
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
 	return repository.scanRows(rows)
 }
 
-func (repository *Content) scanRows(rows *sql.Rows) ([]model.Content, error) {
+func (repository *Content) scanRows(rows *sql.Rows) []model.Content {
 	contents := []model.Content{}
 
 	defer rows.Close()
 
 	for rows.Next() {
 		var content model.Content
-		err := content.ScanRows(rows)
+		content.ScanRows(rows)
 
-		if err != nil {
-			return nil, err
-		}
 		contents = append(contents, content)
 	}
 
 	err := rows.Err()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	return contents, nil
+	return contents
 }

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"log"
 
 	"later/pkg/model"
 	"later/pkg/repository/util"
@@ -22,12 +23,11 @@ func NewShare(db *sql.DB) Share {
 	return Share{db}
 }
 
-var selectShares = util.GenerateSelectStatement(model.Share{}, "shares")
+var shareSelectStatement = util.GenerateSelectStatement(model.Share{}, "shares")
 
 // Insert inserts a new share
-func (repository *Share) Insert(share *model.Share) (*model.Share, error) {
-
-	statement := util.GenerateInsertStatement(*share, "shares")
+func (repository *Share) Insert(share model.Share) error {
+	statement := util.GenerateInsertStatement(share, "shares")
 
 	_, err := repository.DB.Exec(
 		statement,
@@ -36,64 +36,58 @@ func (repository *Share) Insert(share *model.Share) (*model.Share, error) {
 		share.SentByUserID,
 		share.RecipientUserID,
 		share.CreatedAt,
-		share.OpenedAt)
+		share.OpenedAt,
+	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return share, nil
+	return err
 }
 
 // ByID gets a share by id
-func (repository *Share) ByID(id uuid.UUID) (*model.Share, error) {
+func (repository *Share) ByID(id uuid.UUID) *model.Share {
 	var share model.Share
 
-	statement := selectShares + `
-	WHERE id = $1
+	statement := shareSelectStatement + `
+	WHERE id = $1;
 	`
 
 	row := repository.DB.QueryRow(statement, id)
 
-	err := share.ScanRow(row)
+	share.ScanRow(row)
 
-	return &share, err
+	return &share
 }
 
 // All returns all shares
-func (repository *Share) All(limit int) ([]model.Share, error) {
-	statement := selectShares + `
+func (repository *Share) All(limit int) []model.Share {
+	statement := shareSelectStatement + `
 	LIMIT $1;
 	`
 
 	rows, err := repository.DB.Query(statement, limit)
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
 	return repository.scanRows(rows)
 }
 
-func (repository *Share) scanRows(rows *sql.Rows) ([]model.Share, error) {
+func (repository *Share) scanRows(rows *sql.Rows) []model.Share {
 	shares := []model.Share{}
 
 	defer rows.Close()
 
 	for rows.Next() {
 		var share model.Share
-		err := share.ScanRows(rows)
+		share.ScanRows(rows)
 
-		if err != nil {
-			return nil, err
-		}
 		shares = append(shares, share)
 	}
 
 	err := rows.Err()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	return shares, nil
+	return shares
 }

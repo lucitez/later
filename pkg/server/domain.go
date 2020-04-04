@@ -2,9 +2,7 @@ package server
 
 import (
 	"net/http"
-	"strconv"
 
-	"later/pkg/model"
 	"later/pkg/service"
 
 	"later/pkg/request"
@@ -12,94 +10,68 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewDomainServer(manager service.DomainManager) DomainServer {
-	return DomainServer{manager}
+func NewDomain(manager service.Domain) Domain {
+	return Domain{manager}
 }
 
-// DomainServer exposes endpoints for domain related REST requests
-type DomainServer struct {
-	Manager service.DomainManager
+// Domain exposes endpoints for domain related REST requests
+type Domain struct {
+	Manager service.Domain
 }
 
 // RegisterEndpoints defines handlers for endpoints for the domain service
-func (server *DomainServer) RegisterEndpoints(router *gin.Engine) {
+func (server *Domain) RegisterEndpoints(router *gin.Engine) {
 	router.POST("/domains/create", server.create)
 
 	router.GET("/domains/by-domain", server.byDomain)
 	router.GET("/domains/all", server.all)
 }
 
-func (server *DomainServer) create(context *gin.Context) {
-	var json request.DomainCreateRequestBody
+func (server *Domain) create(context *gin.Context) {
+	var body request.DomainCreateRequestBody
 
-	err := context.ShouldBindJSON(&json)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := context.ShouldBindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	domain, err := model.NewDomain(
-		json.Domain,
-		json.ContentType)
+	domain, err := server.Manager.Create(body.ToDomainCreateBody())
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	createddomain, err := server.Manager.Create(domain)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error_type": "On Insert", "error": err.Error()})
-		return
-	}
-
-	context.JSON(http.StatusOK, createddomain)
-}
-
-func (server *DomainServer) byDomain(context *gin.Context) {
-	domainQuery := context.Query("domain")
-
-	if domainQuery == "" {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter domain is required"})
-		return
-	}
-
-	domain, err := server.Manager.ByDomain(domainQuery)
-
-	if err != nil {
-		context.JSON(http.StatusNotFound, gin.H{"error": "Domain does not exist"})
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
 	context.JSON(http.StatusOK, domain)
 }
 
-func (server *DomainServer) all(context *gin.Context) {
-	limit := context.Query("limit")
+func (server *Domain) byDomain(context *gin.Context) {
+	deser := NewDeser(
+		context,
+		QueryParameter{"domain", Str, nil},
+	)
 
-	var err error
-	var limitint int
+	if qp, ok := deser.DeserQueryParams(); ok {
+		domainName := qp["domain"].(string)
 
-	if limit == "" {
-		limitint = 100
-	} else {
-		limitint, err = strconv.Atoi(limit)
+		domain := server.Manager.ByDomain(domainName)
+
+		context.JSON(http.StatusOK, domain)
 	}
+}
 
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter limit must be a number"})
-		return
+func (server *Domain) all(context *gin.Context) {
+	defaultLimit := "100"
+
+	deser := NewDeser(
+		context,
+		QueryParameter{"limit", Int, &defaultLimit},
+	)
+
+	if qp, ok := deser.DeserQueryParams(); ok {
+		limit := qp["limit"].(int)
+		users := server.Manager.All(limit)
+
+		context.JSON(http.StatusOK, users)
 	}
-
-	domains, err := server.Manager.All(limitint)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	context.JSON(http.StatusOK, domains)
-
 }

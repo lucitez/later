@@ -18,21 +18,21 @@ func InitializeContent(db *sql.DB) server.Content {
 	wire.Build(
 		server.NewContent,
 		parse.NewContent,
-		service.NewContentManager,
-		service.NewDomainManager,
+		service.NewContent,
+		service.NewDomain,
 		repository.NewContent,
 		repository.NewDomain,
 	)
 	return server.Content{}
 }
 
-func InitializeDomain(db *sql.DB) server.DomainServer {
+func InitializeDomain(db *sql.DB) server.Domain {
 	wire.Build(
-		server.NewDomainServer,
-		service.NewDomainManager,
+		server.NewDomain,
+		service.NewDomain,
 		repository.NewDomain,
 	)
-	return server.DomainServer{}
+	return server.Domain{}
 }
 
 func InitializeFriend(db *sql.DB) server.Friend {
@@ -64,10 +64,10 @@ func InitializeFriendRequest(db *sql.DB) server.FriendRequest {
 func InitializeShare(db *sql.DB) server.ShareServer {
 	wire.Build(
 		server.NewShareServer,
-		service.NewContentManager,
-		service.NewDomainManager,
+		service.NewContent,
+		service.NewDomain,
 		service.NewShare,
-		service.NewUserContentManager,
+		service.NewUserContent,
 		service.NewUser,
 		repository.NewContent,
 		repository.NewDomain,
@@ -82,7 +82,7 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 func InitializeUserContent(db *sql.DB) server.UserContentServer {
 	wire.Build(
 		server.NewUserContentServer,
-		service.NewUserContentManager,
+		service.NewUserContent,
 		repository.NewUserContent,
 	)
 	return server.UserContentServer{}

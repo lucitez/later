@@ -13,11 +13,11 @@ import (
 
 // UserContentServer ...
 type UserContentServer struct {
-	Manager service.UserContentManager
+	Manager service.UserContent
 }
 
 // NewUserContentServer ...
-func NewUserContentServer(manager service.UserContentManager) UserContentServer {
+func NewUserContentServer(manager service.UserContent) UserContentServer {
 	return UserContentServer{manager}
 }
 

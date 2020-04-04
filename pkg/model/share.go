@@ -2,6 +2,7 @@ package model
 
 import (
 	"database/sql"
+	"log"
 	"time"
 
 	"later/pkg/util/wrappers"
@@ -24,13 +25,10 @@ type Share struct {
 func NewShare(
 	contentID uuid.UUID,
 	sentByUserID uuid.UUID,
-	recipientUserID uuid.UUID) (*Share, error) {
+	recipientUserID uuid.UUID,
+) Share {
 
-	uuid, err := uuid.NewRandom()
-
-	if err != nil {
-		return nil, err
-	}
+	uuid, _ := uuid.NewRandom()
 
 	now := time.Now().UTC()
 
@@ -40,13 +38,14 @@ func NewShare(
 		SentByUserID:    sentByUserID,
 		RecipientUserID: recipientUserID,
 
-		CreatedAt: now}
+		CreatedAt: now,
+	}
 
-	return &newShare, nil
+	return newShare
 }
 
 // ScanRows ...
-func (share *Share) ScanRows(rows *sql.Rows) error {
+func (share *Share) ScanRows(rows *sql.Rows) {
 	err := rows.Scan(
 		&share.ID,
 		&share.ContentID,
@@ -55,11 +54,13 @@ func (share *Share) ScanRows(rows *sql.Rows) error {
 		&share.CreatedAt,
 		&share.OpenedAt)
 
-	return err
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // ScanRow ...
-func (share *Share) ScanRow(row *sql.Row) error {
+func (share *Share) ScanRow(row *sql.Row) {
 	err := row.Scan(
 		&share.ID,
 		&share.ContentID,
@@ -68,11 +69,7 @@ func (share *Share) ScanRow(row *sql.Row) error {
 		&share.CreatedAt,
 		&share.OpenedAt)
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil
-		}
-		return err
+	if err != nil && err != sql.ErrNoRows {
+		log.Fatal(err)
 	}
-	return nil
 }

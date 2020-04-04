@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"log"
 	"strconv"
 
 	// Postgres driver
@@ -25,9 +26,8 @@ func NewUserContent(db *sql.DB) UserContent {
 var selectUserContent = util.GenerateSelectStatement(model.UserContent{}, "user_content")
 
 // Insert inserts a new userContent
-func (repository *UserContent) Insert(userContent *model.UserContent) (*model.UserContent, error) {
-
-	statement := util.GenerateInsertStatement(*userContent, "user_content")
+func (repository *UserContent) Insert(userContent model.UserContent) error {
+	statement := util.GenerateInsertStatement(userContent, "user_content")
 
 	_, err := repository.DB.Exec(
 		statement,
@@ -40,17 +40,14 @@ func (repository *UserContent) Insert(userContent *model.UserContent) (*model.Us
 		userContent.CreatedAt,
 		userContent.UpdatedAt,
 		userContent.ArchivedAt,
-		userContent.DeletedAt)
+		userContent.DeletedAt,
+	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return userContent, nil
+	return err
 }
 
 // ByID gets a userContent by id
-func (repository *UserContent) ByID(id uuid.UUID) (*model.UserContent, error) {
+func (repository *UserContent) ByID(id uuid.UUID) *model.UserContent {
 	var userContent model.UserContent
 
 	statement := selectUserContent + `
@@ -59,20 +56,21 @@ func (repository *UserContent) ByID(id uuid.UUID) (*model.UserContent, error) {
 
 	row := repository.DB.QueryRow(statement, id)
 
-	err := userContent.ScanRow(row)
+	userContent.ScanRow(row)
 
-	return &userContent, err
+	return &userContent
 }
 
 // All returns all userContents
-func (repository *UserContent) All(limit int) ([]model.UserContent, error) {
+func (repository *UserContent) All(limit int) []model.UserContent {
 	statement := selectUserContent + `
-	LIMIT $1
+	WHERE deleted_at IS NULL
+	LIMIT $1;
 	`
 	rows, err := repository.DB.Query(statement, limit)
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
 	return repository.scanRows(rows)
@@ -84,7 +82,8 @@ func (repository *UserContent) Feed(
 	userID uuid.UUID,
 	senderType *string,
 	contentType *string,
-	archived *bool) ([]response.WireUserContent, error) {
+	archived *bool,
+) ([]response.WireUserContent, error) {
 
 	userIDString := userID.String()
 
@@ -141,27 +140,24 @@ func (repository *UserContent) Feed(
 	return repository.scanRowsIntoWireUserContent(rows)
 }
 
-func (repository *UserContent) scanRows(rows *sql.Rows) ([]model.UserContent, error) {
+func (repository *UserContent) scanRows(rows *sql.Rows) []model.UserContent {
 	userContents := []model.UserContent{}
 
 	defer rows.Close()
 
 	for rows.Next() {
 		var userContent model.UserContent
-		err := userContent.ScanRows(rows)
+		userContent.ScanRows(rows)
 
-		if err != nil {
-			return nil, err
-		}
 		userContents = append(userContents, userContent)
 	}
 
 	err := rows.Err()
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	return userContents, nil
+	return userContents
 }
 
 func (repository *UserContent) scanRowsIntoWireUserContent(rows *sql.Rows) ([]response.WireUserContent, error) {

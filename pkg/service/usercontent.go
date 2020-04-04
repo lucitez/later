@@ -1,44 +1,50 @@
 package service
 
 import (
-	"later/pkg/repository"
 	"later/pkg/model"
+	"later/pkg/repository"
 	"later/pkg/response"
+	"later/pkg/service/body"
 
 	"github.com/google/uuid"
 )
 
-// UserContentManager ...
-type UserContentManager struct {
+// UserContent ...
+type UserContent struct {
 	Repository repository.UserContent
 }
 
-// NewUserContentManager ...
-func NewUserContentManager(repository repository.UserContent) UserContentManager {
-	return UserContentManager{repository}
+// NewUserContent ...
+func NewUserContent(repository repository.UserContent) UserContent {
+	return UserContent{repository}
 }
 
 // Create ...
-func (manager *UserContentManager) Create(userContent *model.UserContent) (*model.UserContent, error) {
-	return manager.Repository.Insert(userContent)
+func (manager *UserContent) Create(body body.UserContentCreateBody) (*model.UserContent, error) {
+	userContent := body.ToUserContent()
+	if err := manager.Repository.Insert(userContent); err != nil {
+		return nil, err
+	}
+	return &userContent, nil
 }
 
 // ByID ...
-func (manager *UserContentManager) ByID(id uuid.UUID) (*model.UserContent, error) {
+func (manager *UserContent) ByID(id uuid.UUID) *model.UserContent {
 	return manager.Repository.ByID(id)
 }
 
 // All ...
-func (manager *UserContentManager) All(limit int) ([]model.UserContent, error) {
+func (manager *UserContent) All(limit int) []model.UserContent {
 	return manager.Repository.All(limit)
 }
 
 // Feed ...
-func (manager *UserContentManager) Feed(
+func (manager *UserContent) Feed(
 	userID uuid.UUID,
 	senderType *string,
 	contentType *string,
-	archived *bool) ([]response.WireUserContent, error) {
+	archived *bool,
+) ([]response.WireUserContent, error) {
 
 	return manager.Repository.Feed(
 		userID,

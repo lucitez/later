@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS shares
 -- but passing along only works when person A sends article X to person B and B sends to C (linked by content.id)
 CREATE TABLE IF NOT EXISTS content (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-    title TEXT NOT NULL,
+    title TEXT,
     description TEXT,
     image_url TEXT,
     content_type TEXT,

@@ -1,9 +1,8 @@
 package request
 
 import (
-	"later/pkg/service/body"
 	"later/pkg/model"
-	"later/pkg/util/wrappers"
+	"later/pkg/service/body"
 
 	"github.com/google/uuid"
 )
@@ -11,10 +10,17 @@ import (
 // ShareCreateRequestBody Binding from json
 // TODO experiment with null recipient user ids
 type ShareCreateRequestBody struct {
-	SenderUserID     uuid.UUID           `form:"sender_user_id" json:"sender_user_id" binding:"required"`
-	RecipientUserIDs []uuid.UUID         `form:"recipient_user_ids" json:"recipient_user_ids"`
-	URL              wrappers.NullString `form:"url" json:"url"`               // If new content
-	ContentID        wrappers.NullUUID   `form:"content_id" json:"content_id"` // If forwarding
+	SenderUserID     uuid.UUID   `form:"sender_user_id" json:"sender_user_id" binding:"required"`
+	RecipientUserIDs []uuid.UUID `form:"recipient_user_ids" json:"recipient_user_ids"`
+	URL              string      `form:"url" json:"url" binding:"required"`
+}
+
+// ShareForwardRequestBody Binding from json
+// TODO experiment with null recipient user ids
+type ShareForwardRequestBody struct {
+	SenderUserID     uuid.UUID   `form:"sender_user_id" json:"sender_user_id" binding:"required"`
+	RecipientUserIDs []uuid.UUID `form:"recipient_user_ids" json:"recipient_user_ids"`
+	ContentID        uuid.UUID   `form:"content_id" json:"content_id" binding:"required"`
 }
 
 // ToShareCreateBodiesByUserIds converts this request body to a list of share create bodies
@@ -36,8 +42,7 @@ func (requestBody *ShareCreateRequestBody) ToShareCreateBodiesByUserIds(content 
 // ShareCreateByPhoneNumberRequestBody Binding from json
 // TODO experiment with null recipient user ids
 type ShareCreateByPhoneNumberRequestBody struct {
-	SenderUserID uuid.UUID           `form:"sender_user_id" json:"sender_user_id" binding:"required"`
-	PhoneNumber  string              `form:"phone_number" json:"phone_number" binding:"required"`
-	URL          wrappers.NullString `form:"url" json:"url" binding:"required"` // If new content
-	ContentID    wrappers.NullUUID   `form:"content_id" json:"content_id"`      // If forwarding
+	SenderUserID uuid.UUID `form:"sender_user_id" json:"sender_user_id" binding:"required"`
+	PhoneNumber  string    `form:"phone_number" json:"phone_number" binding:"required"`
+	URL          string    `form:"url" json:"url" binding:"required"`
 }

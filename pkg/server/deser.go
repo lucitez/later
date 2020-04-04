@@ -77,7 +77,7 @@ func (d *Deser) DeserQueryParams() (map[string]interface{}, bool) {
 				m[qp.name] = *value
 			}
 		case UUID:
-			value, err := DeserUUID(d.Context, qp.name)
+			value, err := deserUUID(d.Context, qp.name)
 			if err != nil {
 				d.err = err
 				d.valid = false

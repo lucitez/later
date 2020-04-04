@@ -4,11 +4,12 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/google/uuid"
+
 	"later/pkg/model"
 	"later/pkg/parse"
 	"later/pkg/service"
 	"later/pkg/service/body"
-	"later/pkg/util/wrappers"
 
 	"later/pkg/request"
 
@@ -17,52 +18,59 @@ import (
 
 // ShareServer ...
 type ShareServer struct {
-	Manager        service.Share
-	ContentManager service.ContentManager
-	User           service.User
-	Parser         parse.Content
+	Manager service.Share
+	Content service.Content
+	User    service.User
+	Parser  parse.Content
 }
 
 // NewShareServer ...
 func NewShareServer(
 	manager service.Share,
-	contentManager service.ContentManager,
+	contentManager service.Content,
 	userManager service.User,
 	parser parse.Content,
 ) ShareServer {
 	return ShareServer{
-		Manager:        manager,
-		ContentManager: contentManager,
-		User:           userManager,
-		Parser:         parser,
+		Manager: manager,
+		Content: contentManager,
+		User:    userManager,
+		Parser:  parser,
 	}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service
 func (server *ShareServer) RegisterEndpoints(router *gin.Engine) {
 	router.POST("/shares/new", server.new)
+	router.POST("/shares/forward", server.new)
 	router.POST("/shares/new/by-phone-number", server.newByPhoneNumber)
 }
 
-/**
-*	1. If content_id is present, try to get content by that.
-*	2. If url is present, parse content from url and insert new content
- */
-func (server *ShareServer) getContentFromURLOrContentID(url wrappers.NullString, contentID wrappers.NullUUID) (content *model.Content, err error) {
-	switch {
-	case contentID.Valid:
-		content, err = server.ContentManager.ByID(contentID.ID)
-	case url.Valid:
-		contentFromURL, err := server.Parser.ContentFromURL(url.String)
-		if err != nil {
-			return nil, err
-		}
-		content, err = server.ContentManager.Create(contentFromURL)
-	default:
-		content, err = nil, errors.New("parameters url or content_id required")
+func (server *ShareServer) forward(context *gin.Context) {
+	var body request.ShareForwardRequestBody
+
+	err := context.ShouldBindJSON(&body)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
-	return
+	content := server.Content.ByID(body.ContentID)
+
+	if content == nil {
+		context.JSON(http.StatusBadRequest, errors.New("Content not found"))
+		return
+	}
+
+	shares, err := server.createSharesFromContent(*content, body.SenderUserID, body.RecipientUserIDs)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	context.JSON(http.StatusOK, shares)
 }
 
 /**
@@ -71,45 +79,24 @@ func (server *ShareServer) getContentFromURLOrContentID(url wrappers.NullString,
 *	3. Create new _user_content_ for recipient
  */
 func (server *ShareServer) new(context *gin.Context) {
-	var requestBody request.ShareCreateRequestBody
+	var body request.ShareCreateRequestBody
 
-	err := context.ShouldBindJSON(&requestBody)
+	if err := context.ShouldBindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	content, err := server.Content.CreateFromURL(body.URL)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if len(requestBody.RecipientUserIDs) == 0 {
-		context.JSON(http.StatusBadRequest, errors.New("Must include at least one recipient"))
-		return
-	}
-
-	content, err := server.getContentFromURLOrContentID(requestBody.URL, requestBody.ContentID)
+	shares, err := server.createSharesFromContent(*content, body.SenderUserID, body.RecipientUserIDs)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	/* create share with inserted content */
-
-	var createBodies []body.ShareCreateBody
-
-	for _, recipientUserID := range requestBody.RecipientUserIDs {
-		createBody := body.ShareCreateBody{
-			Content:         *content,
-			SenderUserID:    requestBody.SenderUserID,
-			RecipientUserID: recipientUserID,
-		}
-
-		createBodies = append(createBodies, createBody)
-	}
-
-	shares, err := server.Manager.CreateMultiple(createBodies)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -120,43 +107,57 @@ func (server *ShareServer) new(context *gin.Context) {
 *	1. When user wants to share content
  */
 func (server *ShareServer) newByPhoneNumber(context *gin.Context) {
-	var requestBody request.ShareCreateByPhoneNumberRequestBody
+	var body request.ShareCreateByPhoneNumberRequestBody
 
-	err := context.ShouldBindJSON(&requestBody)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := context.ShouldBindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	userFromPhoneNumber, err := server.userFromPhoneNumber(requestBody.PhoneNumber)
+	content, err := server.Content.CreateFromURL(body.URL)
+
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	content, err := server.getContentFromURLOrContentID(requestBody.URL, requestBody.ContentID)
-
+	userFromPhoneNumber, err := server.userFromPhoneNumber(body.PhoneNumber)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	/* create share with inserted content */
-
-	createBody := body.ShareCreateBody{
-		Content:         *content,
-		SenderUserID:    requestBody.SenderUserID,
-		RecipientUserID: userFromPhoneNumber.ID}
-
-	share, err := server.Manager.Create(createBody)
+	shares, err := server.createSharesFromContent(*content, body.SenderUserID, []uuid.UUID{userFromPhoneNumber.ID})
 
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	context.JSON(http.StatusOK, share)
+	context.JSON(http.StatusOK, shares)
+}
+
+func (server *ShareServer) createSharesFromContent(content model.Content, sharer uuid.UUID, sharees []uuid.UUID) ([]model.Share, error) {
+	var shares []model.Share
+	var err error
+
+	for _, sharee := range sharees {
+		createBody := body.ShareCreateBody{
+			Content:         content,
+			SenderUserID:    sharer,
+			RecipientUserID: sharee,
+		}
+
+		share, err := server.Manager.Create(createBody)
+
+		if err != nil {
+			break
+		} else if share != nil {
+			shares = append(shares, *share)
+		}
+	}
+
+	return shares, err
 }
 
 /**

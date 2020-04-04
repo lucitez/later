@@ -1,31 +1,37 @@
 package service
 
 import (
-	"later/pkg/repository"
 	"later/pkg/model"
+	"later/pkg/repository"
+	"later/pkg/service/body"
 )
 
-// DomainManager ...
-type DomainManager struct {
+// Domain ...
+type Domain struct {
 	Repository repository.Domain
 }
 
-// NewDomainManager for wire generation
-func NewDomainManager(repository repository.Domain) DomainManager {
-	return DomainManager{repository}
+// NewDomain for wire generation
+func NewDomain(repository repository.Domain) Domain {
+	return Domain{repository}
 }
 
 // Create a new domain
-func (manager *DomainManager) Create(domain *model.Domain) (*model.Domain, error) {
-	return manager.Repository.Insert(domain)
+func (manager *Domain) Create(body body.DomainCreateBody) (*model.Domain, error) {
+	domain := body.ToDomain()
+	if err := manager.Repository.Insert(domain); err != nil {
+		return nil, err
+	}
+
+	return &domain, nil
 }
 
 // ByDomain returns a domain by its domain name
-func (manager *DomainManager) ByDomain(domainName string) (*model.Domain, error) {
+func (manager *Domain) ByDomain(domainName string) *model.Domain {
 	return manager.Repository.ByDomain(domainName)
 }
 
 // All returns all domains given a limit
-func (manager *DomainManager) All(limit int) ([]model.Domain, error) {
+func (manager *Domain) All(limit int) []model.Domain {
 	return manager.Repository.All(limit)
 }
