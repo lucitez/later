@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS content (
     title TEXT,
     description TEXT,
     image_url TEXT,
-    content_type TEXT,
+    content_type TEXT, -- [watch, read, listen]
     url TEXT NOT NULL,
     domain TEXT NOT NULL,
     shares int NOT NULL DEFAULT 0 CHECK (shares >= 0),
@@ -70,9 +70,10 @@ CREATE TABLE IF NOT EXISTS user_content (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     share_id uuid NOT NULL,
     content_id uuid NOT NULL,
-    content_type text,
+    content_type text, -- [watch, read, listen]
     user_id uuid NOT NULL,
     sent_by_user_id uuid NOT NULL, -- [self, friend, us]
+    tag text, -- [memes, videos, etc.] (freeform, added by user)
 
     created_at timestamp with time zone NOT NULL default now(),
     updated_at timestamp with time zone NOT NULL default now(),

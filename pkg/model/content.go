@@ -66,7 +66,8 @@ func (content *Content) ScanRows(rows *sql.Rows) {
 		&content.Domain,
 		&content.Shares,
 		&content.CreatedAt,
-		&content.UpdatedAt)
+		&content.UpdatedAt,
+	)
 
 	if err != nil {
 		log.Fatal(err)
@@ -85,7 +86,8 @@ func (content *Content) ScanRow(row *sql.Row) *Content {
 		&content.Domain,
 		&content.Shares,
 		&content.CreatedAt,
-		&content.UpdatedAt)
+		&content.UpdatedAt,
+	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

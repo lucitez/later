@@ -61,8 +61,6 @@ func (parser *Content) ContentFromURL(url string, domain *model.Domain) model.Co
 
 	// TODO just pass a pointer in as an argument
 	switch {
-	case domain == nil:
-		parser.contentMetadataDefault(&contentMetadata, url)
 	default:
 		parser.contentMetadataDefault(&contentMetadata, url)
 	}

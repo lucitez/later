@@ -1,62 +1,102 @@
 package server
 
 import (
-	"net/http"
-	"strconv"
-
+	"later/pkg/request"
 	"later/pkg/service"
-	"later/pkg/util/stringutil"
+	"later/pkg/transfer"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-// UserContentServer ...
-type UserContentServer struct {
-	Manager service.UserContent
+// UserContent ...
+type UserContent struct {
+	Service  service.UserContent
+	Transfer transfer.UserContent
 }
 
-// NewUserContentServer ...
-func NewUserContentServer(manager service.UserContent) UserContentServer {
-	return UserContentServer{manager}
+// NewUserContent ...
+func NewUserContent(
+	service service.UserContent,
+	transfer transfer.UserContent,
+) UserContent {
+	return UserContent{
+		service,
+		transfer,
+	}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service
-func (server *UserContentServer) RegisterEndpoints(router *gin.Engine) {
-	router.GET("/user-content/feed", server.feed)
+func (server *UserContent) RegisterEndpoints(router *gin.Engine) {
+	router.GET("/user-content/filter", server.filter)
+
+	router.PUT("/user-content/archive", server.archive)
+	router.PUT("/user-content/delete", server.delete)
 }
 
-func (server *UserContentServer) feed(context *gin.Context) {
+func (server *UserContent) filter(context *gin.Context) {
+	defaultArchived := "false"
+	defaultLimit := "20"
 
-	userID := context.Query("user_id")
-	senderType := context.Query("sender_type")
-	contentType := context.Query("content_type")
-	archivedQuery := context.Query("archived")
+	deser := NewDeser(
+		context,
+		QueryParameter{name: "user_id", kind: UUID, required: true},
+		QueryParameter{name: "tag", kind: Str},
+		QueryParameter{name: "content_type", kind: Str},
+		QueryParameter{name: "archived", kind: Bool, fallback: &defaultArchived},
+		QueryParameter{name: "limit", kind: Int, fallback: &defaultLimit},
+	)
 
-	archived, err := strconv.ParseBool(archivedQuery)
+	if qp, ok := deser.DeserQueryParams(); ok {
+		userID := qp["user_id"].(*uuid.UUID)
+		tag := qp["tag"].(*string)
+		contentType := qp["content_type"].(*string)
+		archived := qp["archived"].(*bool)
+		limit := qp["limit"].(*int)
 
-	if userID == "" {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter user_id is required"})
+		userContent := server.Service.Filter(
+			*userID,
+			tag,
+			contentType,
+			*archived,
+			*limit,
+		)
+
+		wireUserContent := server.Transfer.WireUserContentsFrom(userContent)
+
+		context.JSON(http.StatusOK, wireUserContent)
+	}
+}
+
+func (server *UserContent) archive(context *gin.Context) {
+	var body request.UserContentArchiveRequestBody
+
+	if err := context.BindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	userIDAsUUID, err := uuid.Parse(userID)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Parameter user_id must be a uuid"})
+	if err := server.Service.Archive(body.ID, body.Tag); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	userContent, err := server.Manager.Feed(
-		userIDAsUUID,
-		stringutil.NullIfBlank(&senderType),
-		stringutil.NullIfBlank(&contentType),
-		&archived)
+	context.JSON(http.StatusOK, true)
+}
 
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func (server *UserContent) delete(context *gin.Context) {
+	var body request.UserContentDeleteRequestBody
+
+	if err := context.BindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	context.JSON(http.StatusOK, userContent)
+	if err := server.Service.Delete(body.ID); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	context.JSON(http.StatusOK, true)
 }

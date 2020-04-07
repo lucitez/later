@@ -49,7 +49,7 @@ func (server *User) signUp(context *gin.Context) {
 func (server *User) byID(context *gin.Context) {
 	deser := NewDeser(
 		context,
-		QueryParameter{"id", UUID, nil},
+		QueryParameter{name: "id", kind: UUID},
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
@@ -65,7 +65,7 @@ func (server *User) allUsers(context *gin.Context) {
 
 	deser := NewDeser(
 		context,
-		QueryParameter{"limit", Int, &defaultLimit},
+		QueryParameter{name: "limit", kind: Int, fallback: &defaultLimit},
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {

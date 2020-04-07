@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// NewDomain for wire gen
 func NewDomain(manager service.Domain) Domain {
 	return Domain{manager}
 }
@@ -48,7 +49,7 @@ func (server *Domain) create(context *gin.Context) {
 func (server *Domain) byDomain(context *gin.Context) {
 	deser := NewDeser(
 		context,
-		QueryParameter{"domain", Str, nil},
+		QueryParameter{name: "domain", kind: Str, required: true},
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
@@ -65,7 +66,7 @@ func (server *Domain) all(context *gin.Context) {
 
 	deser := NewDeser(
 		context,
-		QueryParameter{"limit", Int, &defaultLimit},
+		QueryParameter{name: "limit", kind: Int, fallback: &defaultLimit},
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {

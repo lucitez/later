@@ -18,6 +18,7 @@ type UserContent struct {
 	ContentType  wrappers.NullString
 	UserID       uuid.UUID
 	SentByUserID uuid.UUID
+	Tag          wrappers.NullString
 
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
@@ -62,10 +63,12 @@ func (userContent *UserContent) ScanRows(rows *sql.Rows) {
 		&userContent.ContentType,
 		&userContent.UserID,
 		&userContent.SentByUserID,
+		&userContent.Tag,
 		&userContent.CreatedAt,
 		&userContent.UpdatedAt,
 		&userContent.ArchivedAt,
-		&userContent.DeletedAt)
+		&userContent.DeletedAt,
+	)
 
 	if err != nil {
 		log.Fatal(err)
@@ -81,10 +84,12 @@ func (userContent *UserContent) ScanRow(row *sql.Row) *UserContent {
 		&userContent.ContentType,
 		&userContent.UserID,
 		&userContent.SentByUserID,
+		&userContent.Tag,
 		&userContent.CreatedAt,
 		&userContent.UpdatedAt,
 		&userContent.ArchivedAt,
-		&userContent.DeletedAt)
+		&userContent.DeletedAt,
+	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

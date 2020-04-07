@@ -57,7 +57,7 @@ func (server *FriendRequest) send(context *gin.Context) {
 func (server *FriendRequest) pending(context *gin.Context) {
 	deser := NewDeser(
 		context,
-		QueryParameter{"user_id", UUID, nil},
+		QueryParameter{name: "user_id", kind: UUID, required: true},
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {

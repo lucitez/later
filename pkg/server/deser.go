@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"later/pkg/util/stringutil"
 	"net/http"
 	"strconv"
 
@@ -19,6 +20,8 @@ const (
 	Int
 	// UUID uuid.UUID
 	UUID
+	// Bool bool
+	Bool
 )
 
 // QueryParameter wraps the name and kind
@@ -26,6 +29,7 @@ type QueryParameter struct {
 	name     string
 	kind     Kind
 	fallback *string
+	required bool
 }
 
 // Deser struct does all the work
@@ -57,34 +61,26 @@ func (d *Deser) DeserQueryParams() (map[string]interface{}, bool) {
 	m := make(map[string]interface{})
 	d.valid = true
 	for _, qp := range d.QueryParameters {
+		var value interface{}
+		var err error
+
 		switch qp.kind {
 		case Str:
-			value, err := deserString(d.Context, qp.name, qp.fallback)
-			if err != nil {
-				d.err = err
-				d.valid = false
-				break
-			} else {
-				m[qp.name] = *value
-			}
+			value, err = deserString(d.Context, qp)
 		case Int:
-			value, err := deserInt(d.Context, qp.name, qp.fallback)
-			if err != nil {
-				d.err = err
-				d.valid = false
-				break
-			} else {
-				m[qp.name] = *value
-			}
+			value, err = deserInt(d.Context, qp)
+		case Bool:
+			value, err = deserBool(d.Context, qp)
 		case UUID:
-			value, err := deserUUID(d.Context, qp.name)
-			if err != nil {
-				d.err = err
-				d.valid = false
-				break
-			} else {
-				m[qp.name] = *value
-			}
+			value, err = deserUUID(d.Context, qp)
+		}
+
+		if err != nil {
+			d.err = err
+			d.valid = false
+			break
+		} else {
+			m[qp.name] = value
 		}
 	}
 	if d.err != nil {
@@ -93,73 +89,106 @@ func (d *Deser) DeserQueryParams() (map[string]interface{}, bool) {
 	return m, d.valid
 }
 
-func (d *Deser) Err() (error, bool) {
-	return d.err, d.valid
-}
-
 // DeserUUID Deserializes a UUID query parameter
-func deserUUID(context *gin.Context, paramName string) (*uuid.UUID, error) {
-	idString := context.Query(paramName)
+func deserUUID(
+	context *gin.Context,
+	param QueryParameter,
+) (*uuid.UUID, error) {
+	idString := context.Query(param.name)
 
-	if idString == "" {
-		return nil, errors.New("Parameter " + paramName + " is required")
+	switch {
+	case idString == "" && param.required:
+		return nil, errors.New("Parameter " + param.name + " is required")
+	case idString == "" && !param.required:
+		return nil, nil
+	default:
+		id, err := uuid.Parse(idString)
+
+		if err != nil {
+			return nil, errors.New("Parameter " + param.name + " must be a UUID")
+		}
+
+		return &id, nil
 	}
-
-	id, err := uuid.Parse(idString)
-
-	if err != nil {
-		return nil, errors.New("Parameter " + paramName + " must be of type UUID")
-	}
-
-	return &id, nil
 }
 
 // DeserString Deserializes a String query parameter
 func deserString(
 	context *gin.Context,
-	paramName string,
-	fallback *string,
+	param QueryParameter,
 ) (*string, error) {
 	var str string
 
 	switch {
-	case fallback != nil:
-		str = context.DefaultQuery(paramName, *fallback)
+	case param.fallback != nil:
+		str = context.DefaultQuery(param.name, *param.fallback)
 	default:
-		str = context.Query(paramName)
+		str = context.Query(param.name)
 	}
 
-	if str == "" {
-		return nil, errors.New("Parameter " + paramName + " is required")
+	if str == "" && param.required {
+		return nil, errors.New("Parameter " + param.name + " is required")
 	}
 
-	return &str, nil
+	return stringutil.NullIfBlank(str), nil
 }
 
 // DeserInt Deserializes a Int query parameter
 func deserInt(
 	context *gin.Context,
-	paramName string,
-	fallback *string,
+	param QueryParameter,
 ) (*int, error) {
 	var str string
 
 	switch {
-	case fallback != nil:
-		str = context.DefaultQuery(paramName, *fallback)
+	case param.fallback != nil:
+		str = context.DefaultQuery(param.name, *param.fallback)
 	default:
-		str = context.Query(paramName)
+		str = context.Query(param.name)
 	}
 
-	if str == "" {
-		return nil, errors.New("Parameter " + paramName + " is required")
+	switch {
+	case str == "" && param.required:
+		return nil, errors.New("Parameter " + param.name + " is required")
+	case str == "" && !param.required:
+		return nil, nil
+	default:
+		strInt, err := strconv.Atoi(str)
+
+		if err != nil {
+			return nil, errors.New("Parameter " + param.name + " must be an integer")
+		}
+
+		return &strInt, nil
+	}
+}
+
+// DeserBool Deserializes a Int query parameter
+func deserBool(
+	context *gin.Context,
+	param QueryParameter,
+) (*bool, error) {
+	var str string
+
+	switch {
+	case param.fallback != nil:
+		str = context.DefaultQuery(param.name, *param.fallback)
+	default:
+		str = context.Query(param.name)
 	}
 
-	strInt, err := strconv.Atoi(str)
+	switch {
+	case str == "" && param.required:
+		return nil, errors.New("Parameter " + param.name + " is required")
+	case str == "" && !param.required:
+		return nil, nil
+	default:
+		strBool, err := strconv.ParseBool(str)
 
-	if err != nil {
-		return nil, errors.New("Parameter " + paramName + " must be of type Int")
+		if err != nil {
+			return nil, errors.New("Parameter " + param.name + " must be a boolean")
+		}
+
+		return &strBool, nil
 	}
-
-	return &strInt, nil
 }

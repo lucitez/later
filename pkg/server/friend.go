@@ -35,7 +35,7 @@ func (server *Friend) RegisterEndpoints(router *gin.Engine) {
 func (server *Friend) all(context *gin.Context) {
 	deser := NewDeser(
 		context,
-		QueryParameter{"user_id", UUID, nil},
+		QueryParameter{name: "user_id", kind: UUID, required: true},
 	)
 
 	if parameters, ok := deser.DeserQueryParams(); ok {
@@ -51,8 +51,8 @@ func (server *Friend) all(context *gin.Context) {
 func (server *Friend) search(context *gin.Context) {
 	deser := NewDeser(
 		context,
-		QueryParameter{"user_id", UUID, nil},
-		QueryParameter{"search", Str, nil},
+		QueryParameter{name: "user_id", kind: UUID, required: true},
+		QueryParameter{name: "search", kind: Str, required: true},
 	)
 
 	if parameters, ok := deser.DeserQueryParams(); ok {

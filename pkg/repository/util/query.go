@@ -8,10 +8,17 @@ import (
 )
 
 // GenerateArguments creates a list of interface from the Query class
-func GenerateArguments(arguments []string) []interface{} {
-	args := make([]interface{}, len(arguments))
-	for i, argument := range arguments {
-		args[i] = argument
+func GenerateArguments(arguments ...interface{}) []interface{} {
+	args := []interface{}{}
+	for _, argument := range arguments {
+		reflectVal := reflect.ValueOf(argument)
+		if reflectVal.Kind() == reflect.Ptr {
+			if !reflectVal.IsNil() {
+				args = append(args, argument)
+			}
+		} else {
+			args = append(args, argument)
+		}
 	}
 
 	return args

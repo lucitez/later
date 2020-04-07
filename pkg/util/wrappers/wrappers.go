@@ -126,7 +126,7 @@ func (nullInt64 *NullInt64) UnmarshalJSON(data []byte) error {
 // MarshalJSON ...
 func (nullTime NullTime) MarshalJSON() ([]byte, error) {
 	if nullTime.Valid {
-		return json.Marshal(nullTime.NullTime)
+		return json.Marshal(nullTime.Time)
 	}
 
 	return json.Marshal(nil)

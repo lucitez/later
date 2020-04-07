@@ -3,8 +3,8 @@ package service
 import (
 	"later/pkg/model"
 	"later/pkg/repository"
-	"later/pkg/response"
 	"later/pkg/service/body"
+	"later/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )
@@ -20,35 +20,51 @@ func NewUserContent(repository repository.UserContent) UserContent {
 }
 
 // Create ...
-func (manager *UserContent) Create(body body.UserContentCreateBody) (*model.UserContent, error) {
+func (service *UserContent) Create(body body.UserContentCreateBody) (*model.UserContent, error) {
 	userContent := body.ToUserContent()
-	if err := manager.Repository.Insert(userContent); err != nil {
+	if err := service.Repository.Insert(userContent); err != nil {
 		return nil, err
 	}
 	return &userContent, nil
 }
 
 // ByID ...
-func (manager *UserContent) ByID(id uuid.UUID) *model.UserContent {
-	return manager.Repository.ByID(id)
+func (service *UserContent) ByID(id uuid.UUID) *model.UserContent {
+	return service.Repository.ByID(id)
 }
 
 // All ...
-func (manager *UserContent) All(limit int) []model.UserContent {
-	return manager.Repository.All(limit)
+func (service *UserContent) All(limit int) []model.UserContent {
+	return service.Repository.All(limit)
 }
 
-// Feed ...
-func (manager *UserContent) Feed(
+// Filter ...
+func (service *UserContent) Filter(
 	userID uuid.UUID,
-	senderType *string,
+	tag *string,
 	contentType *string,
-	archived *bool,
-) ([]response.WireUserContent, error) {
+	archived bool,
+	limit int,
+) []model.UserContent {
 
-	return manager.Repository.Feed(
+	return service.Repository.Filter(
 		userID,
-		senderType,
+		tag,
 		contentType,
-		archived)
+		archived,
+		limit,
+	)
+}
+
+// Archive a piece of user content, providing an optional tag
+func (service *UserContent) Archive(
+	id uuid.UUID,
+	tag wrappers.NullString,
+) error {
+	return service.Repository.Archive(id, tag)
+}
+
+// Delete a post
+func (service *UserContent) Delete(id uuid.UUID) error {
+	return service.Repository.Delete(id)
 }

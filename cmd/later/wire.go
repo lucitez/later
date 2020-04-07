@@ -79,13 +79,21 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	return server.ShareServer{}
 }
 
-func InitializeUserContent(db *sql.DB) server.UserContentServer {
+func InitializeUserContent(db *sql.DB) server.UserContent {
 	wire.Build(
-		server.NewUserContentServer,
+		server.NewUserContent,
 		service.NewUserContent,
+		service.NewContent,
+		service.NewDomain,
+		service.NewUser,
+		parse.NewContent,
 		repository.NewUserContent,
+		repository.NewContent,
+		repository.NewDomain,
+		repository.NewUser,
+		transfer.NewUserContent,
 	)
-	return server.UserContentServer{}
+	return server.UserContent{}
 }
 
 func InitializeUser(db *sql.DB) server.User {

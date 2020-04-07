@@ -71,11 +71,19 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	return shareServer
 }
 
-func InitializeUserContent(db *sql.DB) server.UserContentServer {
+func InitializeUserContent(db *sql.DB) server.UserContent {
 	userContent := repository.NewUserContent(db)
 	serviceUserContent := service.NewUserContent(userContent)
-	userContentServer := server.NewUserContentServer(serviceUserContent)
-	return userContentServer
+	domain := repository.NewDomain(db)
+	serviceDomain := service.NewDomain(domain)
+	content := repository.NewContent(db)
+	parseContent := parse.NewContent()
+	serviceContent := service.NewContent(serviceDomain, content, parseContent)
+	user := repository.NewUser(db)
+	serviceUser := service.NewUser(user)
+	transferUserContent := transfer.NewUserContent(serviceContent, serviceUser)
+	serverUserContent := server.NewUserContent(serviceUserContent, transferUserContent)
+	return serverUserContent
 }
 
 func InitializeUser(db *sql.DB) server.User {

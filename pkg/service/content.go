@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"later/pkg/model"
 	"later/pkg/parse"
 	"later/pkg/repository"
@@ -38,7 +37,6 @@ func (service *Content) CreateFromURL(url string) (*model.Content, error) {
 	content := service.Parser.ContentFromURL(url, domain)
 
 	if service.Parser.Err() != nil {
-		fmt.Println("asdlfas;ldkfja;")
 		return nil, service.Parser.Err()
 	}
 

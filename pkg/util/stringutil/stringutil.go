@@ -5,11 +5,11 @@ import (
 	"strings"
 )
 
-func NullIfBlank(str *string) *string {
-	if str != nil && *str == "" {
+func NullIfBlank(str string) *string {
+	if str == "" {
 		return nil
 	}
-	return str
+	return &str
 }
 
 var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
