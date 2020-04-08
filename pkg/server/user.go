@@ -53,8 +53,8 @@ func (server *User) byID(context *gin.Context) {
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
-		userID := qp["id"].(uuid.UUID)
-		user := server.Manager.ByID(userID)
+		userID := qp["id"].(*uuid.UUID)
+		user := server.Manager.ByID(*userID)
 
 		context.JSON(http.StatusOK, user)
 	}
@@ -69,8 +69,8 @@ func (server *User) allUsers(context *gin.Context) {
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
-		limit := qp["limit"].(int)
-		users := server.Manager.All(limit)
+		limit := qp["limit"].(*int)
+		users := server.Manager.All(*limit)
 
 		context.JSON(http.StatusOK, users)
 	}

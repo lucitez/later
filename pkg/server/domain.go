@@ -53,9 +53,9 @@ func (server *Domain) byDomain(context *gin.Context) {
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
-		domainName := qp["domain"].(string)
+		domainName := qp["domain"].(*string)
 
-		domain := server.Manager.ByDomain(domainName)
+		domain := server.Manager.ByDomain(*domainName)
 
 		context.JSON(http.StatusOK, domain)
 	}
@@ -70,8 +70,8 @@ func (server *Domain) all(context *gin.Context) {
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
-		limit := qp["limit"].(int)
-		users := server.Manager.All(limit)
+		limit := qp["limit"].(*int)
+		users := server.Manager.All(*limit)
 
 		context.JSON(http.StatusOK, users)
 	}

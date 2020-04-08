@@ -39,9 +39,9 @@ func (server *Friend) all(context *gin.Context) {
 	)
 
 	if parameters, ok := deser.DeserQueryParams(); ok {
-		userID := parameters["user_id"].(uuid.UUID)
+		userID := parameters["user_id"].(*uuid.UUID)
 
-		friends := server.Manager.All(userID)
+		friends := server.Manager.All(*userID)
 		wireFriends := server.Transfer.WireFriendsFrom(friends)
 
 		context.JSON(http.StatusOK, wireFriends)
@@ -56,10 +56,10 @@ func (server *Friend) search(context *gin.Context) {
 	)
 
 	if parameters, ok := deser.DeserQueryParams(); ok {
-		userID := parameters["user_id"].(uuid.UUID)
-		search := parameters["search"].(string)
+		userID := parameters["user_id"].(*uuid.UUID)
+		search := parameters["search"].(*string)
 
-		friends := server.Manager.Search(userID, search)
+		friends := server.Manager.Search(*userID, *search)
 		wireFriends := server.Transfer.WireFriendsFrom(friends)
 
 		context.JSON(http.StatusOK, wireFriends)

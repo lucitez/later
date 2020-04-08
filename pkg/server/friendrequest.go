@@ -61,8 +61,8 @@ func (server *FriendRequest) pending(context *gin.Context) {
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
-		userID := qp["user_id"].(uuid.UUID)
-		friendRequests := server.Manager.Pending(userID)
+		userID := qp["user_id"].(*uuid.UUID)
+		friendRequests := server.Manager.Pending(*userID)
 
 		wireFriendRequests := server.Transfer.WireFriendRequestsFrom(friendRequests)
 
