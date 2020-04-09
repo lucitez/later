@@ -4,14 +4,15 @@
 #     "url": "https://soundcloud.com/itskforest/stwo-kmh-lovin-u"
 # }
 
-# GET http://localhost:8000/user-content/filter
-#     ?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915
+GET http://192.168.254.64:8000/user-content/filter
+    ?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915
+    &archived=true
 
 # PUT http://localhost:8000/user-content/archive
 
 # {
-#     "id": "1ef551dc-0faa-4c5c-bce8-a9cf80540de0",
-#     "tag": "mixes"
+#     "id": "3f3f9f14-6634-4a4f-b460-1aa938932acd",
+#     "tag": "footy"
 # }
 
 # PUT http://localhost:8000/user-content/delete
