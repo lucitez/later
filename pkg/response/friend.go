@@ -13,7 +13,7 @@ type WireFriend struct {
 	UserID      uuid.UUID           `json:"user_id"`
 	FirstName   wrappers.NullString `json:"first_name"`
 	LastName    wrappers.NullString `json:"last_name"`
-	Username    wrappers.NullString `json:"user_name"`
+	Username    wrappers.NullString `json:"username"`
 	Email       wrappers.NullString `json:"email"`
 	PhoneNumber string              `json:"phone_number"`
 	CreatedAt   time.Time           `json:"created_at"`

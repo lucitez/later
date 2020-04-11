@@ -1,6 +1,7 @@
 import React from 'react';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import AntIcons from 'react-native-vector-icons/AntDesign';
+import FeatherIcons from 'react-native-vector-icons/Feather';
 
 function Icon(props) {
 
@@ -21,6 +22,8 @@ function Icon(props) {
             return <AntIcons name='checkcircle' {...props} />
         case 'back':
             return <AntIcons name='left' {...props} />
+        case 'chat':
+            return <FeatherIcons name='message-circle' {...props} />
         default:
             return null
     }

@@ -49,7 +49,7 @@ function AddFriendScreen({ navigation }) {
             {
                 users.length == 0 ?
                     <View style={styles.noFriendsContainer}><Text>Could not find any users that match your search</Text></View>
-                    : <UserGroup users={users} onRequestSent={onFriendRequestSent} />
+                    : <UserGroup type='add_friend' users={users} onRequestSent={onFriendRequestSent} />
             }
         </View>
     );
@@ -62,7 +62,7 @@ function BackIcon(navigation) {
 function sendFriendRequest(userId) {
     let queryString = `/friend-requests/send`
     let body = {
-        sender_user_id: 'b6e05c09-0f62-4757-95f5-ea855adc491',
+        sender_user_id: 'b6e05c09-0f62-4757-95f5-ea855adc4915',
         recipient_user_id: userId
     }
 

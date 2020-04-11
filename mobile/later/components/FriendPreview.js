@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Colors from '../assets/colors';
+import Icon from '../components/Icon';
 
-function UserPreview(props) {
+function FriendPreview(props) {
     let user = props.user
 
     return (
@@ -12,18 +13,10 @@ function UserPreview(props) {
             </View>
             <View style={styles.detailsContainer}>
                 <Text style={styles.name}>{user.first_name} {user.last_name}</Text>
-                <Text style={styles.username}>{user.username}</Text>
+                <Text style={styles.username}>@{user.username}</Text>
             </View>
-            <View style={styles.addFriendContainer}>
-                {
-                    user.pending_request ?
-                        <View style={styles.requestSentContainer}><Text style={{ color: Colors.white }}>Request Sent</Text></View>
-                        :
-                        <TouchableOpacity onPress={() => props.onRequestSent()}>
-                            <View style={styles.addFriendButton}><Text style={{ color: Colors.green }}>Send Request</Text></View>
-                        </TouchableOpacity>
-                }
-
+            <View style={styles.chatContainer}>
+                <Icon type='chat' size={30} />
             </View>
         </View>
     );
@@ -32,7 +25,9 @@ function UserPreview(props) {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        height: 50,
+        height: 60,
+        paddingTop: 5,
+        paddingBottom: 5,
         width: '100%',
         backgroundColor: Colors.white
     },
@@ -62,27 +57,13 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '300'
     },
-    addFriendContainer: {
+    chatContainer: {
         height: '100%',
         padding: 5,
         marginRight: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    addFriendButton: {
-        padding: 7,
-        borderWidth: 2,
-        borderRadius: 5,
-        borderColor: Colors.green,
-        justifyContent: 'center'
-    },
-    requestSentContainer: {
-        padding: 7,
-        borderRadius: 5,
-        backgroundColor: Colors.green,
-        justifyContent: 'center'
-    },
-
 });
 
-export default UserPreview
+export default FriendPreview
