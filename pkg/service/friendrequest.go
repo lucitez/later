@@ -42,9 +42,12 @@ func (manager *FriendRequest) Create(body body.FriendRequestCreateBody) (*model.
 
 // Pending ...
 func (manager *FriendRequest) Pending(userID uuid.UUID) []model.FriendRequest {
-	requests := manager.Repository.PendingByUserID(userID)
+	return manager.Repository.PendingByUserID(userID)
+}
 
-	return requests
+// PendingBySenderAndRecipient ...
+func (manager *FriendRequest) PendingBySenderAndRecipient(sentByUserID uuid.UUID, recipientUserID uuid.UUID) *model.FriendRequest {
+	return manager.Repository.PendingByRequesterAndRequestee(sentByUserID, recipientUserID)
 }
 
 // Accept ...

@@ -88,7 +88,60 @@ func (repository *User) ByPhoneNumber(phoneNumber string) *model.User {
 	return user.ScanRow(row)
 }
 
-// All returns all users with a limit
+// AddFriendFilter ...
+func (repository *User) AddFriendFilter(
+	userID uuid.UUID,
+	search *string,
+) []model.User {
+	withStatement := `
+	WITH user_friends AS (
+		SELECT friend_user_id
+		FROM friends
+		WHERE user_id = $1
+		AND deleted_at IS NULL
+	)
+	`
+	statement := withStatement + userSelectStatement + `
+	WHERE id != $1
+	AND id NOT IN (SELECT * FROM user_friends)
+	`
+
+	var fuzzySearch *string = nil
+
+	if search != nil {
+		statement = statement + `
+		AND (
+			username ILIKE $2
+			OR email ILIKE $2
+			OR first_name ILIKE $2
+			OR last_name ILIKE $2
+		)
+		AND deleted_at IS NULL
+		`
+		fuzzySearch = search
+		*fuzzySearch = "%" + *fuzzySearch + "%"
+	} else {
+		statement = statement + `
+		AND deleted_at IS NULL
+		`
+	}
+
+	args := util.GenerateArguments(
+		userID,
+		fuzzySearch,
+	)
+
+	rows, err := repository.DB.Query(statement, args...)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return repository.scanRows(rows)
+
+}
+
+// Filter returns all users with a limit
 func (repository *User) Filter(
 	search *string,
 	limit int,

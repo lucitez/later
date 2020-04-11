@@ -2,7 +2,6 @@ package parse
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"regexp"
 
@@ -83,7 +82,6 @@ func (parser *Content) ContentFromURL(url string, domain *model.Domain) model.Co
 }
 
 func (parser *Content) contentMetadataDefault(metadata *contentMetadata, url string) {
-	fmt.Println(url)
 	resp, err := http.Get(url)
 
 	if resp.StatusCode != 200 {

@@ -7,7 +7,9 @@ import (
 
 // UserSignUpRequestBody Binding from json
 type UserSignUpRequestBody struct {
-	Username    wrappers.NullString `form:"username" json:"username"`
+	Username    string              `form:"username" json:"username" binding:"required"`
+	FirstName   string              `form:"first_name" json:"first_name" binding:"required"`
+	LastName    wrappers.NullString `form:"last_name" json:"last_name"`
 	Email       wrappers.NullString `form:"email" json:"email"`
 	PhoneNumber string              `form:"phone_number" json:"phone_number" binding:"required"`
 }
@@ -15,6 +17,8 @@ type UserSignUpRequestBody struct {
 func (body *UserSignUpRequestBody) ToUser() model.User {
 	return model.NewUserFromSignUp(
 		body.Username,
+		body.FirstName,
+		body.LastName,
 		body.Email,
 		body.PhoneNumber,
 	)

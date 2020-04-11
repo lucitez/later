@@ -1,6 +1,7 @@
 package server
 
 import (
+	"later/pkg/transfer"
 	"net/http"
 
 	"later/pkg/request"
@@ -12,12 +13,13 @@ import (
 
 // User ...
 type User struct {
-	Manager service.User
+	service  service.User
+	Transfer transfer.User
 }
 
 // NewUser ...
-func NewUser(manager service.User) User {
-	return User{manager}
+func NewUser(service service.User, transfer transfer.User) User {
+	return User{service, transfer}
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service
@@ -28,6 +30,7 @@ func (server *User) RegisterEndpoints(router *gin.Engine) {
 
 	router.GET("/users/by-id", server.byID)
 	router.GET("/users/filter", server.filter)
+	router.GET("/users/add-friend-filter", server.addFriendFilter)
 }
 
 func (server *User) signUp(context *gin.Context) {
@@ -38,7 +41,7 @@ func (server *User) signUp(context *gin.Context) {
 		return
 	}
 
-	user, err := server.Manager.SignUp(body)
+	user, err := server.service.SignUp(body)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
@@ -56,7 +59,7 @@ func (server *User) byID(context *gin.Context) {
 
 	if qp, ok := deser.DeserQueryParams(); ok {
 		userID := qp["id"].(*uuid.UUID)
-		user := server.Manager.ByID(*userID)
+		user := server.service.ByID(*userID)
 
 		context.JSON(http.StatusOK, user)
 	}
@@ -77,12 +80,34 @@ func (server *User) filter(context *gin.Context) {
 		search := qp["search"].(*string)
 		limit := qp["limit"].(*int)
 		offset := qp["offset"].(*int)
-		users := server.Manager.Filter(
+		users := server.service.Filter(
 			search,
 			*limit,
 			*offset,
 		)
 
 		context.JSON(http.StatusOK, users)
+	}
+}
+
+func (server *User) addFriendFilter(context *gin.Context) {
+
+	deser := NewDeser(
+		context,
+		QueryParameter{name: "user_id", kind: UUID, required: true},
+		QueryParameter{name: "search", kind: Str},
+	)
+
+	if qp, ok := deser.DeserQueryParams(); ok {
+		userID := qp["user_id"].(*uuid.UUID)
+		search := qp["search"].(*string)
+		users := server.service.AddFriendFilter(
+			*userID,
+			search,
+		)
+
+		wireFriendUsers := server.Transfer.WireAddFriendUsersFrom(*userID, users)
+
+		context.JSON(http.StatusOK, wireFriendUsers)
 	}
 }

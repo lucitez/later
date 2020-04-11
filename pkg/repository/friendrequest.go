@@ -70,6 +70,23 @@ func (repository *FriendRequest) PendingByUserID(userID uuid.UUID) []model.Frien
 	return repository.scanRows(rows)
 }
 
+// PendingByRequesterAndRequestee gets a pending friend request from one user to another
+func (repository *FriendRequest) PendingByRequesterAndRequestee(requesterUserID uuid.UUID, requesteeUserID uuid.UUID) *model.FriendRequest {
+	var friendRequest model.FriendRequest
+
+	statement := friendRequestSelectStatement + `
+	WHERE sent_by_user_id = $1
+	AND recipient_user_id = $2
+	AND accepted_at IS NULL
+	AND declined_at IS NULL
+	AND deleted_at IS NULL;
+	`
+
+	row := repository.DB.QueryRow(statement, requesterUserID, requesteeUserID)
+
+	return friendRequest.ScanRow(row)
+}
+
 // Accept updates accepted_at
 func (repository *FriendRequest) Accept(ID uuid.UUID) {
 	statement := `

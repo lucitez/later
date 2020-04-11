@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Header from '../components/Header';
 import Icon from '../components/Icon';
 import Colors from '../assets/colors';
-import Network from '../util';
+import Network from '../util/Network';
 
 function FriendScreen({ navigation }) {
     const [friends, setFriends] = useState([])
@@ -12,10 +12,7 @@ function FriendScreen({ navigation }) {
 
     useEffect(() => {
         getFriends('b6e05c09-0f62-4757-95f5-ea855adc4915', null, offset)
-            .then(response => response.json())
-            .then(content => {
-                setFriends(content)
-            })
+            .then(content => content)
             .catch(error => console.error(error))
     }, [offset])
 
@@ -33,11 +30,11 @@ function AddFriendsIcon(navigation) {
 }
 
 const getFriends = (userId, search, offset) => {
-    let queryString = `${Network.local}/friends/for-user?user_id=${userId}&offset=${offset}&limit=10`
+    let queryString = `/friends/for-user?user_id=${userId}&offset=${offset}&limit=10`
     if (search && search.length > 2) {
         queryString += `&search=${search}`
     }
-    return fetch(queryString)
+    return Network.GET(queryString)
 }
 
 const styles = StyleSheet.create({

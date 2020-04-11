@@ -1,7 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Color from '../assets/colors';
-import Icon from '../components/Icon';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import Colors from '../assets/colors';
 
 function UserPreview(props) {
     let user = props.user
@@ -16,7 +15,15 @@ function UserPreview(props) {
                 <Text style={styles.username}>{user.username}</Text>
             </View>
             <View style={styles.addFriendContainer}>
-                <Icon type='plus' size={25} />
+                {
+                    user.pending_request ?
+                        <View style={styles.requestSentContainer}><Text style={{ color: Colors.white }}>Request Sent</Text></View>
+                        :
+                        <TouchableOpacity onPress={() => props.onRequestSent()}>
+                            <View style={styles.addFriendButton}><Text style={{ color: Colors.green }}>Send Request</Text></View>
+                        </TouchableOpacity>
+                }
+
             </View>
         </View>
     );
@@ -25,12 +32,12 @@ function UserPreview(props) {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        height: 60,
+        height: 50,
         width: '100%',
-        backgroundColor: Color.white
+        backgroundColor: Colors.white
     },
     imageContainer: {
-        width: 60,
+        width: 50,
         padding: 5,
         justifyContent: 'center',
         alignItems: 'center',
@@ -62,6 +69,20 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    addFriendButton: {
+        padding: 7,
+        borderWidth: 2,
+        borderRadius: 5,
+        borderColor: Colors.green,
+        justifyContent: 'center'
+    },
+    requestSentContainer: {
+        padding: 7,
+        borderRadius: 5,
+        backgroundColor: Colors.green,
+        justifyContent: 'center'
+    },
+
 });
 
 export default UserPreview

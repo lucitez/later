@@ -29,7 +29,9 @@ type User struct {
 // NewUserFromSignUp constructor for creating a new user
 // TODO validate email, phone number
 func NewUserFromSignUp(
-	username wrappers.NullString,
+	username string,
+	firstName string,
+	lastName wrappers.NullString,
 	email wrappers.NullString,
 	phoneNumber string,
 ) User {
@@ -40,7 +42,9 @@ func NewUserFromSignUp(
 
 	return User{
 		ID:          newUUID,
-		Username:    username,
+		Username:    wrappers.NewNullStringFromString(username),
+		FirstName:   wrappers.NewNullStringFromString(firstName),
+		LastName:    lastName,
 		Email:       email,
 		PhoneNumber: phoneNumber,
 		SignedUpAt:  wrappers.NewNullTime(&now),

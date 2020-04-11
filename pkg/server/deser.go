@@ -84,7 +84,7 @@ func (d *Deser) DeserQueryParams() (map[string]interface{}, bool) {
 		}
 	}
 	if d.err != nil {
-		d.Context.JSON(http.StatusBadRequest, d.err.Error())
+		d.Context.JSON(http.StatusBadRequest, gin.H{"error": d.err.Error()})
 	}
 	return m, d.valid
 }

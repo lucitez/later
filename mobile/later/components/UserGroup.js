@@ -9,7 +9,7 @@ function UserGroup(props) {
             {
                 props.users.map((user, index) => (
                     <View key={index}>
-                        <UserPreview user={user} key={user.id} />
+                        <UserPreview user={user} key={user.id} onRequestSent={() => props.onRequestSent(user.id)} />
                         {index < props.users.length - 1 ? <Divider key={props.index} /> : null}
                     </View>
                 ))

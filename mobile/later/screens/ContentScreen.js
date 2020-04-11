@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import ContentGroup from '../components/ContentGroup';
 import Header from '../components/Header';
 import Colors from '../assets/colors';
-import Network from '../util';
+import Network from '../util/Network';
 import ContentFilter from '../components/ContentFilter';
 
 function ContentScreen(props) {
@@ -15,7 +15,6 @@ function ContentScreen(props) {
 
     useEffect(() => {
         getContent('b6e05c09-0f62-4757-95f5-ea855adc4915', props.archived)
-            .then(response => response.json())
             .then(content => {
                 setAllContent(content)
                 setVisibleContent(content)
@@ -44,11 +43,11 @@ const filterContent = (content, filter) => {
 }
 
 const getContent = (userId, archived) => {
-    let queryString = `${Network.local}/user-content/filter?user_id=${userId}`
+    let queryString = `/user-content/filter?user_id=${userId}`
     if (archived) {
         queryString += `&archived=true`
     }
-    return fetch(queryString)
+    return Network.GET(queryString)
 }
 
 const styles = StyleSheet.create({

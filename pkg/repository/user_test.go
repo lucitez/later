@@ -79,3 +79,92 @@ func TestFilterUsersEmptySearch(t *testing.T) {
 
 	testUtil.Assert.Contains(actual, user)
 }
+
+func TestAddFriendFilter(t *testing.T) {
+	beforeEach(t)
+
+	user1 := model.NewUserFromSignUp(
+		wrappers.NewNullStringFromString("test_username"),
+		wrappers.NewNullStringFromString("test_email"),
+		"1111111111",
+	)
+
+	user2 := model.NewUserFromSignUp(
+		wrappers.NewNullStringFromString("foo"),
+		wrappers.NewNullStringFromString("foo"),
+		"2222222222",
+	)
+
+	user3 := model.NewUserFromSignUp(
+		wrappers.NewNullStringFromString("bar"),
+		wrappers.NewNullStringFromString("bar"),
+		"3333333333",
+	)
+
+	friend := model.NewFriend(
+		user1.ID,
+		user2.ID,
+	)
+
+	userRepo.Insert(user1)
+	userRepo.Insert(user2)
+	userRepo.Insert(user3)
+
+	friendRepo.Insert(friend)
+
+	actual := userRepo.AddFriendFilter(
+		user1.ID,
+		nil,
+	)
+
+	testUtil.Assert.Contains(actual, user3)
+}
+
+func TestAddFriendFilterWithSearch(t *testing.T) {
+	beforeEach(t)
+
+	user1 := model.NewUserFromSignUp(
+		wrappers.NewNullStringFromString("test_username"),
+		wrappers.NewNullStringFromString("test_email"),
+		"1111111111",
+	)
+
+	user2 := model.NewUserFromSignUp(
+		wrappers.NewNullStringFromString("foo"),
+		wrappers.NewNullStringFromString("foo"),
+		"2222222222",
+	)
+
+	user3 := model.NewUserFromSignUp(
+		wrappers.NewNullStringFromString("bar"),
+		wrappers.NewNullStringFromString("bar"),
+		"3333333333",
+	)
+
+	user4 := model.NewUserFromSignUp(
+		wrappers.NewNullStringFromString("baz"),
+		wrappers.NewNullStringFromString("baz"),
+		"4444444444",
+	)
+
+	friend := model.NewFriend(
+		user1.ID,
+		user2.ID,
+	)
+
+	userRepo.Insert(user1)
+	userRepo.Insert(user2)
+	userRepo.Insert(user3)
+	userRepo.Insert(user4)
+
+	friendRepo.Insert(friend)
+
+	search := "bar"
+
+	actual := userRepo.AddFriendFilter(
+		user1.ID,
+		&search,
+	)
+
+	testUtil.Assert.Contains(actual, user3)
+}

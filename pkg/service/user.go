@@ -67,3 +67,14 @@ func (manager *User) Filter(
 		offset,
 	)
 }
+
+// AddFriendFilter ...
+func (manager *User) AddFriendFilter(
+	userID uuid.UUID,
+	search *string,
+) []model.User {
+	return manager.Repository.AddFriendFilter(
+		userID,
+		search,
+	)
+}

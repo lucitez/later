@@ -17,6 +17,8 @@ function Icon(props) {
             return <AntIcons name='search1' {...props} />
         case 'plus':
             return <AntIcons name='pluscircleo' {...props} />
+        case 'check_filled':
+            return <AntIcons name='checkcircle' {...props} />
         case 'back':
             return <AntIcons name='left' {...props} />
         default:

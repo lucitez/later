@@ -3,17 +3,18 @@ package response
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"later/pkg/util/wrappers"
+
+	"github.com/google/uuid"
 )
 
 type WireFriend struct {
-	ID          uuid.UUID
-	UserID      uuid.UUID
-	FirstName   wrappers.NullString
-	LastName    wrappers.NullString
-	Username    wrappers.NullString
-	Email       wrappers.NullString
-	PhoneNumber string
-	CreatedAt   time.Time
+	ID          uuid.UUID           `json:"id"`
+	UserID      uuid.UUID           `json:"user_id"`
+	FirstName   wrappers.NullString `json:"first_name"`
+	LastName    wrappers.NullString `json:"last_name"`
+	Username    wrappers.NullString `json:"user_name"`
+	Email       wrappers.NullString `json:"email"`
+	PhoneNumber string              `json:"phone_number"`
+	CreatedAt   time.Time           `json:"created_at"`
 }

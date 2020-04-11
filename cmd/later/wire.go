@@ -100,7 +100,12 @@ func InitializeUser(db *sql.DB) server.User {
 	wire.Build(
 		server.NewUser,
 		service.NewUser,
+		service.NewFriendRequest,
+		service.NewFriend,
 		repository.NewUser,
+		repository.NewFriendRequest,
+		repository.NewFriend,
+		transfer.NewUser,
 	)
 	return server.User{}
 }
