@@ -15,4 +15,4 @@
 
 # GET http://localhost:8000/friends/all?user_id=683fca78-1a29-4570-8e3c-d39d07483551
 
-GET http://localhost:8000/friends/search?search=test&user_id=683fca78-1a29-4570-8e3c-d39d07483551
+GET http://localhost:8000/friends/for-user?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915

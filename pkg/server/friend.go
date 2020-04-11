@@ -28,38 +28,33 @@ func NewFriend(
 
 // RegisterEndpoints defines handlers for endpoints for the user service
 func (server *Friend) RegisterEndpoints(router *gin.Engine) {
-	router.GET("/friends/all", server.all)
-	router.GET("/friends/search", server.search)
+	router.GET("/friends/for-user", server.forUser)
 }
 
-func (server *Friend) all(context *gin.Context) {
+func (server *Friend) forUser(context *gin.Context) {
+	defaultLimit := "20"
+	defaultOffset := "0"
+
 	deser := NewDeser(
 		context,
 		QueryParameter{name: "user_id", kind: UUID, required: true},
-	)
-
-	if parameters, ok := deser.DeserQueryParams(); ok {
-		userID := parameters["user_id"].(*uuid.UUID)
-
-		friends := server.Manager.All(*userID)
-		wireFriends := server.Transfer.WireFriendsFrom(friends)
-
-		context.JSON(http.StatusOK, wireFriends)
-	}
-}
-
-func (server *Friend) search(context *gin.Context) {
-	deser := NewDeser(
-		context,
-		QueryParameter{name: "user_id", kind: UUID, required: true},
-		QueryParameter{name: "search", kind: Str, required: true},
+		QueryParameter{name: "search", kind: Str, required: false},
+		QueryParameter{name: "limit", kind: Int, fallback: &defaultLimit},
+		QueryParameter{name: "offset", kind: Int, fallback: &defaultOffset},
 	)
 
 	if parameters, ok := deser.DeserQueryParams(); ok {
 		userID := parameters["user_id"].(*uuid.UUID)
 		search := parameters["search"].(*string)
+		limit := parameters["limit"].(*int)
+		offset := parameters["offset"].(*int)
 
-		friends := server.Manager.Search(*userID, *search)
+		friends := server.Manager.ForUser(
+			*userID,
+			search,
+			*limit,
+			*offset,
+		)
 		wireFriends := server.Transfer.WireFriendsFrom(friends)
 
 		context.JSON(http.StatusOK, wireFriends)

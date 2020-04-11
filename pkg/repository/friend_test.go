@@ -14,17 +14,22 @@ var friend = model.NewFriend(
 	userID2,
 )
 
-func TestInsertAndByUserID(t *testing.T) {
+func TestInsertAndForUser(t *testing.T) {
 	beforeEach(t)
 
 	friendRepo.Insert(friend)
 
-	actual := friendRepo.ByUserID(friend.UserID)
+	actual := friendRepo.ForUser(
+		friend.UserID,
+		nil,
+		1,
+		0,
+	)
 
 	testUtil.Assert.Contains(actual, friend)
 }
 
-func TestSearchByUserID(t *testing.T) {
+func TestForUserWithSearch(t *testing.T) {
 	beforeEach(t)
 	user := model.NewUserFromSignUp(
 		wrappers.NewNullStringFromString("test"),
@@ -40,7 +45,14 @@ func TestSearchByUserID(t *testing.T) {
 	friendRepo.Insert(friend)
 	userRepo.Insert(user)
 
-	actual := friendRepo.SearchByUserID(friend.UserID, "TES")
+	search := "test"
+
+	actual := friendRepo.ForUser(
+		friend.UserID,
+		&search,
+		1,
+		0,
+	)
 
 	testUtil.Assert.Contains(actual, friend)
 }

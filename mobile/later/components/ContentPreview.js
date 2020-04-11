@@ -1,23 +1,51 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Linking, Alert, Image, TouchableWithoutFeedback } from 'react-native';
+import Icon from '../components/Icon';
+import Tag from '../components/Tag';
+import Colors from '../assets/colors';
 
 function ContentPreview(props) {
 
     return (
         <View style={styles.contentContainer}>
             <View style={styles.imageContainer}>
-                <Image style={styles.thumb} source={{ uri: props.content.image_url }} />
+                <Image style={styles.thumb} source={props.content.image_url ? { uri: props.content.image_url } : {}} />
             </View>
             <View style={styles.detailsContainer}>
-                <View style={styles.titleAndDescriptionContainer}>
-                    <Text style={styles.title} numberOfLines={2}>{props.content.title}</Text>
-                    <Text style={styles.description} numberOfLines={1}>{props.content.description}</Text>
+                <View style={styles.topDetailsContainer}>
+                    <View style={styles.titleAndDescriptionContainer}>
+                        <TouchableWithoutFeedback onPress={async () => {
+                            // Checking if the link is supported for links with custom URL scheme.
+                            const supported = await Linking.canOpenURL(props.content.url);
+
+                            if (supported) {
+                                // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+                                // by some browser in the mobile
+                                await Linking.openURL(props.content.url);
+                            } else {
+                                Alert.alert(`Don't know how to open this URL: ${props.content.url}`);
+                            }
+
+                        }}>
+                            <View>
+                                <Text style={styles.title} numberOfLines={2}>{props.content.title}</Text>
+                                <Text style={styles.description} numberOfLines={1}>{props.content.description}</Text>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                    {
+                        props.content.tag ?
+                            <View style={styles.tagContainer}>
+                                <Tag name={props.content.tag} />
+                            </View>
+                            : null
+                    }
                 </View>
-                <View style={styles.tagContainer}>
-                    <Text>{props.content.tag}</Text>
-                </View>
-                <View style={styles.sentByContainer}>
+                <View style={styles.bottomDetailsContainer}>
                     <Text>Recommended by {props.content.sent_by_username}</Text>
+                    <View style={styles.iconContainer}>
+                        <Icon type={props.content.content_type} size={25} color={Colors.black} />
+                    </View>
                 </View>
             </View>
         </View>
@@ -26,55 +54,55 @@ function ContentPreview(props) {
 
 const styles = StyleSheet.create({
     contentContainer: {
-        display: 'flex',
+        flexDirection: 'row',
         height: 120,
         width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
         marginTop: 5,
-        marginBottom: 5
+        marginBottom: 5,
     },
     imageContainer: {
-        display: 'flex',
-        height: 120,
         width: 120,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 5
+        padding: 5,
+    },
+    detailsContainer: {
+        flexDirection: 'column',
+        flexGrow: 1,
+        padding: 5,
+    },
+    topDetailsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    tagContainer: {
+        flex: 1,
+    },
+    titleAndDescriptionContainer: {
+        flex: 4,
     },
     thumb: {
         height: '100%',
         width: '100%',
         borderRadius: 5,
     },
-    detailsContainer: {
-        display: 'flex',
-        flex: 1,
-        flexDirection: 'column',
-        padding: 5,
-    },
-    tagContainer: {
-        position: 'absolute',
-        right: 10,
-        top: 10
-    },
-    titleAndDescriptionContainer: {
-        flex: 2,
-        marginRight: '20%',
-    },
     title: {
         fontWeight: 'bold',
-        overflow: 'hidden',
         fontSize: 16,
     },
     description: {
         fontSize: 12,
     },
-    sentByContainer: {
-        flex: 1,
+    bottomDetailsContainer: {
+        flexGrow: 1,
         flexDirection: 'row',
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        justifyContent: 'space-between',
     },
+    iconContainer: {
+        paddingRight: 10,
+        marginBottom: -5
+    }
 });
 
 export default ContentPreview

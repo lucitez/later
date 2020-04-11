@@ -1,11 +1,11 @@
-# GET http://localhost:8000/users/all
+GET http://localhost:8000/users/filter?search=Tes
 
 # GET http://localhost:8000/users/by-id?user_id=23be1933-f90c-42e4-b8b1-b7ec733d9e4d
 
-POST http://localhost:8000/users/sign-up
+# POST http://localhost:8000/users/sign-up
 
-{
-    "username": "boat",
-    "email": "angel@dust.co",
-    "phone_number": "0001112222"
-}
+# {
+#     "username": "boat",
+#     "email": "angel@dust.co",
+#     "phone_number": "0001112222"
+# }

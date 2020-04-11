@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -154,6 +155,8 @@ func (repository *UserContent) Filter(
 		contentType,
 		limit,
 	)
+
+	fmt.Println(statement)
 
 	rows, err := repository.DB.Query(statement, args...)
 

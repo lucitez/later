@@ -21,11 +21,13 @@ func NewUser(manager service.User) User {
 }
 
 // RegisterEndpoints defines handlers for endpoints for the user service
+// TODO add endpoint to get users but exclude users that requester is friends with already
+// Same endpoint should return WireFriendUser with information about whether the requesting user has a _pending_ FR
 func (server *User) RegisterEndpoints(router *gin.Engine) {
 	router.POST("/users/sign-up", server.signUp)
 
 	router.GET("/users/by-id", server.byID)
-	router.GET("/users/all", server.allUsers)
+	router.GET("/users/filter", server.filter)
 }
 
 func (server *User) signUp(context *gin.Context) {
@@ -60,17 +62,26 @@ func (server *User) byID(context *gin.Context) {
 	}
 }
 
-func (server *User) allUsers(context *gin.Context) {
-	defaultLimit := "100"
+func (server *User) filter(context *gin.Context) {
+	defaultLimit := "20"
+	defaultOffset := "0"
 
 	deser := NewDeser(
 		context,
+		QueryParameter{name: "search", kind: Str, required: false},
 		QueryParameter{name: "limit", kind: Int, fallback: &defaultLimit},
+		QueryParameter{name: "offset", kind: Int, fallback: &defaultOffset},
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
+		search := qp["search"].(*string)
 		limit := qp["limit"].(*int)
-		users := server.Manager.All(*limit)
+		offset := qp["offset"].(*int)
+		users := server.Manager.Filter(
+			search,
+			*limit,
+			*offset,
+		)
 
 		context.JSON(http.StatusOK, users)
 	}

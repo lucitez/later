@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"log"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
@@ -88,14 +89,49 @@ func (repository *User) ByPhoneNumber(phoneNumber string) *model.User {
 }
 
 // All returns all users with a limit
-func (repository *User) All(limit int) []model.User {
-	statement := userSelectStatement + `
-	WHERE deleted_at IS NULL
-	ORDER BY created_at desc
-	LIMIT $1;
-	`
+func (repository *User) Filter(
+	search *string,
+	limit int,
+	offset int,
+) []model.User {
+	statement := userSelectStatement
+	counter := 1
+	var fuzzySearch *string = nil
 
-	rows, err := repository.DB.Query(statement, limit)
+	if search != nil {
+		statement = statement + `
+		WHERE (
+			username ILIKE $1
+			OR email ILIKE $1
+			OR first_name ILIKE $1
+			OR last_name ILIKE $1
+		)
+		AND deleted_at IS NULL
+		`
+		counter++
+		fuzzySearch = search
+		*fuzzySearch = "%" + *fuzzySearch + "%"
+	} else {
+		statement = statement + `
+		WHERE deleted_at IS NULL
+		`
+	}
+
+	statement += `
+	LIMIT $` + strconv.Itoa(counter)
+
+	counter++
+
+	statement += `
+	OFFSET $` + strconv.Itoa(counter)
+
+	args := util.GenerateArguments(
+		fuzzySearch,
+		limit,
+		offset,
+	)
+
+	rows, err := repository.DB.Query(statement, args...)
 
 	if err != nil {
 		log.Fatal(err)

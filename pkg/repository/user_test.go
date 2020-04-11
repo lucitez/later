@@ -50,19 +50,32 @@ func TestUserByPhoneNumber(t *testing.T) {
 	testUtil.Assert.Equal(*actual, user)
 }
 
-func TestAllUsers(t *testing.T) {
+func TestFilterUsers(t *testing.T) {
 	beforeEach(t)
 
-	user2 := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("test_username_2"),
-		wrappers.NewNullStringFromString("test_email_2"),
-		"0000000000",
+	search := "test"
+	userRepo.Insert(user)
+
+	actual := userRepo.Filter(
+		&search,
+		1,
+		0,
 	)
 
+	testUtil.Assert.Contains(actual, user)
+}
+
+func TestFilterUsersEmptySearch(t *testing.T) {
+	beforeEach(t)
+
+	search := ""
 	userRepo.Insert(user)
-	userRepo.Insert(user2)
 
-	actual := userRepo.All(1)
+	actual := userRepo.Filter(
+		&search,
+		1,
+		0,
+	)
 
-	testUtil.Assert.Contains(actual, user2)
+	testUtil.Assert.Contains(actual, user)
 }

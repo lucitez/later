@@ -55,7 +55,15 @@ func (manager *User) ByPhoneNumber(phoneNumber string) *model.User {
 	return manager.Repository.ByPhoneNumber(phoneNumber)
 }
 
-// All ...
-func (manager *User) All(limit int) []model.User {
-	return manager.Repository.All(limit)
+// Filter ...
+func (manager *User) Filter(
+	search *string,
+	limit int,
+	offset int,
+) []model.User {
+	return manager.Repository.Filter(
+		search,
+		limit,
+		offset,
+	)
 }

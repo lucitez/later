@@ -20,6 +20,7 @@ type WireUserContent struct {
 	Domain         string              `json:"domain"`
 	SentBy         uuid.UUID           `json:"sent_by"`
 	SentByUsername wrappers.NullString `json:"sent_by_username"`
+	URL            string              `json:"url"`
 
 	CreatedAt  time.Time         `json:"created_at"`
 	ArchivedAt wrappers.NullTime `json:"archived_at"`

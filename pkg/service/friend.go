@@ -45,11 +45,16 @@ func (manager *Friend) HandleAcceptedFriendRequest(request model.FriendRequest) 
 }
 
 // All ...
-func (manager *Friend) All(userID uuid.UUID) []model.Friend {
-	return manager.Repository.ByUserID(userID)
-}
-
-// Search ...
-func (manager *Friend) Search(userID uuid.UUID, query string) []model.Friend {
-	return manager.Repository.SearchByUserID(userID, query)
+func (manager *Friend) ForUser(
+	userID uuid.UUID,
+	search *string,
+	limit int,
+	offset int,
+) []model.Friend {
+	return manager.Repository.ForUser(
+		userID,
+		search,
+		limit,
+		offset,
+	)
 }

@@ -3,5 +3,5 @@ POST http://localhost:8000/shares/new
 {
     "sender_user_id": "ec0aa72c-497c-4579-a6aa-1f19ebff5a1a",
     "recipient_user_ids": ["b6e05c09-0f62-4757-95f5-ea855adc4915"],
-    "url": "https://www.youtube.com/watch?v=Pkb2v3IhRJI"
+    "url": "https://www.wsj.com/articles/dire-economic-numbers-intensify-debate-over-lifting-coronavirus-restrictions-11586459653?mod=hp_lead_pos1"
 }
