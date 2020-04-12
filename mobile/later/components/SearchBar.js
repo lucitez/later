@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TextInput, View, Keyboard, TouchableOpacity } from 'react-native';
-import Colors from '../assets/colors';
+import { colors } from '../assets/colors';
 import Icon from '../components/Icon';
 
 function SearchBar(props) {
@@ -13,18 +13,31 @@ function SearchBar(props) {
     return (
         <View style={styles.container}>
             <View style={styles.searchBarContainer} >
-                <Icon type='search' size={20} color={Colors.black} />
-                <View style={styles.inputContainer} >
-                    <TextInput autoCorrect={false} placeholder='Search...' onChangeText={text => setSearch(text)} value={search} />
+                <View style={styles.searchIconContainer} >
+                    <Icon type={props.iconName ? props.iconName : 'search'} size={20} color={colors.darkGray} />
                 </View>
+                <View style={styles.inputContainer} >
+                    <TextInput
+                        autoFocus={props.autoFocus}
+                        autoCorrect={false}
+                        returnKeyType={props.returnKeyType}
+                        placeholder={props.placeholder ? props.placeholder : 'Search...'}
+                        onChangeText={text => setSearch(text)}
+                        value={search}
+                    />
+                </View>
+                {search.length > 0 ?
+                    <View style={styles.clearIconContainer}>
+                        <Icon type='close' size={20} color={colors.darkGray} onPress={() => setSearch('')} />
+                    </View>
+                    : null}
             </View>
             <TouchableOpacity onPress={() => {
                 setSearch('')
                 Keyboard.dismiss()
             }}>
                 <View style={styles.cancelContainer} >
-
-                    <Text style={{ color: Colors.white }}>Cancel</Text>
+                    <Text style={{ color: colors.white }}>Cancel</Text>
                 </View>
             </TouchableOpacity>
         </View>
@@ -33,13 +46,12 @@ function SearchBar(props) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.gray,
-        height: 40,
+        backgroundColor: colors.primary,
+        height: 50,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: "center",
-        backgroundColor: '#D1D1D1',
         padding: 5,
         paddingLeft: 7,
     },
@@ -48,15 +60,23 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: '100%',
         borderRadius: 10,
-        backgroundColor: Colors.white,
+        backgroundColor: colors.white,
         alignItems: 'center',
         paddingLeft: 10,
+    },
+    searchIconContainer: {
+        paddingTop: 3,
+    },
+    clearIconContainer: {
+        paddingRight: 5,
+        paddingTop: 2,
     },
     inputContainer: {
         height: '100%',
         justifyContent: 'center',
-        marginLeft: 1,
+        marginLeft: 5,
         flexGrow: 1,
+        flexBasis: 0,
     },
     cancelContainer: {
         marginLeft: 10,

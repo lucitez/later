@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import Colors from '../assets/colors';
+import { colors } from '../assets/colors';
 
 function AddFriendPreview(props) {
     let user = props.user
@@ -18,12 +18,12 @@ function AddFriendPreview(props) {
                 {
                     user.pending_request ?
                         <View style={styles.requestSentContainer}>
-                            <Text style={{ color: Colors.white, fontSize: 12 }}>Request Sent</Text>
+                            <Text style={{ color: colors.white, fontSize: 12 }}>Request Sent</Text>
                         </View>
                         :
                         <TouchableOpacity onPress={() => props.onRequestSent()}>
                             <View style={styles.addFriendButton}>
-                                <Text style={{ color: Colors.green, fontSize: 12 }}>Send Request</Text>
+                                <Text style={{ color: colors.green, fontSize: 12 }}>Send Request</Text>
                             </View>
                         </TouchableOpacity>
                 }
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         height: 50,
         width: '100%',
-        backgroundColor: Colors.white
+        backgroundColor: colors.white
     },
     imageContainer: {
         width: 50,
@@ -77,13 +77,13 @@ const styles = StyleSheet.create({
         padding: 6,
         borderWidth: 1.5,
         borderRadius: 5,
-        borderColor: Colors.green,
+        borderColor: colors.green,
         justifyContent: 'center'
     },
     requestSentContainer: {
         padding: 7,
         borderRadius: 5,
-        backgroundColor: Colors.green,
+        backgroundColor: colors.green,
         justifyContent: 'center'
     },
 

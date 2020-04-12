@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableWithoutFeedback } from 'react-native';
-import Colors from '../assets/colors';
+// import { colors } from '../assets/colors';
 import Icon from '../components/Icon';
+import { colors, contentTypes } from '../assets/colors';
 
 function FilterOption(props) {
 
@@ -9,7 +10,7 @@ function FilterOption(props) {
         <View style={styles.filterValueContainer}>
             <TouchableWithoutFeedback onPress={props.onPress}>
                 <View style={styles.filterIconContainer}>
-                    <Icon type={props.name} size={30} color={props.active ? Colors.black : Colors.gray} />
+                    <Icon type={props.name} size={30} color={props.active ? contentTypes[props.name].color : colors.gray} />
                 </View>
             </TouchableWithoutFeedback >
         </View>
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
         height: 50,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: Colors.lightGray,
+        backgroundColor: colors.lightGray,
     },
     filterValueContainer: {
         flexGrow: 1,

@@ -28,6 +28,21 @@ func NewContent(
 	}
 }
 
+// GetContentPreview ...
+func (service *Content) GetContentPreview(url string) (*model.Content, error) {
+	urlDomain := parse.DomainFromURL(url)
+
+	domain := service.DomainService.ByDomain(urlDomain)
+
+	content := service.Parser.ContentFromURL(url, domain)
+
+	if service.Parser.Err() != nil {
+		return nil, service.Parser.Err()
+	}
+
+	return &content, nil
+}
+
 // CreateFromURL calls parse and creates content from parse results
 func (service *Content) CreateFromURL(url string) (*model.Content, error) {
 	urlDomain := parse.DomainFromURL(url)

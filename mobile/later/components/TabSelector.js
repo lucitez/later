@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import Colors from '../assets/colors';
+import { colors } from '../assets/colors';
 
 function Tab(props) {
     return (
@@ -56,16 +56,16 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     tabName: {
-        color: Colors.white,
+        color: colors.white,
         fontSize: 20,
     },
     button: {
         borderWidth: 1,
-        borderColor: Colors.white
+        borderColor: colors.white
     },
     activeTab: {
         borderBottomWidth: 2,
-        borderColor: Colors.white,
+        borderColor: colors.white,
         width: '80%',
         marginBottom: 5,
     },
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
 const activeTabStyle = (active) => {
     return {
         borderWidth: 2,
-        borderColor: Colors.white,
+        borderColor: colors.white,
         width: '80%',
         marginBottom: 5,
         opacity: active ? 1 : 0

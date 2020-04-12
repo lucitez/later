@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import Colors from '../assets/colors';
+import { colors } from '../assets/colors';
 import Icon from '../components/Icon';
 
 function FriendPreview(props) {
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5,
         width: '100%',
-        backgroundColor: Colors.white
+        backgroundColor: colors.white
     },
     imageContainer: {
         width: 50,

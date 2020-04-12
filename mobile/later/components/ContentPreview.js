@@ -2,50 +2,61 @@ import React from 'react';
 import { StyleSheet, Text, View, Linking, Alert, Image, TouchableWithoutFeedback } from 'react-native';
 import Icon from '../components/Icon';
 import Tag from '../components/Tag';
-import Colors from '../assets/colors';
+import { contentTypes } from '../assets/colors';
 
 function ContentPreview(props) {
+
+    let content = props.content
 
     return (
         <View style={styles.contentContainer}>
             <View style={styles.imageContainer}>
-                <Image style={styles.thumb} source={props.content.image_url ? { uri: props.content.image_url } : {}} />
+                <Image style={styles.thumb} source={content.image_url ? { uri: content.image_url } : {}} />
             </View>
             <View style={styles.detailsContainer}>
                 <View style={styles.topDetailsContainer}>
                     <View style={styles.titleAndDescriptionContainer}>
                         <TouchableWithoutFeedback onPress={async () => {
                             // Checking if the link is supported for links with custom URL scheme.
-                            const supported = await Linking.canOpenURL(props.content.url);
+                            const supported = await Linking.canOpenURL(content.url);
 
                             if (supported) {
                                 // Opening the link with some app, if the URL scheme is "http" the web link should be opened
                                 // by some browser in the mobile
-                                await Linking.openURL(props.content.url);
+                                await Linking.openURL(content.url);
                             } else {
-                                Alert.alert(`Don't know how to open this URL: ${props.content.url}`);
+                                Alert.alert(`Don't know how to open this URL: ${content.url}`);
                             }
 
                         }}>
                             <View>
-                                <Text style={styles.title} numberOfLines={2}>{props.content.title}</Text>
-                                <Text style={styles.description} numberOfLines={1}>{props.content.description}</Text>
+                                <Text style={styles.title} numberOfLines={2}>{content.title}</Text>
+                                <Text style={styles.description} numberOfLines={1}>{content.description}</Text>
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
                     {
-                        props.content.tag ?
+                        content.tag ?
                             <View style={styles.tagContainer}>
-                                <Tag name={props.content.tag} />
+                                <Tag name={content.tag} />
                             </View>
                             : null
                     }
                 </View>
                 <View style={styles.bottomDetailsContainer}>
-                    <Text>Recommended by {props.content.sent_by_username}</Text>
-                    <View style={styles.iconContainer}>
-                        <Icon type={props.content.content_type} size={25} color={Colors.black} />
-                    </View>
+                    {
+                        content.sent_by_username ?
+                            <Text>Recommended by {content.sent_by_username}</Text> :
+                            null
+                    }
+                    {
+                        content.content_type ?
+                            <View style={styles.iconContainer}>
+                                <Icon type={content.content_type} size={25} color={contentTypes[content.content_type].color} />
+                            </View> :
+                            null
+                    }
+
                 </View>
             </View>
         </View>

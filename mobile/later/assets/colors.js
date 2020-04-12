@@ -1,12 +1,23 @@
-const Colors = {
+export const colors = {
     white: '#FCFCFC',
     primary: '#FF8D50',
-    green: '#00b344',
+    green: '#00B344',
     black: '#242424',
     gray: '#888888',
     lightGray: '#EFEFEF',
     darkGray: '#4F4F4F',
-    tag: '#7200C6',
+    purple: '#B24BFF',
+    blue: '#3BACFF'
 }
 
-export default Colors
+export const contentTypes = {
+    watch: {
+        color: 'purple'
+    },
+    read: {
+        color: 'green'
+    },
+    listen: {
+        color: 'blue'
+    }
+}

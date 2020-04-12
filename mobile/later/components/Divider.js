@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Colors from '../assets/colors';
+import { colors } from '../assets/colors';
 
 function Divider() {
 
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
         height: 0.5,
         alignSelf: 'center',
         width: '98%',
-        backgroundColor: Colors.black
+        backgroundColor: colors.black
     }
 });
 

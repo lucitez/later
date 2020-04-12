@@ -5,14 +5,14 @@
 #     "recipient_user_id": "683fca78-1a29-4570-8e3c-d39d07483551"
 # }
 
-# GET http://localhost:8000/friend-requests/pending?user_id=683fca78-1a29-4570-8e3c-d39d07483551
+# GET http://localhost:8000/friend-requests/pending?user_id=d862d942-6d43-48a4-b018-d5edd45d63e9
 
 # PUT http://localhost:8000/friend-requests/accept
 
 # {
-#     "id": "8e5cd2ba-1074-4224-917c-f7d40004bb4d"
+#     "id": "63aa29f2-dfb7-47c0-94c6-c311e01c1212"
 # }
 
 # GET http://localhost:8000/friends/all?user_id=683fca78-1a29-4570-8e3c-d39d07483551
 
-GET http://localhost:8000/friends/for-user?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915
+# GET http://localhost:8000/friends/for-user?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915

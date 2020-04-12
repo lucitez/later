@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Colors from '../assets/colors';
+import { colors } from '../assets/colors';
 
 function Tag(props) {
     return (
@@ -12,7 +12,7 @@ function Tag(props) {
 
 const styles = StyleSheet.create({
     tagContainer: {
-        backgroundColor: Colors.primary,
+        backgroundColor: colors.primary,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 5,
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
         paddingBottom: 2,
     },
     tag: {
-        color: Colors.white
+        color: colors.white
     },
 })
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ContentGroup from '../components/ContentGroup';
 import Header from '../components/Header';
-import Colors from '../assets/colors';
+import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import ContentFilter from '../components/ContentFilter';
 
@@ -53,7 +53,7 @@ const getContent = (userId, archived) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.lightGray,
+        backgroundColor: colors.lightGray,
     },
     searchContainer: {
         flex: 1,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     contentContainer: {
-        backgroundColor: Colors.white,
+        backgroundColor: colors.white,
         flexGrow: 1,
     }
 });

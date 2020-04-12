@@ -3,14 +3,16 @@ import { registerRootComponent } from 'expo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import AntIcons from 'react-native-vector-icons/AntDesign';
+import Icon from './components/Icon';
 import ContentScreen from './screens/ContentScreen';
 import FriendScreen from './screens/FriendScreen';
 import AddFriendScreen from './screens/AddFriendScreen';
-import Colors from './assets/colors';
+import { colors } from './assets/colors';
+import ShareScreen from './screens/ShareScreen';
 
 const Tab = createBottomTabNavigator();
 const FriendStack = createStackNavigator();
+const ShareStack = createStackNavigator();
 
 function CreateFriendStack() {
   return (
@@ -18,6 +20,14 @@ function CreateFriendStack() {
       <FriendStack.Screen name="Friends" component={FriendScreen} />
       <FriendStack.Screen name="Test" component={AddFriendScreen} />
     </FriendStack.Navigator>
+  )
+}
+
+function CreateShareStack() {
+  return (
+    <ShareStack.Navigator initialRouteName="Share" headerMode="none">
+      <ShareStack.Screen name="Share" component={ShareScreen} />
+    </ShareStack.Navigator>
   )
 }
 
@@ -35,27 +45,18 @@ class App extends React.Component {
       <NavigationContainer>
         <Tab.Navigator
           screenOptions={({ route }) => ({
-            tabBarIcon: ({ _, color, size }) => {
-              let iconName;
-
-              if (route.name === 'Home') {
-                iconName = 'home'
-              } else if (route.name === 'Archive') {
-                iconName = 'lock';
-              } else if (route.name === 'Friends') {
-                iconName = 'user';
-              }
-
-              return <AntIcons name={iconName} size={size} color={color} />;
-            },
+            tabBarIcon: ({ _, color, size }) => (
+              <Icon type={route.name.toLowerCase()} size={size} color={color} />
+            )
           })}
           tabBarOptions={{
-            activeTintColor: Colors.primary,
+            activeTintColor: colors.primary,
             inactiveTintColor: 'gray',
           }}
         >
           <Tab.Screen name='Home' component={CreateContentScreen} />
           <Tab.Screen name='Archive' component={CreateArchiveScreen} />
+          <Tab.Screen name='Share' component={CreateShareStack} />
           <Tab.Screen name='Friends' component={CreateFriendStack} />
         </Tab.Navigator>
       </NavigationContainer>

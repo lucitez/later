@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, Alert } from 'react-native';
 import Header from '../components/Header';
-import Colors from '../assets/colors';
+import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import SearchBar from '../components/SearchBar';
 import UserGroup from '../components/UserGroup';
@@ -48,7 +48,9 @@ function AddFriendScreen({ navigation }) {
             <SearchBar onChange={search => setSearch(search)} />
             {
                 users.length == 0 ?
-                    <View style={styles.noFriendsContainer}><Text>Could not find any users that match your search</Text></View>
+                    <View style={styles.noUserContainer}>
+                        <Text>Could not find any users that match your search</Text>
+                    </View>
                     : <UserGroup type='add_friend' users={users} onRequestSent={onFriendRequestSent} />
             }
         </View>
@@ -56,7 +58,7 @@ function AddFriendScreen({ navigation }) {
 }
 
 function BackIcon(navigation) {
-    return <Icon type='back' size={25} color={Colors.white} onPress={() => navigation.pop()} />
+    return <Icon type='back' size={25} color={colors.white} onPress={() => navigation.pop()} />
 }
 
 function sendFriendRequest(userId) {
@@ -77,7 +79,7 @@ const getUsers = (userId, search) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.lightGray,
+        backgroundColor: colors.lightGray,
     },
     searchContainer: {
         flex: 1,
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10
     },
-    noFriendsContainer: {
+    noUserContainer: {
         marginTop: 10,
         width: '100%',
         alignItems: 'center',

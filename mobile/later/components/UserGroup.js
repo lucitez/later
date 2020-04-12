@@ -5,7 +5,6 @@ import FriendPreview from './FriendPreview'
 import Divider from './Divider'
 
 function UserGroup(props) {
-    console.log(props)
     return (
         <ScrollView>
             {

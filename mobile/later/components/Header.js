@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Colors from '../assets/colors';
+import { colors } from '../assets/colors';
 
 
 function Header(props) {
@@ -21,7 +21,7 @@ function Header(props) {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.primary,
+        backgroundColor: colors.primary,
         height: '11%',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        color: Colors.white,
+        color: colors.white,
         fontSize: 20,
         fontWeight: '400',
         letterSpacing: 2,
