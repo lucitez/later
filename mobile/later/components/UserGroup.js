@@ -7,7 +7,7 @@ import Divider from './Divider'
 
 function UserGroup(props) {
     return (
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps={props.keyboardShouldPersistTaps}>
             {
                 props.users.map((user, index) => (
                     <View key={index}>

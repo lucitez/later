@@ -9,13 +9,13 @@ import Icon from '../components/Icon';
 
 const setRequestSent = (users, userId) => {
     return users.map(user =>
-        user.id == userId ? { ...user, pending_request: true } : user
+        user.id == userId ? { ...user, pendingRequest: true } : user
     )
 }
 
 const revertRequestSent = (users, userId) => {
     return users.map(user =>
-        user.id == userId ? { ...user, pending_request: false } : user
+        user.id == userId ? { ...user, pendingRequest: false } : user
     )
 }
 
@@ -64,16 +64,20 @@ function BackIcon(navigation) {
 function sendFriendRequest(userId) {
     let queryString = `/friend-requests/send`
     let body = {
-        sender_user_id: 'b6e05c09-0f62-4757-95f5-ea855adc4915',
-        recipient_user_id: userId
+        senderUserId: 'b6e05c09-0f62-4757-95f5-ea855adc4915',
+        recipientUserId: userId
     }
 
     return Network.POST(queryString, body)
 }
 
 const getUsers = (userId, search) => {
-    let queryString = `/users/add-friend-filter?user_id=${userId}&search=${search}`
-    return Network.GET(queryString)
+    params = {
+        userId: userId,
+        search: search
+    }
+    let queryString = `/users/add-friend-filter`
+    return Network.GET(queryString, params)
 }
 
 const styles = StyleSheet.create({

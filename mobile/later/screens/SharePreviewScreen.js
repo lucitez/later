@@ -67,8 +67,11 @@ function SharePreviewScreen({ navigation }) {
 }
 
 const getContentPreview = url => {
-    let queryString = `/content/preview?url=${url}`
-    return Network.GET(queryString)
+    params = {
+        url: url
+    }
+    let queryString = `/content/preview`
+    return Network.GET(queryString, params)
 }
 
 const styles = StyleSheet.create({

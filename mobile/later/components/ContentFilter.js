@@ -23,7 +23,7 @@ function ArchiveFilter(props) {
     let contentTypes = ['watch', 'read', 'listen']
 
     const [filter, setFilter] = useState({
-        'content_type': null
+        'contentType': null
     })
 
     return (
@@ -33,11 +33,11 @@ function ArchiveFilter(props) {
                     <FilterOption
                         key={index}
                         name={contentType}
-                        active={filter['content_type'] == contentType}
+                        active={filter['contentType'] == contentType}
                         onPress={() => {
                             let updatedFilter = {
                                 ...filter,
-                                ['content_type']: filter['content_type'] == contentType ? null : contentType
+                                ['contentType']: filter['contentType'] == contentType ? null : contentType
                             }
                             setFilter(updatedFilter)
                             props.onChange(updatedFilter)

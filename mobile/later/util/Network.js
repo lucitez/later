@@ -1,82 +1,105 @@
+import axios from 'axios';
+import _ from 'lodash';
+
 const host = {
     local: 'http://192.168.254.64:8000'
 }
 
-/**
- * Parses the JSON returned by a network request
- *
- * @param  {object} response A response from a network request
- *
- * @return {object}          The parsed JSON, status from the response
- */
-function parseJSON(response) {
-    return new Promise((resolve) => response.json()
-        .then((json) => resolve({
-            status: response.status,
-            ok: response.ok,
-            json,
-        }))
-        .catch(() => {
-            resolve({
-                status: 500,
-                ok: false,
-                json: { error: "Something went wrong" }
-            })
-        })
-    );
-}
+const client = axios.create({
+    baseURL: host.local,
+    timeout: 1000
+})
 
-/**
- * Requests a URL, returning a promise
- *
- * @param  {string} endpoint     The URL we want to request
- * @param  {object} [options] The options we want to pass to "fetch"
- *
- * @return {Promise}           The request promise
- */
-function request(endpoint, options) {
+client.interceptors.response.use(response => {
+    return { ...response, ['data']: dataToCamelCase(response.data) }
+})
+
+function request(options) {
     return new Promise((resolve, reject) => {
-        fetch(host.local + endpoint, options)
-            .then(parseJSON)
-            .then((response) => {
-                if (response.ok) {
-                    return resolve(response.json);
+        client.request(options)
+            .then(response => resolve(response.data))
+            .catch((error) => {
+                console.log(error.config)
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                    return reject(error.response.data)
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+                    // http.ClientRequest in node.js
+                    console.log(error.request);
+                    return reject(error.request)
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.log('Error', error.message);
+                    return reject(error.message)
                 }
-                // extract the error from the server's json
-                return reject({
-                    status: response.status,
-                    error: response.json.error
-                });
             })
-            .catch((error) => reject({
-                networkError: error.message,
-            }));
     });
 }
 
+const objToSnakeCase = (obj) => {
+    let snakeCaseParams = {}
+
+    for (let [key, value] of Object.entries(obj)) {
+        snakeCaseParams[_.snakeCase(key)] = value
+    }
+
+    return snakeCaseParams
+}
+
+const objToCamelCase = (obj) => {
+    let camelCaseParams = {}
+
+    for (let [key, value] of Object.entries(obj)) {
+        camelCaseParams[_.camelCase(key)] = value
+    }
+
+    return camelCaseParams
+}
+
+// THIS IS BRITTLE AF
+const dataToCamelCase = (data) => {
+    switch (typeof data) {
+        case 'object':
+            if (Array.isArray(data)) {
+                return data.map(obj => objToCamelCase(obj))
+            } else {
+                return objToCamelCase(data)
+            }
+        default:
+            return data
+    }
+}
+
 const Network = {
-    POST(endpoint, body, headers = {}) {
+    POST(url, body) {
         options = {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(body)
+            method: 'post',
+            url: url,
+            data: objToSnakeCase(body),
         }
-        return request(endpoint, options)
+        return request(options)
     },
-    PUT(endpoint, body, headers = {}) {
+    PUT(url, body) {
         options = {
-            method: 'GET',
-            headers: headers,
-            body: JSON.stringify(body)
+            method: 'put',
+            url: url,
+            data: objToSnakeCase(body),
         }
-        return request(endpoint, options)
+        return request(options)
     },
-    GET(endpoint, headers = {}) {
+    GET(url, params = {}) {
         options = {
-            method: 'GET',
-            headers: headers,
+            method: 'get',
+            url: url,
+            params: objToSnakeCase(params),
         }
-        return request(endpoint, options)
+        return request(options)
     }
 }
 

@@ -11,12 +11,12 @@ function AddFriendPreview(props) {
                 <View style={styles.thumb}></View>
             </View>
             <View style={styles.detailsContainer}>
-                <Text style={styles.name}>{user.first_name} {user.last_name}</Text>
+                <Text style={styles.name}>{user.firstName} {user.lastName}</Text>
                 <Text style={styles.username}>@{user.username}</Text>
             </View>
             <View style={styles.addFriendContainer}>
                 {
-                    user.pending_request ?
+                    user.pendingRequest ?
                         <View style={styles.requestSentContainer}>
                             <Text style={{ color: colors.white, fontSize: 12 }}>Request Sent</Text>
                         </View>

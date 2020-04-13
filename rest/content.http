@@ -9,7 +9,7 @@
 #     &archived=true
 
 GET http://localhost:8000/content/preview
-    ?url=https://www.nytimes.com/2020/04/12/nyregion/coronavirus-new-york-update.html
+    ?url=/content/preview?url=https://www.nytimes.com/2020/04/13/world/coronavirus-news-world-international-global.html?referringSource=articleShare
 
 # PUT http://localhost:8000/user-content/archive
 

@@ -9,12 +9,12 @@ import { colors } from '../assets/colors';
 import { userId } from '../util/constants';
 import UserGroup from '../components/UserGroup';
 
-function SharePreviewScreen(props) {
+function SharePreviewScreen(props, { navigation }) {
 
     let preview = props.route.params.contentPreview
 
     const [search, setSearch] = useState('')
-    const [selectedFriends, setSelectedFriends] = useState({}) // map of user_id to friendUser
+    const [selectedFriends, setSelectedFriends] = useState({}) // map of userId to friendUser
     const [friends, setFriends] = useState([])
 
     useEffect(() => {
@@ -31,7 +31,9 @@ function SharePreviewScreen(props) {
         setSelectedFriends(updateSelectedFriends(friendUser, selectedFriends))
     }
 
-    // console.log(friends)
+    const onSend = () => {
+
+    }
 
     return (
         <View style={styles.container}>
@@ -48,7 +50,7 @@ function SharePreviewScreen(props) {
                 behavior='padding'
                 style={{ flex: 1 }}
             >
-                <UserGroup users={friends} type='share' onSelectToggle={onSelectToggle} />
+                <UserGroup users={friends} type='share' onSelectToggle={onSelectToggle} keyboardShouldPersistTaps='handled' />
                 {
                     Object.values(selectedFriends).length > 0 ?
                         <View style={styles.selectedUsersContainer}>
@@ -67,30 +69,30 @@ function SharePreviewScreen(props) {
 }
 
 function transformFriends(friends, selectedFriends) {
-    console.log('friends')
-    console.log(friends)
-    console.log('selected friends')
-    console.log(selectedFriends)
-
-
-
     return friends.map(friend => (
-        { ...friend, ['selected']: selectedFriends.hasOwnProperty(friend.user_id) }
+        { ...friend, ['selected']: selectedFriends.hasOwnProperty(friend.userId) }
     ))
 }
 
 const updateSelectedFriends = (friendUser, selectedFriends) => {
     if (friendUser.selected) {
-        let { [friendUser.user_id]: userId, ...rest } = selectedFriends
+        let { [friendUser.userId]: userId, ...rest } = selectedFriends
         return rest
     } else {
-        return { ...selectedFriends, [friendUser.user_id]: friendUser }
+        return { ...selectedFriends, [friendUser.userId]: friendUser }
     }
 }
 
 const searchFriends = search => {
-    let queryString = `/friends/for-user?user_id=${userId}&search=${search}`
-    return Network.GET(queryString)
+    params = {
+        userId: userId,
+        search: search,
+    }
+    let queryString = `/friends/for-user`
+    return Network.GET(queryString, params)
+}
+
+const sendShares = (url, userIds) => {
 }
 
 const styles = StyleSheet.create({

@@ -10,7 +10,7 @@ function ContentScreen(props) {
     const [allContent, setAllContent] = useState([])
     const [visibleContent, setVisibleContent] = useState([])
     const [filter, setFilter] = useState({
-        'content_type': null
+        'contentType': null
     })
 
     useEffect(() => {
@@ -36,18 +36,18 @@ function ContentScreen(props) {
 }
 
 const filterContent = (content, filter) => {
-    if (filter['content_type'] != null) {
-        return content.filter(c => c['content_type'] == filter['content_type'])
+    if (filter['contentType'] != null) {
+        return content.filter(c => c['contentType'] == filter['contentType'])
     }
     return content
 }
 
 const getContent = (userId, archived) => {
-    let queryString = `/user-content/filter?user_id=${userId}`
-    if (archived) {
-        queryString += `&archived=true`
+    params = {
+        userId: userId,
+        archived: archived
     }
-    return Network.GET(queryString)
+    return Network.GET(`/user-content/filter`, params)
 }
 
 const styles = StyleSheet.create({

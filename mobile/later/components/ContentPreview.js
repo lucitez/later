@@ -11,7 +11,7 @@ function ContentPreview(props) {
     return (
         <View style={styles.contentContainer}>
             <View style={styles.imageContainer}>
-                <Image style={styles.thumb} source={content.image_url ? { uri: content.image_url } : {}} />
+                <Image style={styles.thumb} source={content.imageUrl ? { uri: content.imageUrl } : {}} />
             </View>
             <View style={styles.detailsContainer}>
                 <View style={styles.topDetailsContainer}>
@@ -45,14 +45,14 @@ function ContentPreview(props) {
                 </View>
                 <View style={styles.bottomDetailsContainer}>
                     {
-                        content.sent_by_username ?
-                            <Text>Recommended by {content.sent_by_username}</Text> :
+                        content.sentByUsername ?
+                            <Text>Recommended by {content.sentByUsername}</Text> :
                             null
                     }
                     {
-                        content.content_type ?
+                        content.contentType ?
                             <View style={styles.iconContainer}>
-                                <Icon type={content.content_type} size={25} color={contentTypes[content.content_type].color} />
+                                <Icon type={content.contentType} size={25} color={contentTypes[content.contentType].color} />
                             </View> :
                             null
                     }

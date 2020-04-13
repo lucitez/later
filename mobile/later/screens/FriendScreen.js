@@ -40,9 +40,15 @@ function AddFriendsIcon(navigation) {
 }
 
 const getFriends = (userId, search, offset) => {
-    let queryString = `/friends/for-user?user_id=${userId}&search=${search}&offset=${offset}&limit=10`
+    params = {
+        userId: userId,
+        search: search,
+        offset: offset,
+        limit: 10
+    }
+    let queryString = `/friends/for-user`
 
-    return Network.GET(queryString)
+    return Network.GET(queryString, params)
 }
 
 const styles = StyleSheet.create({
