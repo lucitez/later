@@ -31,7 +31,7 @@ func (transfer *Friend) WireFriendsFrom(friendRequests []model.Friend) []respons
 func wireFriend(friend model.Friend, user model.User) response.WireFriend {
 	return response.WireFriend{
 		ID:          friend.ID,
-		UserID:      friend.UserID,
+		UserID:      user.ID,
 		FirstName:   user.FirstName,
 		LastName:    user.LastName,
 		Username:    user.Username,

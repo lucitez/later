@@ -21,7 +21,7 @@ function Icon(props) {
         case 'plus':
             return <AntIcons name='pluscircleo' {...props} />
         case 'check_filled':
-            return <AntIcons name='checkcircle' {...props} />
+            return <FeatherIcons name='check-circle' {...props} />
         case 'back':
             return <AntIcons name='left' {...props} />
         case 'chat':
@@ -38,6 +38,10 @@ function Icon(props) {
             return <MaterialIcons name='content-paste' {...props} />
         case 'close':
             return <AntIcons name='closecircle' {...props} />
+        case 'circle':
+            return <FeatherIcons name='circle' {...props} />
+        case 'next':
+            return <AntIcons name='rightcircle' {...props} />
         default:
             return null
     }

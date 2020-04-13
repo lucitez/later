@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { colors } from '../assets/colors';
+import Icon from '../components/Icon';
 
-function AddFriendPreview(props) {
+function ShareWithFriendPreview(props) {
     let user = props.user
+    let selected = user.selected
 
     return (
         <View style={styles.container}>
@@ -14,18 +16,12 @@ function AddFriendPreview(props) {
                 <Text style={styles.name}>{user.first_name} {user.last_name}</Text>
                 <Text style={styles.username}>@{user.username}</Text>
             </View>
-            <View style={styles.addFriendContainer}>
+            <View style={styles.chatContainer}>
                 {
-                    user.pending_request ?
-                        <View style={styles.requestSentContainer}>
-                            <Text style={{ color: colors.white, fontSize: 12 }}>Request Sent</Text>
-                        </View>
+                    selected ?
+                        <Icon type='check_filled' size={30} />
                         :
-                        <TouchableOpacity onPress={() => props.onRequestSent()}>
-                            <View style={styles.addFriendButton}>
-                                <Text style={{ color: colors.green, fontSize: 12 }}>Send Request</Text>
-                            </View>
-                        </TouchableOpacity>
+                        <Icon type='circle' size={30} />
                 }
             </View>
         </View>
@@ -35,7 +31,9 @@ function AddFriendPreview(props) {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        height: 50,
+        height: 60,
+        paddingTop: 5,
+        paddingBottom: 5,
         width: '100%',
         backgroundColor: colors.white
     },
@@ -65,27 +63,13 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '300'
     },
-    addFriendContainer: {
+    chatContainer: {
         height: '100%',
         padding: 5,
         marginRight: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    addFriendButton: {
-        padding: 6,
-        borderWidth: 1.5,
-        borderRadius: 5,
-        borderColor: colors.green,
-        justifyContent: 'center'
-    },
-    requestSentContainer: {
-        padding: 7,
-        borderRadius: 5,
-        backgroundColor: colors.green,
-        justifyContent: 'center'
-    },
-
 });
 
-export default AddFriendPreview
+export default ShareWithFriendPreview

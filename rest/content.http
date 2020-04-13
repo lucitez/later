@@ -4,9 +4,12 @@
 #     "url": "https://soundcloud.com/itskforest/stwo-kmh-lovin-u"
 # }
 
-GET http://192.168.254.64:8000/user-content/filter
-    ?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915
-    &archived=true
+# GET http://192.168.254.64:8000/user-content/filter
+#     ?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915
+#     &archived=true
+
+GET http://localhost:8000/content/preview
+    ?url=https://www.nytimes.com/2020/04/12/nyregion/coronavirus-new-york-update.html
 
 # PUT http://localhost:8000/user-content/archive
 

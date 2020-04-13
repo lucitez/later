@@ -1,5 +1,5 @@
 const host = {
-    local: 'http://10.0.1.59:8000'
+    local: 'http://192.168.254.64:8000'
 }
 
 /**
@@ -15,13 +15,21 @@ function parseJSON(response) {
             status: response.status,
             ok: response.ok,
             json,
-        })));
+        }))
+        .catch(() => {
+            resolve({
+                status: 500,
+                ok: false,
+                json: { error: "Something went wrong" }
+            })
+        })
+    );
 }
 
 /**
  * Requests a URL, returning a promise
  *
- * @param  {string} endpoin  t     The URL we want to request
+ * @param  {string} endpoint     The URL we want to request
  * @param  {object} [options] The options we want to pass to "fetch"
  *
  * @return {Promise}           The request promise

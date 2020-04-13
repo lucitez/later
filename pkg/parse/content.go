@@ -56,6 +56,8 @@ func (parser *Content) Err() error {
 
 // ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
 func (parser *Content) ContentFromURL(url string, domain *model.Domain) model.Content {
+	parser.message = ""
+	parser.valid = true
 	var contentType *string
 	var contentMetadata contentMetadata
 
@@ -83,6 +85,12 @@ func (parser *Content) ContentFromURL(url string, domain *model.Domain) model.Co
 
 func (parser *Content) contentMetadataDefault(metadata *contentMetadata, url string) {
 	resp, err := http.Get(url)
+
+	if err != nil {
+		parser.valid = false
+		parser.message = err.Error()
+		return
+	}
 
 	if resp.StatusCode != 200 {
 		parser.valid = false

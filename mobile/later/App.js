@@ -8,7 +8,8 @@ import ContentScreen from './screens/ContentScreen';
 import FriendScreen from './screens/FriendScreen';
 import AddFriendScreen from './screens/AddFriendScreen';
 import { colors } from './assets/colors';
-import ShareScreen from './screens/ShareScreen';
+import SharePreviewScreen from './screens/SharePreviewScreen';
+import SendShareScreen from './screens/SendShareScreen';
 
 const Tab = createBottomTabNavigator();
 const FriendStack = createStackNavigator();
@@ -26,7 +27,8 @@ function CreateFriendStack() {
 function CreateShareStack() {
   return (
     <ShareStack.Navigator initialRouteName="Share" headerMode="none">
-      <ShareStack.Screen name="Share" component={ShareScreen} />
+      <ShareStack.Screen name="Share" component={SharePreviewScreen} />
+      <ShareStack.Screen name="Send Share" component={SendShareScreen} />
     </ShareStack.Navigator>
   )
 }

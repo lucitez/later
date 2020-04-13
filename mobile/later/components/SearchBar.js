@@ -26,11 +26,13 @@ function SearchBar(props) {
                         value={search}
                     />
                 </View>
-                {search.length > 0 ?
-                    <View style={styles.clearIconContainer}>
-                        <Icon type='close' size={20} color={colors.darkGray} onPress={() => setSearch('')} />
-                    </View>
-                    : null}
+                {
+                    search.length > 0 ?
+                        <View style={styles.clearIconContainer}>
+                            <Icon type='close' size={20} color={colors.darkGray} onPress={() => setSearch('')} />
+                        </View>
+                        : null
+                }
             </View>
             <TouchableOpacity onPress={() => {
                 setSearch('')
@@ -70,6 +72,7 @@ const styles = StyleSheet.create({
     clearIconContainer: {
         paddingRight: 5,
         paddingTop: 2,
+        marginLeft: 5,
     },
     inputContainer: {
         height: '100%',
