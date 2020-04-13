@@ -7,7 +7,7 @@ const host = {
 
 const client = axios.create({
     baseURL: host.local,
-    timeout: 1000
+    timeout: 10000
 })
 
 client.interceptors.response.use(response => {
@@ -77,7 +77,7 @@ const dataToCamelCase = (data) => {
 }
 
 const Network = {
-    POST(url, body) {
+    POST(url, body = {}) {
         options = {
             method: 'post',
             url: url,
@@ -85,7 +85,7 @@ const Network = {
         }
         return request(options)
     },
-    PUT(url, body) {
+    PUT(url, body = {}) {
         options = {
             method: 'put',
             url: url,

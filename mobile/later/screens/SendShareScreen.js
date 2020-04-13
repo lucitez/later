@@ -9,9 +9,10 @@ import { colors } from '../assets/colors';
 import { userId } from '../util/constants';
 import UserGroup from '../components/UserGroup';
 
-function SharePreviewScreen(props, { navigation }) {
+function SharePreviewScreen(props) {
 
     let preview = props.route.params.contentPreview
+    let navigation = props.navigation
 
     const [search, setSearch] = useState('')
     const [selectedFriends, setSelectedFriends] = useState({}) // map of userId to friendUser
@@ -32,7 +33,8 @@ function SharePreviewScreen(props, { navigation }) {
     }
 
     const onSend = () => {
-
+        sendShares(preview.url, Object.keys(selectedFriends))
+        navigation.navigate('Home')
     }
 
     return (
@@ -58,7 +60,7 @@ function SharePreviewScreen(props, { navigation }) {
                                 {Object.values(selectedFriends).map(friend => friend.username).join(', ')}
                             </Text>
                             <View style={styles.sendIconContainer}>
-                                <Icon type='next' size={30} color={colors.white} />
+                                <Icon type='next' size={30} color={colors.white} onPress={() => onSend()} />
                             </View>
                         </View>
                         : null
@@ -93,6 +95,13 @@ const searchFriends = search => {
 }
 
 const sendShares = (url, userIds) => {
+    body = {
+        senderUserId: userId,
+        recipientUserIds: userIds,
+        url: url
+    }
+    console.log(body)
+    return Network.POST('/shares/new', body)
 }
 
 const styles = StyleSheet.create({
@@ -114,7 +123,8 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
         padding: 10,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     selectedUsersText: {
         fontSize: 20,
