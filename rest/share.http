@@ -1,7 +1,7 @@
 POST http://localhost:8000/shares/new
 
 {
-    "sender_user_id": "ec0aa72c-497c-4579-a6aa-1f19ebff5a1a",
-    "recipient_user_ids": ["b6e05c09-0f62-4757-95f5-ea855adc4915"],
-    "url": "https://www.wsj.com/articles/dire-economic-numbers-intensify-debate-over-lifting-coronavirus-restrictions-11586459653?mod=hp_lead_pos1"
+    "sender_user_id": "efa605a8-efb4-4a85-8548-55f5eafa5a21",
+    "recipient_user_ids": ["fdeff714-8f43-4083-ac3f-229cd1783c0c"],
+    "url": "https://www.wellplated.com/baked-salmon-in-foil/"
 }

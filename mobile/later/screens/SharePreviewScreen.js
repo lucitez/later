@@ -7,6 +7,7 @@ import ContentPreview from '../components/ContentPreview';
 import { colors } from '../assets/colors';
 
 function SharePreviewScreen({ navigation }) {
+
     const [url, setUrl] = useState('')
     const [loading, setLoading] = useState(false)
     const [contentPreview, setContentPreview] = useState(null)

@@ -84,4 +84,10 @@ CREATE TABLE IF NOT EXISTS user_content (
 CREATE TRIGGER update_user_content BEFORE UPDATE ON user_content
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
+CREATE INDEX idx_user_content_on_user_id_and_archived_at ON user_content(user_id, archived_at)
+WHERE deleted_at IS NULL;
+
+CREATE INDEX idx_user_content_on_user_id_and_content_type_and_tag ON user_content(user_id, content_type, tag)
+WHERE deleted_at IS NULL;
+
 COMMIT;

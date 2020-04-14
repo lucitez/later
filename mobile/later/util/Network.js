@@ -15,9 +15,14 @@ client.interceptors.response.use(response => {
 })
 
 function request(options) {
+    let start = Date.now();
+
     return new Promise((resolve, reject) => {
         client.request(options)
-            .then(response => resolve(response.data))
+            .then(response => {
+                console.log(`seconds elapsed: ${Date.now() - start}`)
+                return resolve(response.data)
+            })
             .catch((error) => {
                 console.log(error.config)
                 if (error.response) {
@@ -78,7 +83,7 @@ const dataToCamelCase = (data) => {
 
 const Network = {
     POST(url, body = {}) {
-        options = {
+        let options = {
             method: 'post',
             url: url,
             data: objToSnakeCase(body),
@@ -86,7 +91,7 @@ const Network = {
         return request(options)
     },
     PUT(url, body = {}) {
-        options = {
+        let options = {
             method: 'put',
             url: url,
             data: objToSnakeCase(body),
@@ -94,7 +99,7 @@ const Network = {
         return request(options)
     },
     GET(url, params = {}) {
-        options = {
+        let options = {
             method: 'get',
             url: url,
             params: objToSnakeCase(params),

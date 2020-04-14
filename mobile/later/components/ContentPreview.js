@@ -1,10 +1,18 @@
-import React from 'react';
-import { StyleSheet, Text, View, Linking, Alert, Image, TouchableWithoutFeedback } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Linking, Alert, Image, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import Icon from '../components/Icon';
 import Tag from '../components/Tag';
-import { contentTypes } from '../assets/colors';
+import ButtonGroup from './ButtonGroup';
+import Button from './Button';
+import { contentTypes, colors } from '../assets/colors';
+import Modal from 'react-native-modal';
 
 function ContentPreview(props) {
+
+    const deviceWidth = Dimensions.get("window").width
+    const deviceHeight = Dimensions.get("window").height
+
+    const [bottomSheetActive, setBottomSheetActive] = useState(false)
 
     let content = props.content
 
@@ -17,17 +25,18 @@ function ContentPreview(props) {
                 <View style={styles.topDetailsContainer}>
                     <View style={styles.titleAndDescriptionContainer}>
                         <TouchableWithoutFeedback onPress={async () => {
-                            // Checking if the link is supported for links with custom URL scheme.
-                            const supported = await Linking.canOpenURL(content.url);
+                            if (!bottomSheetActive) {
+                                // Checking if the link is supported for links with custom URL scheme.
+                                const supported = await Linking.canOpenURL(content.url);
 
-                            if (supported) {
-                                // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-                                // by some browser in the mobile
-                                await Linking.openURL(content.url);
-                            } else {
-                                Alert.alert(`Don't know how to open this URL: ${content.url}`);
+                                if (supported) {
+                                    // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+                                    // by some browser in the mobile
+                                    await Linking.openURL(content.url);
+                                } else {
+                                    Alert.alert(`Don't know how to open this URL: ${content.url}`);
+                                }
                             }
-
                         }}>
                             <View>
                                 <Text style={styles.title} numberOfLines={2}>{content.title}</Text>
@@ -44,21 +53,67 @@ function ContentPreview(props) {
                     }
                 </View>
                 <View style={styles.bottomDetailsContainer}>
-                    {
-                        content.sentByUsername ?
-                            <Text>Recommended by {content.sentByUsername}</Text> :
-                            null
-                    }
-                    {
-                        content.contentType ?
-                            <View style={styles.iconContainer}>
-                                <Icon type={content.contentType} size={25} color={contentTypes[content.contentType].color} />
-                            </View> :
-                            null
-                    }
-
+                    <View style={{ flex: 2 }}>
+                        {
+                            content.sentByUsername ?
+                                <Text>From @{content.sentByUsername}</Text> :
+                                null
+                        }
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        {
+                            content.contentType ?
+                                <View style={styles.contentTypeIconContainer}>
+                                    <Icon type={content.contentType} size={25} color={contentTypes[content.contentType].color} />
+                                </View> :
+                                null
+                        }
+                    </View>
+                    <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                        <View style={styles.shareIconContainer}>
+                            <Icon type='dots' size={20} color={colors.black} onPress={() => setBottomSheetActive(true)} />
+                        </View>
+                    </View>
                 </View>
             </View>
+            <Modal
+                isVisible={bottomSheetActive}
+                backdropOpacity={0}
+                backdropColor={colors.primary}
+                onBackdropPress={() => setBottomSheetActive(false)}
+                animationIn='slideInUp'
+                animationOut='slideOutDown'
+                animationOutTiming={500}
+                deviceHeight={deviceHeight}
+                deviceWidth={deviceWidth}
+                style={{ justifyContent: 'flex-end', margin: 0 }}
+            >
+                <View style={styles.bottomSheet}>
+                    <ButtonGroup theme='primary' buttonProps={[
+                        {
+                            theme: 'primary',
+                            name: 'Forward',
+                            size: 'medium',
+                            onPress: () => {
+                                props.onAction('forward', { content: content })
+                                setBottomSheetActive(false)
+                            }
+                        },
+                        {
+                            theme: 'primary',
+                            name: 'Archive',
+                            size: 'medium',
+                            onPress: () => props.onAction('forward', { content: content })
+                        },
+                        {
+                            theme: 'light',
+                            name: 'Cancel',
+                            size: 'medium',
+                            onPress: () => setBottomSheetActive(false)
+                        }
+                    ]} />
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -110,10 +165,17 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent: 'space-between',
     },
-    iconContainer: {
-        paddingRight: 10,
+    contentTypeIconContainer: {
         marginBottom: -5
-    }
+    },
+    shareIconContainer: {
+        paddingRight: 10,
+        marginBottom: -3
+    },
+    bottomSheet: {
+        backgroundColor: colors.primary,
+        paddingBottom: 30,
+    },
 });
 
 export default ContentPreview

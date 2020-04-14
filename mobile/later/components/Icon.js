@@ -4,6 +4,7 @@ import AntIcons from 'react-native-vector-icons/AntDesign';
 import FeatherIcons from 'react-native-vector-icons/Feather';
 import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import EntypoIcons from 'react-native-vector-icons/Entypo';
 
 function Icon(props) {
     switch (props.type) {
@@ -42,6 +43,8 @@ function Icon(props) {
             return <FeatherIcons name='circle' {...props} />
         case 'next':
             return <AntIcons name='rightcircle' {...props} />
+        case 'dots':
+            return <EntypoIcons name='dots-three-vertical' {...props} />
         default:
             return null
     }

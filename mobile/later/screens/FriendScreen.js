@@ -6,22 +6,24 @@ import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import UserGroup from '../components/UserGroup';
 import SearchBar from '../components/SearchBar';
+import { userId } from '../util/constants';
 
 function FriendScreen({ navigation }) {
     const [friends, setFriends] = useState([])
-    const [search, setSearch] = useState('')
+    const [search, setSearch] = useState(null)
     const [offset, setOffset] = useState(0)
 
     useEffect(() => {
-        getFriends('b6e05c09-0f62-4757-95f5-ea855adc4915', search, offset)
+        getFriends(userId, search, offset)
             .then(nextPage => setFriends(friends.concat(nextPage)))
             .catch(error => console.error(error))
     }, [offset])
 
     useEffect(() => {
-        getFriends('b6e05c09-0f62-4757-95f5-ea855adc4915', search, offset)
-            .then(friends => setFriends(friends))
-            .catch(error => console.error(error))
+        if (search)
+            getFriends(userId, search, offset)
+                .then(friends => setFriends(friends))
+                .catch(error => console.error(error))
     }, [search])
 
     return (

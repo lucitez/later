@@ -100,7 +100,6 @@ const sendShares = (url, userIds) => {
         recipientUserIds: userIds,
         url: url
     }
-    console.log(body)
     return Network.POST('/shares/new', body)
 }
 

@@ -6,6 +6,7 @@ import Network from '../util/Network';
 import SearchBar from '../components/SearchBar';
 import UserGroup from '../components/UserGroup';
 import Icon from '../components/Icon';
+import { userId } from '../util/constants';
 
 const setRequestSent = (users, userId) => {
     return users.map(user =>
@@ -25,19 +26,20 @@ function AddFriendScreen({ navigation }) {
 
     useEffect(() => {
         if (search.length == 0 || search.length > 2) {
-            getUsers('b6e05c09-0f62-4757-95f5-ea855adc4915', search)
+            getUsers(search)
                 .then(users => setUsers(users))
                 .catch(error => console.error(error))
         }
     }, [search])
 
-    const onFriendRequestSent = userId => {
-        setUsers(setRequestSent(users, userId))
+    const onFriendRequestSent = friendUserId => {
+        console.log('REQUEST SENT')
+        setUsers(setRequestSent(users, friendUserId))
 
-        sendFriendRequest(userId)
-            .then()
+        sendFriendRequest(friendUserId)
+            .then((success) => null)
             .catch((err) => {
-                setUsers(revertRequestSent(users, userId))
+                setUsers(revertRequestSent(users, friendUserId))
                 Alert.alert(err)
             })
     }
@@ -61,17 +63,17 @@ function BackIcon(navigation) {
     return <Icon type='back' size={25} color={colors.white} onPress={() => navigation.pop()} />
 }
 
-function sendFriendRequest(userId) {
+function sendFriendRequest(friendUserId) {
     let queryString = `/friend-requests/send`
     let body = {
-        senderUserId: 'b6e05c09-0f62-4757-95f5-ea855adc4915',
-        recipientUserId: userId
+        senderUserId: userId,
+        recipientUserId: friendUserId
     }
 
     return Network.POST(queryString, body)
 }
 
-const getUsers = (userId, search) => {
+const getUsers = (search) => {
     params = {
         userId: userId,
         search: search

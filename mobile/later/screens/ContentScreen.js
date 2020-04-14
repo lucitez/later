@@ -1,51 +1,61 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import ContentGroup from '../components/ContentGroup';
-import Header from '../components/Header';
+import { StyleSheet, View, Text } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
+import Header from '../components/Header';
+import { userId } from '../util/constants';
 import ContentFilter from '../components/ContentFilter';
+import ContentGroup from '../components/ContentGroup';
+import SearchBar from '../components/SearchBar';
 
-function ContentScreen(props) {
-    const [allContent, setAllContent] = useState([])
-    const [visibleContent, setVisibleContent] = useState([])
-    const [filter, setFilter] = useState({
-        'contentType': null
-    })
+function ContentScreen({ navigation }) {
+    const [content, setContent] = useState([])
+    const [search, setSearch] = useState('')
+    const [filter, setFilter] = useState({})
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        getContent('b6e05c09-0f62-4757-95f5-ea855adc4915', props.archived)
+        setLoading(true)
+        getContent(search, filter)
             .then(content => {
-                setAllContent(content)
-                setVisibleContent(content)
+                setContent(content)
+                setLoading(false)
             })
             .catch(error => console.error(error))
-    }, [])
-
-    useEffect(() => setVisibleContent(filterContent(allContent, filter)), [filter])
+    }, [filter, search])
 
     return (
         <View style={styles.container}>
             <Header name="Later" />
+            <SearchBar
+                onChange={value => setSearch(value)}
+                placeholder='Search...'
+            />
             <ContentFilter onChange={(filter) => setFilter(filter)} />
             <View style={styles.contentContainer}>
-                <ContentGroup content={visibleContent} />
+                {
+                    loading ?
+                        <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
+                            <Text>Loading...</Text>
+                        </View>
+                        :
+                        <ContentGroup content={content} onForward={(content) => {
+                            navigation.navigate('Share', {
+                                screen: 'Send Share',
+                                params: { contentPreview: content }
+                            })
+                        }} />
+                }
             </View>
         </View>
     );
 }
 
-const filterContent = (content, filter) => {
-    if (filter['contentType'] != null) {
-        return content.filter(c => c['contentType'] == filter['contentType'])
-    }
-    return content
-}
-
-const getContent = (userId, archived) => {
-    params = {
+const getContent = (search, contentFilter) => {
+    let params = {
         userId: userId,
-        archived: archived
+        search: search,
+        ...contentFilter
     }
     return Network.GET(`/user-content/filter`, params)
 }

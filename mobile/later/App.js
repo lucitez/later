@@ -33,14 +33,6 @@ function CreateShareStack() {
   )
 }
 
-function CreateContentScreen() {
-  return <ContentScreen archived={false} />
-}
-
-function CreateArchiveScreen() {
-  return <ContentScreen archived={true} />
-}
-
 class App extends React.Component {
   render() {
     return (
@@ -56,8 +48,7 @@ class App extends React.Component {
             inactiveTintColor: 'gray',
           }}
         >
-          <Tab.Screen name='Home' component={CreateContentScreen} />
-          <Tab.Screen name='Archive' component={CreateArchiveScreen} />
+          <Tab.Screen name='Home' component={ContentScreen} />
           <Tab.Screen name='Share' component={CreateShareStack} />
           <Tab.Screen name='Friends' component={CreateFriendStack} />
         </Tab.Navigator>

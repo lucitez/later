@@ -7,12 +7,12 @@
 
 # GET http://localhost:8000/friend-requests/pending?user_id=d862d942-6d43-48a4-b018-d5edd45d63e9
 
-# PUT http://localhost:8000/friend-requests/accept
+PUT http://localhost:8000/friend-requests/accept
 
-# {
-#     "id": "ec3b5a49-d61f-42a4-a6ab-09de0029b2eb"
-# }
+{
+    "id": "558a349f-38f7-4003-82e9-48199807c4a8"
+}
 
-GET http://localhost:8000/friends/for-user?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915
+# GET http://localhost:8000/friends/for-user?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915
 
 # GET http://localhost:8000/friends/for-user?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915
