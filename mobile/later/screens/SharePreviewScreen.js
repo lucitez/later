@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Button, TouchableOpacity, Alert } from 'react-native';
 import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import Network from '../util/Network';
 import ContentPreview from '../components/ContentPreview';
 import { colors } from '../assets/colors';
 
-function SharePreviewScreen({ navigation }) {
-
+function SharePreviewScreen({ navigation, route }) {
     const [url, setUrl] = useState('')
     const [loading, setLoading] = useState(false)
     const [contentPreview, setContentPreview] = useState(null)
+    const [sent, setSent] = useState(false)
 
     useEffect(() => {
         if (url.length > 0) {
@@ -27,10 +27,18 @@ function SharePreviewScreen({ navigation }) {
         }
     }, [url])
 
+    useEffect(() => {
+        if (route.params && route.params.success) {
+            setSent(true)
+            setTimeout(() => { setSent(false) }, 2000)
+        }
+    }, [route.params])
+
     return (
         <View style={styles.container}>
             <Header name='Share' />
             <SearchBar
+                clear={sent}
                 onChange={value => setUrl(value)}
                 iconName='paste'
                 autoFocus={true}
@@ -59,7 +67,13 @@ function SharePreviewScreen({ navigation }) {
                             loading ?
                                 <Text>Retrieving data</Text>
                                 :
-                                <Text>{url.length == 0 ? "Paste a URL to get started!" : "We could not generate a preview of your link"}</Text>
+                                <Text>
+                                    {
+                                        sent ? "Share successful!" :
+                                            url.length == 0 ? "Paste a URL to get started!" :
+                                                "We could not generate a preview of your link"
+                                    }
+                                </Text>
                         }
                     </View>
             }
@@ -68,7 +82,7 @@ function SharePreviewScreen({ navigation }) {
 }
 
 const getContentPreview = url => {
-    params = {
+    let params = {
         url: url
     }
     let queryString = `/content/preview`

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, Platform, Text } from 'react-native';
+import { StyleSheet, View, KeyboardAvoidingView, NavigationActions, Text } from 'react-native';
 import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import ContentPreview from '../components/ContentPreview';
@@ -9,10 +9,9 @@ import { colors } from '../assets/colors';
 import { userId } from '../util/constants';
 import UserGroup from '../components/UserGroup';
 
-function SharePreviewScreen(props) {
+function SendShareScreen({ navigation, route }) {
 
-    let preview = props.route.params.contentPreview
-    let navigation = props.navigation
+    let preview = route.params.contentPreview
 
     const [search, setSearch] = useState('')
     const [selectedFriends, setSelectedFriends] = useState({}) // map of userId to friendUser
@@ -34,16 +33,26 @@ function SharePreviewScreen(props) {
 
     const onSend = () => {
         sendShares(preview.url, Object.keys(selectedFriends))
-        navigation.navigate('Home')
+        navigation.navigate('Share', { success: true })
     }
+
+    const backIcon = (
+        <Icon
+            type='back'
+            size={25}
+            color={colors.white}
+            onPress={() => navigation.pop()}
+        />
+    )
 
     return (
         <View style={styles.container}>
-            <Header name='Share' />
+            <Header name='Share' leftIcon={backIcon} />
             <SearchBar
                 onChange={value => setSearch(value)}
                 iconName='friends'
                 placeholder='Share with friends'
+                onCancel={() => navigation.pop()}
             />
             <View style={styles.contentPreviewContainer}>
                 <ContentPreview content={preview} />
@@ -86,7 +95,7 @@ const updateSelectedFriends = (friendUser, selectedFriends) => {
 }
 
 const searchFriends = search => {
-    params = {
+    let params = {
         userId: userId,
         search: search,
     }
@@ -132,4 +141,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default SharePreviewScreen;
+export default SendShareScreen;

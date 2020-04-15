@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'flex-end',
         paddingRight: 10,
+        paddingTop: 5,
     },
     headerTitleContainer: {
         height: '100%',

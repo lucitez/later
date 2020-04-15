@@ -33,11 +33,9 @@ function AddFriendScreen({ navigation }) {
     }, [search])
 
     const onFriendRequestSent = friendUserId => {
-        console.log('REQUEST SENT')
         setUsers(setRequestSent(users, friendUserId))
 
         sendFriendRequest(friendUserId)
-            .then((success) => null)
             .catch((err) => {
                 setUsers(revertRequestSent(users, friendUserId))
                 Alert.alert(err)

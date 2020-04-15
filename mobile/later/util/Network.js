@@ -15,12 +15,9 @@ client.interceptors.response.use(response => {
 })
 
 function request(options) {
-    let start = Date.now();
-
     return new Promise((resolve, reject) => {
         client.request(options)
             .then(response => {
-                console.log(`seconds elapsed: ${Date.now() - start}`)
                 return resolve(response.data)
             })
             .catch((error) => {

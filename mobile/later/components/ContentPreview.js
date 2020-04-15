@@ -1,21 +1,11 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Linking, Alert, Image, TouchableWithoutFeedback, Dimensions } from 'react-native';
-import Icon from '../components/Icon';
-import Tag from '../components/Tag';
-import ButtonGroup from './ButtonGroup';
-import Button from './Button';
+import React from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import Icon from './Icon';
+import Link from './Link';
+import Tag from './Tag';
 import { contentTypes, colors } from '../assets/colors';
-import Modal from 'react-native-modal';
 
-function ContentPreview(props) {
-
-    const deviceWidth = Dimensions.get("window").width
-    const deviceHeight = Dimensions.get("window").height
-
-    const [bottomSheetActive, setBottomSheetActive] = useState(false)
-
-    let content = props.content
-
+function ContentPreview({ onDotPress, content, linkActive }) {
     return (
         <View style={styles.contentContainer}>
             <View style={styles.imageContainer}>
@@ -24,98 +14,42 @@ function ContentPreview(props) {
             <View style={styles.detailsContainer}>
                 <View style={styles.topDetailsContainer}>
                     <View style={styles.titleAndDescriptionContainer}>
-                        <TouchableWithoutFeedback onPress={async () => {
-                            if (!bottomSheetActive) {
-                                // Checking if the link is supported for links with custom URL scheme.
-                                const supported = await Linking.canOpenURL(content.url);
-
-                                if (supported) {
-                                    // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-                                    // by some browser in the mobile
-                                    await Linking.openURL(content.url);
-                                } else {
-                                    Alert.alert(`Don't know how to open this URL: ${content.url}`);
-                                }
-                            }
-                        }}>
+                        <Link url={content.url} active={linkActive}>
                             <View>
                                 <Text style={styles.title} numberOfLines={2}>{content.title}</Text>
                                 <Text style={styles.description} numberOfLines={1}>{content.description}</Text>
                             </View>
-                        </TouchableWithoutFeedback>
+                        </Link>
                     </View>
-                    {
-                        content.tag ?
-                            <View style={styles.tagContainer}>
-                                <Tag name={content.tag} />
-                            </View>
-                            : null
-                    }
+                    {renderTag(content.archivedAt, content.tag)}
                 </View>
                 <View style={styles.bottomDetailsContainer}>
-                    <View style={{ flex: 2 }}>
-                        {
-                            content.sentByUsername ?
-                                <Text>From @{content.sentByUsername}</Text> :
-                                null
+                    <View style={styles.usernameContianer}>
+                        {content.sentByUsername ? <Text>From @{content.sentByUsername}</Text> : null}
+                    </View>
+                    <View style={styles.contentTypeIconContainer}>
+                        {content.contentType ?
+                            <Icon type={content.contentType} size={25} color={contentTypes[content.contentType].color} /> :
+                            null
                         }
                     </View>
-                    <View style={{ flex: 1 }}>
-                        {
-                            content.contentType ?
-                                <View style={styles.contentTypeIconContainer}>
-                                    <Icon type={content.contentType} size={25} color={contentTypes[content.contentType].color} />
-                                </View> :
-                                null
-                        }
-                    </View>
-                    <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                        <View style={styles.shareIconContainer}>
-                            <Icon type='dots' size={20} color={colors.black} onPress={() => setBottomSheetActive(true)} />
-                        </View>
-                    </View>
+                    <TouchableOpacity style={styles.dotsIconContainer} onPress={() => onDotPress()}>
+                        <Icon type='dots' size={20} color={colors.black} />
+                    </TouchableOpacity>
                 </View>
             </View>
-            <Modal
-                isVisible={bottomSheetActive}
-                backdropOpacity={0}
-                backdropColor={colors.primary}
-                onBackdropPress={() => setBottomSheetActive(false)}
-                animationIn='slideInUp'
-                animationOut='slideOutDown'
-                animationOutTiming={500}
-                deviceHeight={deviceHeight}
-                deviceWidth={deviceWidth}
-                style={{ justifyContent: 'flex-end', margin: 0 }}
-            >
-                <View style={styles.bottomSheet}>
-                    <ButtonGroup theme='primary' buttonProps={[
-                        {
-                            theme: 'primary',
-                            name: 'Forward',
-                            size: 'medium',
-                            onPress: () => {
-                                props.onAction('forward', { content: content })
-                                setBottomSheetActive(false)
-                            }
-                        },
-                        {
-                            theme: 'primary',
-                            name: 'Archive',
-                            size: 'medium',
-                            onPress: () => props.onAction('forward', { content: content })
-                        },
-                        {
-                            theme: 'light',
-                            name: 'Cancel',
-                            size: 'medium',
-                            onPress: () => setBottomSheetActive(false)
-                        }
-                    ]} />
-                </View>
-            </Modal>
         </View>
     );
+}
+
+const renderTag = (archived, tag) => {
+    if (!archived) return null
+    if (!tag) return null
+    return (
+        <TouchableOpacity style={styles.tagContainer} onPress={() => onTagPress(tag)}>
+            <Tag name={tag} />
+        </TouchableOpacity>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -135,17 +69,19 @@ const styles = StyleSheet.create({
     detailsContainer: {
         flexDirection: 'column',
         flexGrow: 1,
+        flexBasis: 0,
         padding: 5,
     },
     topDetailsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-    tagContainer: {
-        flex: 1,
-    },
     titleAndDescriptionContainer: {
-        flex: 4,
+        flexGrow: 1,
+        flexBasis: 0,
+    },
+    tagContainer: {
+        padding: 2
     },
     thumb: {
         height: '100%',
@@ -165,16 +101,18 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent: 'space-between',
     },
+    usernameContianer: {
+        flex: 2
+    },
     contentTypeIconContainer: {
+        flex: 1,
         marginBottom: -5
     },
-    shareIconContainer: {
+    dotsIconContainer: {
+        flex: 1,
+        alignItems: 'flex-end',
         paddingRight: 10,
-        marginBottom: -3
-    },
-    bottomSheet: {
-        backgroundColor: colors.primary,
-        paddingBottom: 30,
+        marginBottom: -3,
     },
 });
 

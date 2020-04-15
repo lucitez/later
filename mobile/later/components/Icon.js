@@ -45,6 +45,8 @@ function Icon(props) {
             return <AntIcons name='rightcircle' {...props} />
         case 'dots':
             return <EntypoIcons name='dots-three-vertical' {...props} />
+        case 'tag':
+            return <AntIcons name='tag' {...props} />
         default:
             return null
     }
