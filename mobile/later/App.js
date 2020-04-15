@@ -12,6 +12,7 @@ import { colors } from './assets/colors';
 import SharePreviewScreen from './screens/SharePreviewScreen';
 import SendShareScreen from './screens/SendShareScreen';
 import DiscoverScreen from './screens/DiscoverScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const ContentStack = createStackNavigator();
@@ -57,9 +58,8 @@ function CreateChatStack() {
 
 function CreateProfileStack() {
   return (
-    <ProfileStack.Navigator initialRouteName='Friends' headerMode='none'>
-      <ProfileStack.Screen name='Friends' component={FriendScreen} />
-      <ProfileStack.Screen name='Test' component={AddFriendScreen} />
+    <ProfileStack.Navigator initialRouteName='Profile' headerMode='none'>
+      <ProfileStack.Screen name='Profile' component={ProfileScreen} />
     </ProfileStack.Navigator>
   )
 }
