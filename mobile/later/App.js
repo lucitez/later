@@ -11,18 +11,30 @@ import AddFriendScreen from './screens/AddFriendScreen';
 import { colors } from './assets/colors';
 import SharePreviewScreen from './screens/SharePreviewScreen';
 import SendShareScreen from './screens/SendShareScreen';
+import DiscoverScreen from './screens/DiscoverScreen';
 
 const Tab = createBottomTabNavigator();
 const ContentStack = createStackNavigator();
-const FriendStack = createStackNavigator();
+const DiscoverStack = createStackNavigator();
 const ShareStack = createStackNavigator();
+const ChatStack = createStackNavigator();
+const ProfileStack = createStackNavigator();
 
-function CreateFriendStack() {
+function CreateContentStack() {
   return (
-    <FriendStack.Navigator initialRouteName='Friends' headerMode='none'>
-      <FriendStack.Screen name='Friends' component={FriendScreen} />
-      <FriendStack.Screen name='Test' component={AddFriendScreen} />
-    </FriendStack.Navigator>
+    <ContentStack.Navigator initialRouteName='Home' headerMode='none'>
+      <ContentStack.Screen name='Home' component={ContentScreen} />
+      <ContentStack.Screen name='Archive' component={ArchiveScreen} />
+      <ContentStack.Screen name='Forward' component={SendShareScreen} />
+    </ContentStack.Navigator>
+  )
+}
+
+function CreateDiscoverStack() {
+  return (
+    <DiscoverStack.Navigator initialRouteName='Todo' headerMode='none'>
+      <DiscoverStack.Screen name='Todo' component={DiscoverScreen} />
+    </DiscoverStack.Navigator>
   )
 }
 
@@ -35,13 +47,20 @@ function CreateShareStack() {
   )
 }
 
-function CreateContentStack() {
+function CreateChatStack() {
   return (
-    <ContentStack.Navigator initialRouteName='Home' headerMode='none'>
-      <ContentStack.Screen name='Home' component={ContentScreen} />
-      <ContentStack.Screen name='Archive' component={ArchiveScreen} />
-      <ContentStack.Screen name='Forward' component={SendShareScreen} />
-    </ContentStack.Navigator>
+    <ChatStack.Navigator initialRouteName='Todo' headerMode='none'>
+      <ChatStack.Screen name='Todo' component={DiscoverScreen} />
+    </ChatStack.Navigator>
+  )
+}
+
+function CreateProfileStack() {
+  return (
+    <ProfileStack.Navigator initialRouteName='Friends' headerMode='none'>
+      <ProfileStack.Screen name='Friends' component={FriendScreen} />
+      <ProfileStack.Screen name='Test' component={AddFriendScreen} />
+    </ProfileStack.Navigator>
   )
 }
 
@@ -61,8 +80,10 @@ class App extends React.Component {
           }}
         >
           <Tab.Screen name='Home' component={CreateContentStack} />
+          <Tab.Screen name='Discover' component={CreateDiscoverStack} />
           <Tab.Screen name='Share' component={CreateShareStack} />
-          <Tab.Screen name='Friends' component={CreateFriendStack} />
+          <Tab.Screen name='Chat' component={CreateChatStack} />
+          <Tab.Screen name='Profile' component={CreateProfileStack} />
         </Tab.Navigator>
       </NavigationContainer>
     )

@@ -32,8 +32,10 @@ func TestInsertAndForUser(t *testing.T) {
 func TestForUserWithSearch(t *testing.T) {
 	beforeEach(t)
 	user := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("test"),
-		wrappers.NewNullStringFromString("test"),
+		"test",
+		"test",
+		wrappers.NewNullStringFromString("first"),
+		wrappers.NewNullStringFromString("last"),
 		"2222222222",
 	)
 

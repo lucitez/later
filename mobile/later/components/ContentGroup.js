@@ -6,7 +6,7 @@ import Divider from './Divider'
 
 function ContentGroup(props) {
     return (
-        <ScrollView keyboardShouldPersistTaps={props.keyboardShouldPersistTaps}>
+        <ScrollView keyboardShouldPersistTaps='always'>
             {
                 props.content.map((contentObj, index) => (
                     <View key={index}>
@@ -34,7 +34,7 @@ function Preview(props, content) {
                 <ArchiveContentPreview
                     content={content}
                     onForward={() => props.onForward(content)}
-                    onTagPress={tag => props.onTagPress(tag)}
+                    onUpdateTag={tag => props.onUpdateTag(content, tag)}
                 />
             )
     }

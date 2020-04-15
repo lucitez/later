@@ -7,20 +7,28 @@ import (
 	"github.com/google/uuid"
 )
 
+// UserContentCreateBody ...
 type UserContentCreateBody struct {
-	shareID         uuid.UUID
-	contentID       uuid.UUID
-	contentType     wrappers.NullString
-	recipientUserID uuid.UUID
-	senderUserID    uuid.UUID
+	ShareID         uuid.UUID
+	ContentID       uuid.UUID
+	ContentType     wrappers.NullString
+	RecipientUserID uuid.UUID
+	SenderUserID    uuid.UUID
 }
 
+// ToUserContent ...
 func (body *UserContentCreateBody) ToUserContent() model.UserContent {
 	return model.NewUserContent(
-		body.shareID,
-		body.contentID,
-		body.contentType,
-		body.recipientUserID,
-		body.senderUserID,
+		body.ShareID,
+		body.ContentID,
+		body.ContentType,
+		body.RecipientUserID,
+		body.SenderUserID,
 	)
+}
+
+// UserContentUpdateBody ...
+type UserContentUpdateBody struct {
+	ID  uuid.UUID
+	Tag wrappers.NullString
 }

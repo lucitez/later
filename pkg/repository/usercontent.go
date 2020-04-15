@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"later/pkg/service/body"
 	"log"
 	"strconv"
 
@@ -110,6 +111,24 @@ func (repository *UserContent) Delete(id uuid.UUID) error {
 	)
 
 	return err
+}
+
+// Update user_content
+func (repository *UserContent) Update(body body.UserContentUpdateBody) {
+	statement := `
+	UPDATE user_content
+	SET tag = $1
+	WHERE id = $2;
+	`
+	_, err := repository.DB.Exec(
+		statement,
+		body.Tag,
+		body.ID,
+	)
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Filter gets usercontent

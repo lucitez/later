@@ -41,6 +41,14 @@ function ContentScreen({ navigation }) {
         <View style={styles.container}>
             <Header name="Later" rightIcon={archiveIcon} />
             <View style={styles.contentContainer}>
+                {
+                    content.length == 0 ?
+                        <View style={{ width: '100%', alignItems: 'center', paddingTop: 15 }}>
+                            <Text style={{ textAlign: 'center' }}>Check out the discover page for more content!</Text>
+                        </View>
+                        :
+                        null
+                }
                 <ContentGroup
                     type='home'
                     content={content}

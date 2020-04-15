@@ -34,6 +34,17 @@ function ArchiveScreen({ navigation }) {
         />
     )
 
+    const onUpdateTag = (updatedContent, newTag) => {
+        let prevTag = updatedContent.tag
+
+        if (prevTag != newTag) {
+            setContent(updateContentTag(content, updatedContent.id, newTag))
+            updateTag(updatedContent.id, newTag)
+                .then()
+                .catch(() => setContent(updateContentTag(content, updatedContent.id, prevTag)))
+        }
+    }
+
     return (
         <View style={styles.container}>
             <Header name="Later" leftIcon={backIcon} />
@@ -48,6 +59,7 @@ function ArchiveScreen({ navigation }) {
                     noContentMessage='Your archived content shows up here'
                     content={content}
                     onForward={content => navigation.navigate('Forward', { contentPreview: content })}
+                    onUpdateTag={onUpdateTag}
                 />
                 {
                     loading ?
@@ -76,6 +88,20 @@ const getContent = (search, contentFilter) => {
     }
     return Network.GET(`/user-content/filter`, params)
 }
+
+const updateTag = (contentId, tag) => {
+    let params = {
+        id: contentId,
+        tag: tag
+    }
+    return Network.PUT('/user-content/update', params)
+}
+
+const updateContentTag = (content, contentId, tag) => (
+    content.map(c => (
+        c.id == contentId ? { ...c, ['tag']: tag } : c
+    ))
+)
 
 const styles = StyleSheet.create({
     container: {

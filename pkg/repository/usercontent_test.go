@@ -3,6 +3,7 @@ package repository_test
 import (
 	"later/pkg/model"
 	"later/pkg/repository"
+	"later/pkg/service/body"
 	"later/pkg/util/wrappers"
 	"testing"
 
@@ -118,4 +119,20 @@ func TestFilterArchived(t *testing.T) {
 	)
 
 	testUtil.Assert.NotEmpty(actual)
+}
+
+func TestUpdate(t *testing.T) {
+	beforeEach(t)
+
+	userContentRepo.Insert(userContent)
+
+	updateBody := body.UserContentUpdateBody{
+		ID:  userContent.ID,
+		Tag: wrappers.NewNullStringFromString("memes"),
+	}
+
+	userContentRepo.Update(updateBody)
+	actual := userContentRepo.ByID(userContent.ID)
+
+	testUtil.Assert.Equal(actual.Tag.String, "memes")
 }

@@ -68,3 +68,8 @@ func (service *UserContent) Archive(
 func (service *UserContent) Delete(id uuid.UUID) error {
 	return service.Repository.Delete(id)
 }
+
+// Update user content
+func (service *UserContent) Update(body body.UserContentUpdateBody) {
+	service.Repository.Update(body)
+}

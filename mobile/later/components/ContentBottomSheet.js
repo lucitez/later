@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View } from 'react-native'
 import BottomSheet from './BottomSheet';
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
 import ArchiveContentBottomSheet from './ArchiveContentBottomSheet';
 import EditTagBottomSheet from './EditTagBottomSheet';
-import { colors } from '../assets/colors';
+import BottomSheetContainer from './BottomSheetContainer';
 
 function ContentBottomSheet(props) {
     const [optionsActive, setOptionsActive] = useState(false)
     const [archiveActive, setArchiveActive] = useState(false)
     const [tagActive, setTagActive] = useState(false)
-
-    let content = props.content
 
     useEffect(() => {
         props.setOptionsActive(optionsActive)
@@ -28,7 +25,7 @@ function ContentBottomSheet(props) {
                 return (
                     <>
                         <Button theme='primary' name='Forward' size='medium' onPress={() => {
-                            props.onForward(content)
+                            props.onForward()
                             setOptionsActive(false)
                         }} />
                         <Button theme='primary' name='Archive' size='medium' onPress={() => {
@@ -42,7 +39,7 @@ function ContentBottomSheet(props) {
                 return (
                     <>
                         <Button theme='primary' name='Forward' size='medium' onPress={() => {
-                            props.onForward(content)
+                            props.onForward()
                             setOptionsActive(false)
                         }} />
                         <Button theme='primary' name='Edit Tag' size='medium' onPress={() => {
@@ -61,11 +58,12 @@ function ContentBottomSheet(props) {
                 visible={optionsActive}
                 onHide={() => setOptionsActive(false)}
             >
-                <View style={styles.optionsBottomSheet}>
+                <BottomSheetContainer>
                     <ButtonGroup theme='primary'>
                         <Options />
                     </ButtonGroup>
-                </View>
+                </BottomSheetContainer>
+
             </BottomSheet>
             <ArchiveContentBottomSheet
                 active={archiveActive}
@@ -80,12 +78,5 @@ function ContentBottomSheet(props) {
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    optionsBottomSheet: {
-        backgroundColor: colors.primary,
-        paddingBottom: 30,
-    },
-});
 
 export default ContentBottomSheet

@@ -4,7 +4,7 @@ import { colors } from '../assets/colors';
 import Icon from '../components/Icon';
 
 function SearchBar(props) {
-    const [search, setSearch] = useState(props.value ? props.value : '')
+    const [search, setSearch] = useState(props.startingValue ? props.startingValue : '')
 
     useEffect(() => {
         props.onChange(search)
@@ -41,6 +41,7 @@ function SearchBar(props) {
                 }
             </View>
             <TouchableOpacity onPress={() => {
+                console.log('HUH')
                 setSearch('')
                 Keyboard.dismiss()
                 if (props.onCancel) props.onCancel()

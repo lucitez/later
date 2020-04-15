@@ -21,7 +21,9 @@ function ContentPreview({ onDotPress, content, linkActive }) {
                             </View>
                         </Link>
                     </View>
-                    {renderTag(content.archivedAt, content.tag)}
+                    <TouchableOpacity onPress={() => onDotPress()}>
+                        <Icon type='dots' size={20} color={colors.black} />
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.bottomDetailsContainer}>
                     <View style={styles.usernameContianer}>
@@ -33,8 +35,8 @@ function ContentPreview({ onDotPress, content, linkActive }) {
                             null
                         }
                     </View>
-                    <TouchableOpacity style={styles.dotsIconContainer} onPress={() => onDotPress()}>
-                        <Icon type='dots' size={20} color={colors.black} />
+                    <TouchableOpacity style={styles.tagContainer} onPress={() => onTagPress(content.tag)}>
+                        {content.tag ? <Tag name={content.tag} /> : null}
                     </TouchableOpacity>
                 </View>
             </View>
@@ -80,9 +82,6 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         flexBasis: 0,
     },
-    tagContainer: {
-        padding: 2
-    },
     thumb: {
         height: '100%',
         width: '100%',
@@ -102,16 +101,16 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     usernameContianer: {
-        flex: 2
+        flex: 2,
+        alignItems: 'flex-start'
+    },
+    tagContainer: {
+        flex: 2,
+        alignItems: 'flex-end'
     },
     contentTypeIconContainer: {
         flex: 1,
-        marginBottom: -5
-    },
-    dotsIconContainer: {
-        flex: 1,
-        alignItems: 'flex-end',
-        paddingRight: 10,
+        alignItems: 'center',
         marginBottom: -3,
     },
 });

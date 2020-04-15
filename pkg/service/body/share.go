@@ -16,10 +16,10 @@ type ShareCreateBody struct {
 // ToUserContentCreateBody ...
 func (body *ShareCreateBody) ToUserContentCreateBody(shareID uuid.UUID) UserContentCreateBody {
 	return UserContentCreateBody{
-		shareID,
-		body.Content.ID,
-		body.Content.ContentType,
-		body.RecipientUserID,
-		body.SenderUserID,
+		ShareID:         shareID,
+		ContentID:       body.Content.ID,
+		ContentType:     body.Content.ContentType,
+		RecipientUserID: body.RecipientUserID,
+		SenderUserID:    body.SenderUserID,
 	}
 }

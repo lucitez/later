@@ -33,6 +33,7 @@ func (server *UserContent) RegisterEndpoints(router *gin.Engine) {
 
 	router.PUT("/user-content/archive", server.archive)
 	router.PUT("/user-content/delete", server.delete)
+	router.PUT("/user-content/update", server.update)
 }
 
 func (server *UserContent) filter(context *gin.Context) {
@@ -97,6 +98,19 @@ func (server *UserContent) delete(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
+	context.JSON(http.StatusOK, true)
+}
+
+func (server *UserContent) update(context *gin.Context) {
+	var body request.UserContentUpdateRequestBody
+
+	if err := context.BindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	server.Service.Update(body.ToUserContentUpdateBody())
 
 	context.JSON(http.StatusOK, true)
 }

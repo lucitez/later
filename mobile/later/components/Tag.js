@@ -9,7 +9,7 @@ function Tag(props) {
             <View style={styles.tagContainer}>
                 <Text style={styles.tag}>{props.name}</Text>
             </View>
-            <View style={styles.triangle} />
+            {/* <View style={styles.triangle} /> */}
         </View>
 
     )
@@ -28,12 +28,11 @@ const styles = StyleSheet.create({
         borderRightColor: 'transparent',
         borderColor: colors.primary
     },
-
     tagContainer: {
         backgroundColor: colors.primary,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 5,
+        borderRadius: 3,
         padding: 5,
         paddingTop: 3,
         paddingBottom: 3,

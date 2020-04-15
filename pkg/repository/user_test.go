@@ -15,7 +15,9 @@ import (
 var userRepo repository.User
 
 var user = model.NewUserFromSignUp(
-	wrappers.NewNullStringFromString("test_username"),
+	"test_username",
+	"first_name",
+	wrappers.NewNullStringFromString("last_name"),
 	wrappers.NewNullStringFromString("test_email"),
 	"1111111111",
 )
@@ -84,19 +86,25 @@ func TestAddFriendFilter(t *testing.T) {
 	beforeEach(t)
 
 	user1 := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("test_username"),
+		"test_username",
+		"first_name",
+		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("test_email"),
 		"1111111111",
 	)
 
 	user2 := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("foo"),
+		"foo",
+		"first_name",
+		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("foo"),
 		"2222222222",
 	)
 
 	user3 := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("bar"),
+		"bar",
+		"first_name",
+		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("bar"),
 		"3333333333",
 	)
@@ -106,9 +114,22 @@ func TestAddFriendFilter(t *testing.T) {
 		user2.ID,
 	)
 
-	userRepo.Insert(user1)
-	userRepo.Insert(user2)
-	userRepo.Insert(user3)
+	err := userRepo.Insert(user1)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = userRepo.Insert(user2)
+
+	if err != nil {
+		t.Error(err)
+	}
+	err = userRepo.Insert(user3)
+
+	if err != nil {
+		t.Error(err)
+	}
 
 	friendRepo.Insert(friend)
 
@@ -124,25 +145,33 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 	beforeEach(t)
 
 	user1 := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("test_username"),
+		"test_username",
+		"first_name",
+		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("test_email"),
 		"1111111111",
 	)
 
 	user2 := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("foo"),
+		"foo",
+		"first_name",
+		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("foo"),
 		"2222222222",
 	)
 
 	user3 := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("bar"),
+		"bar",
+		"first_name",
+		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("bar"),
 		"3333333333",
 	)
 
 	user4 := model.NewUserFromSignUp(
-		wrappers.NewNullStringFromString("baz"),
+		"baz",
+		"first_name",
+		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("baz"),
 		"4444444444",
 	)

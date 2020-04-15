@@ -1,23 +1,15 @@
 
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, Keyboard, ScrollView, TouchableOpacity, Text } from 'react-native'
+import { StyleSheet, View, ScrollView, TouchableOpacity, Text, Keyboard } from 'react-native'
 import BottomSheet from './BottomSheet';
 import Button from './Button';
 import SearchBar from './SearchBar';
+import BottomSheetContainer from './BottomSheetContainer';
 import { colors } from '../assets/colors';
 
 function ArchiveContentBottomSheet(props) {
     const [tagValue, setTagValue] = useState('')
     const [tags, setTags] = useState([])
-
-    const [isKeyboardShowing, setKeyboardShowing] = useState(false)
-
-    Keyboard.addListener('keyboardWillShow', function () {
-        setKeyboardShowing(true)
-    })
-    Keyboard.addListener('keyboardWillHide', function () {
-        setKeyboardShowing(false)
-    })
 
     useEffect(() => {
         setTags(tagValue == '' ? [] : [tagValue])
@@ -29,11 +21,16 @@ function ArchiveContentBottomSheet(props) {
             onHide={() => props.onHide()}
             avoidKeyboard={true}
         >
-            <View style={[styles.archiveBottomSheet, isKeyboardShowing ? { paddingBottom: 5 } : { paddingBottom: 30 }]}>
+            <BottomSheetContainer height='40%'>
                 <View style={styles.addTagContainer}>
-                    <SearchBar iconName='tag' onChange={value => setTagValue(value)} onCancel={() => props.onHide()} />
+                    <SearchBar
+                        placeholder='Add Tag...'
+                        iconName='tag'
+                        onChange={value => setTagValue(value)}
+                        onCancel={() => props.onHide()}
+                    />
                 </View>
-                <ScrollView style={styles.tagsContainer}>
+                <ScrollView style={styles.tagsContainer} keyboardShouldPersistTaps='always'>
                     {tags.map((tag, index) => (
                         <TouchableOpacity key={index} style={styles.tagContainer}>
                             <Text style={styles.tag}>{tag}</Text>
@@ -42,22 +39,17 @@ function ArchiveContentBottomSheet(props) {
                 </ScrollView>
                 <View style={styles.archiveButtonContainer}>
                     <Button theme='primary' name='Archive' size='medium' onPress={() => {
-                        props.onHide(false)
+                        Keyboard.dismiss()
+                        props.onHide()
                         props.onArchive(tagValue)
                     }} />
                 </View>
-
-            </View>
+            </BottomSheetContainer>
         </BottomSheet>
     )
 }
 
 const styles = StyleSheet.create({
-    archiveBottomSheet: {
-        height: '40%',
-        backgroundColor: colors.primary,
-        justifyContent: 'flex-start'
-    },
     addTagContainer: {
         margin: 10,
     },
