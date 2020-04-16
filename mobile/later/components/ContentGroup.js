@@ -6,7 +6,7 @@ import Divider from './Divider'
 
 function ContentGroup(props) {
     return (
-        <ScrollView keyboardShouldPersistTaps='always'>
+        <ScrollView keyboardShouldPersistTaps='handled'>
             {
                 props.content.map((contentObj, index) => (
                     <View key={index}>

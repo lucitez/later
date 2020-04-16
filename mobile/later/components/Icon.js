@@ -52,6 +52,8 @@ function Icon(props) {
             return <AntIcons name='closecircle' {...props} />
         case 'dots':
             return <EntypoIcons name='dots-three-vertical' {...props} />
+        case 'gear':
+            return <SimpleLineIcons name='settings' {...props} />
 
         /**
         App

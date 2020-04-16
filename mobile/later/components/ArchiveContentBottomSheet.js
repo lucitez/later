@@ -30,7 +30,7 @@ function ArchiveContentBottomSheet(props) {
                         onCancel={() => props.onHide()}
                     />
                 </View>
-                <ScrollView style={styles.tagsContainer} keyboardShouldPersistTaps='always'>
+                <ScrollView style={styles.tagsContainer} keyboardShouldPersistTaps='handled'>
                     {tags.map((tag, index) => (
                         <TouchableOpacity key={index} style={styles.tagContainer}>
                             <Text style={styles.tag}>{tag}</Text>

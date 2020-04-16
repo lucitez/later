@@ -13,6 +13,7 @@ import SharePreviewScreen from './screens/SharePreviewScreen';
 import SendShareScreen from './screens/SendShareScreen';
 import DiscoverScreen from './screens/DiscoverScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const ContentStack = createStackNavigator();
@@ -60,6 +61,7 @@ function CreateProfileStack() {
   return (
     <ProfileStack.Navigator initialRouteName='Profile' headerMode='none'>
       <ProfileStack.Screen name='Profile' component={ProfileScreen} />
+      <ProfileStack.Screen name='Edit' component={EditProfileScreen} />
     </ProfileStack.Navigator>
   )
 }

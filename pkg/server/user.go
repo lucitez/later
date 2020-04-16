@@ -54,7 +54,7 @@ func (server *User) signUp(context *gin.Context) {
 func (server *User) byID(context *gin.Context) {
 	deser := NewDeser(
 		context,
-		QueryParameter{name: "id", kind: UUID},
+		QueryParameter{name: "id", kind: UUID, required: true},
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
