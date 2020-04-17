@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, TextInput, StyleSheet } from 'react-native'
 import { colors } from '../../assets/colors'
 
-export default function PlainText(props) {
+export default function Email(props) {
 
     const [value, setValue] = useState(props.value)
 
-    useEffect(() => props.onChange(props.name, value), [value])
+    useEffect(() => {
+        let valid = isValid(value)
+        props.onChange(props.name, value, valid)
+    }, [value])
 
     return (
         <View style={styles.container}>
@@ -21,9 +24,15 @@ export default function PlainText(props) {
                     selectionColor={colors.white}
                 />
             </View>
-            <View style={styles.underline} />
+            <View style={[styles.underline]} />
         </View>
     )
+}
+
+const isValid = (value) => {
+    const pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+
+    return pattern.test(value)
 }
 
 const styles = StyleSheet.create({

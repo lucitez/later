@@ -22,24 +22,24 @@ function ContentScreen({ navigation }) {
             .catch(error => console.error(error))
     }, [offset])
 
-    const onArchive = (archivedContent, tag) => {
-        archiveContent(archivedContent, tag)
-            .then(setContent(content.filter(c => c.id != archivedContent.id)))
+    const onSave = (savedContent, tag) => {
+        SavedContent(savedContent, tag)
+            .then(setContent(content.filter(c => c.id != savedContent.id)))
             .catch(error => Alert.alert(error))
     }
 
-    const archiveIcon = (
+    const saveIcon = (
         <Icon
-            type='archive'
+            type='save'
             size={25}
             color={colors.white}
-            onPress={() => navigation.navigate('Archive')}
+            onPress={() => navigation.navigate('Saved')}
         />
     )
 
     return (
         <View style={styles.container}>
-            <Header name="Later" rightIcon={archiveIcon} />
+            <Header name="Later" rightIcon={saveIcon} />
             <View style={styles.contentContainer}>
                 {
                     content.length == 0 ?
@@ -52,8 +52,8 @@ function ContentScreen({ navigation }) {
                 <ContentGroup
                     type='home'
                     content={content}
-                    onForward={content => navigation.navigate('Forward', { contentPreview: content })}
-                    onArchive={onArchive}
+                    onForward={content => navigation.navigate('Forward', { contentPreview: content, previousScreen: 'Home' })}
+                    onSave={onSave}
                 />
                 {
                     loading ?
@@ -76,13 +76,13 @@ const getContent = () => {
     return Network.GET(`/user-content/filter`, params)
 }
 
-const archiveContent = (content, tag) => {
+const SavedContent = (content, tag) => {
     let params = {
         id: content.id,
         tag: tag
     }
 
-    return Network.PUT(`/user-content/archive`, params)
+    return Network.PUT(`/user-content/save`, params)
 }
 
 const styles = StyleSheet.create({

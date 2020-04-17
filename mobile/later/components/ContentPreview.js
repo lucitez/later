@@ -36,22 +36,12 @@ function ContentPreview({ onDotPress, content, linkActive }) {
                         }
                     </View>
                     <TouchableOpacity style={styles.tagContainer} onPress={() => onTagPress(content.tag)}>
-                        {content.tag ? <Tag name={content.tag} /> : null}
+                        {content.tag && content.savedAt ? <Tag name={content.tag} /> : null}
                     </TouchableOpacity>
                 </View>
             </View>
         </View>
     );
-}
-
-const renderTag = (archived, tag) => {
-    if (!archived) return null
-    if (!tag) return null
-    return (
-        <TouchableOpacity style={styles.tagContainer} onPress={() => onTagPress(tag)}>
-            <Tag name={tag} />
-        </TouchableOpacity>
-    )
 }
 
 const styles = StyleSheet.create({

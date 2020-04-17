@@ -1,7 +1,7 @@
 POST http://localhost:8000/shares/new
 
 {
-    "sender_user_id": "efa605a8-efb4-4a85-8548-55f5eafa5a21",
-    "recipient_user_ids": ["fdeff714-8f43-4083-ac3f-229cd1783c0c"],
-    "url": "https://www.wellplated.com/baked-salmon-in-foil/"
+    "sender_user_id": "512ec34c-1bac-4ec1-98d0-845712de9ef6",
+    "recipient_user_ids": ["2ef129c3-1301-4959-9710-df31688e88d4"],
+    "url": "https://medium.com/@ASlavitt/donald-trump-thinks-his-willpower-can-restart-the-economy-it-cant-ca99f2d58fad"
 }

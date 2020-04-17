@@ -22,7 +22,7 @@ function BottomSheetContainer(props) {
 
     return (
         <View style={[
-            styles.archiveBottomSheet,
+            styles.saveBottomSheet,
             isKeyboardShowing ? { paddingBottom: 5 } : { paddingBottom: 30 },
             props.height ? { height: props.height } : null
         ]}>
@@ -32,7 +32,7 @@ function BottomSheetContainer(props) {
 }
 
 const styles = StyleSheet.create({
-    archiveBottomSheet: {
+    saveBottomSheet: {
         backgroundColor: colors.primary,
         justifyContent: 'flex-start'
     },

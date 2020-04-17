@@ -36,7 +36,7 @@ function EditTagBottomSheet(props) {
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
-                <View style={styles.archiveButtonContainer}>
+                <View style={styles.saveButtonContainer}>
                     <Button theme='primary' name='Update Tag' size='medium' onPress={() => {
                         Keyboard.dismiss()
                         props.onHide()
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     addTagContainer: {
         margin: 10,
     },
-    archiveButtonContainer: {
+    saveButtonContainer: {
         paddingLeft: 15,
         paddingRight: 15,
     },

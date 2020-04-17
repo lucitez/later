@@ -49,11 +49,11 @@ func TestAllUserContent(t *testing.T) {
 	testUtil.Assert.Contains(actual, userContent)
 }
 
-func TestArchiveUserContent(t *testing.T) {
+func TestSaveUserContent(t *testing.T) {
 	beforeEach(t)
 
 	userContentRepo.Insert(userContent)
-	userContentRepo.Archive(
+	userContentRepo.Save(
 		userContent.ID,
 		wrappers.NewNullStringFromString("memes"),
 	)
@@ -61,7 +61,7 @@ func TestArchiveUserContent(t *testing.T) {
 	actual := userContentRepo.ByID(userContent.ID)
 
 	testUtil.Assert.Equal(actual.Tag.String, "memes")
-	testUtil.Assert.True(actual.ArchivedAt.Valid)
+	testUtil.Assert.True(actual.SavedAt.Valid)
 }
 
 func TestDeleteUserContent(t *testing.T) {
@@ -92,7 +92,7 @@ func TestFilter(t *testing.T) {
 	testUtil.Assert.Contains(actual, userContent)
 }
 
-func TestFilterArchived(t *testing.T) {
+func TestFilterSaved(t *testing.T) {
 	contentType := "watch"
 	beforeEach(t)
 
@@ -102,19 +102,19 @@ func TestFilterArchived(t *testing.T) {
 		userContent.UserID,
 		nil,
 		&contentType,
-		true, // archived
+		true, // saved
 		1,
 	)
 
 	testUtil.Assert.Empty(actual)
 
-	userContentRepo.Archive(userContent.ID, wrappers.NewNullStringFromString("memes"))
+	userContentRepo.Save(userContent.ID, wrappers.NewNullStringFromString("memes"))
 
 	actual = userContentRepo.Filter(
 		userContent.UserID,
 		nil,
 		&contentType,
-		true, // archived
+		true, // saved
 		1,
 	)
 

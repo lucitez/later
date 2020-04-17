@@ -9,7 +9,7 @@ import ContentGroup from '../components/ContentGroup';
 import SearchBar from '../components/SearchBar';
 import Icon from '../components/Icon';
 
-function ArchiveScreen({ navigation }) {
+function SavedScreen({ navigation }) {
     const [content, setContent] = useState([])
     const [search, setSearch] = useState('')
     const [filter, setFilter] = useState({})
@@ -47,7 +47,7 @@ function ArchiveScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Header name="Later" leftIcon={backIcon} />
+            <Header name="Saved" leftIcon={backIcon} />
             <SearchBar
                 onChange={value => setSearch(value)}
                 placeholder='Search...'
@@ -55,10 +55,10 @@ function ArchiveScreen({ navigation }) {
             <ContentFilter onChange={(filter) => setFilter(filter)} />
             <View style={styles.contentContainer}>
                 <ContentGroup
-                    type='archive'
-                    noContentMessage='Your archived content shows up here'
+                    type='save'
+                    noContentMessage='Your saved content shows up here'
                     content={content}
-                    onForward={content => navigation.navigate('Forward', { contentPreview: content })}
+                    onForward={content => navigation.navigate('Forward', { contentPreview: content, previousScreen: 'Saved' })}
                     onUpdateTag={onUpdateTag}
                 />
                 {
@@ -69,7 +69,7 @@ function ArchiveScreen({ navigation }) {
                         :
                         content.length == 0 && Object.length == 0 ?
                             <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
-                                <Text>Your archived content shows up here</Text>
+                                <Text>Your saved content shows up here</Text>
                             </View>
                             :
                             null
@@ -81,7 +81,7 @@ function ArchiveScreen({ navigation }) {
 
 const getContent = (search, contentFilter) => {
     let params = {
-        archived: true,
+        saved: true,
         userId: userId,
         search: search,
         ...contentFilter
@@ -119,4 +119,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ArchiveScreen
+export default SavedScreen

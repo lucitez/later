@@ -9,7 +9,7 @@ GET http://localhost:8000/user-content/filter?user_id=fdeff714-8f43-4083-ac3f-22
 # GET http://localhost:8000/content/preview
 #     ?url=/content/preview?url=https://www.nytimes.com/2020/04/13/world/coronavirus-news-world-international-global.html?referringSource=articleShare
 
-# PUT http://localhost:8000/user-content/archive
+# PUT http://localhost:8000/user-content/save
 
 # {
 #     "id": "3f3f9f14-6634-4a4f-b460-1aa938932acd",

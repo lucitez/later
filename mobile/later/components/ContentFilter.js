@@ -18,7 +18,7 @@ function FilterOption(props) {
     )
 }
 
-function ArchiveFilter(props) {
+function SaveFilter(props) {
 
     let contentTypes = ['watch', 'read', 'listen']
 
@@ -68,4 +68,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default ArchiveFilter
+export default SaveFilter

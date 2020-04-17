@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from './components/Icon';
 import ContentScreen from './screens/ContentScreen';
-import ArchiveScreen from './screens/ArchiveScreen';
+import SavedScreen from './screens/SavedScreen';
 import FriendScreen from './screens/FriendScreen';
 import AddFriendScreen from './screens/AddFriendScreen';
 import { colors } from './assets/colors';
@@ -26,7 +26,7 @@ function CreateContentStack() {
   return (
     <ContentStack.Navigator initialRouteName='Home' headerMode='none'>
       <ContentStack.Screen name='Home' component={ContentScreen} />
-      <ContentStack.Screen name='Archive' component={ArchiveScreen} />
+      <ContentStack.Screen name='Saved' component={SavedScreen} />
       <ContentStack.Screen name='Forward' component={SendShareScreen} />
     </ContentStack.Navigator>
   )

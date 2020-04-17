@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import BottomSheet from './BottomSheet';
 import Button from './Button';
 import ButtonGroup from './ButtonGroup';
-import ArchiveContentBottomSheet from './ArchiveContentBottomSheet';
+import SavedContentBottomSheet from './SavedContentBottomSheet';
 import EditTagBottomSheet from './EditTagBottomSheet';
 import BottomSheetContainer from './BottomSheetContainer';
 
 function ContentBottomSheet(props) {
     const [optionsActive, setOptionsActive] = useState(false)
-    const [archiveActive, setArchiveActive] = useState(false)
+    const [saveActive, setSaveActive] = useState(false)
     const [tagActive, setTagActive] = useState(false)
 
     useEffect(() => {
@@ -28,14 +28,14 @@ function ContentBottomSheet(props) {
                             props.onForward()
                             setOptionsActive(false)
                         }} />
-                        <Button theme='primary' name='Archive' size='medium' onPress={() => {
+                        <Button theme='primary' name='Save' size='medium' onPress={() => {
                             setOptionsActive(false)
-                            setTimeout(() => { setArchiveActive(true) }, 400)
+                            setTimeout(() => { setSaveActive(true) }, 400)
                         }} />
                         <Button theme='light' name='Cancel' size='medium' onPress={() => setOptionsActive(false)} />
                     </>
                 )
-            case 'archive':
+            case 'save':
                 return (
                     <>
                         <Button theme='primary' name='Forward' size='medium' onPress={() => {
@@ -65,9 +65,9 @@ function ContentBottomSheet(props) {
                 </BottomSheetContainer>
 
             </BottomSheet>
-            <ArchiveContentBottomSheet
-                active={archiveActive}
-                onHide={() => setArchiveActive(false)}
+            <SavedContentBottomSheet
+                active={saveActive}
+                onHide={() => setSaveActive(false)}
                 {...props}
             />
             <EditTagBottomSheet

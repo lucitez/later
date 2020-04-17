@@ -22,7 +22,7 @@ type UserContent struct {
 
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
-	ArchivedAt wrappers.NullTime
+	SavedAt wrappers.NullTime
 	DeletedAt  wrappers.NullTime
 }
 
@@ -66,7 +66,7 @@ func (userContent *UserContent) ScanRows(rows *sql.Rows) {
 		&userContent.Tag,
 		&userContent.CreatedAt,
 		&userContent.UpdatedAt,
-		&userContent.ArchivedAt,
+		&userContent.SavedAt,
 		&userContent.DeletedAt,
 	)
 
@@ -87,7 +87,7 @@ func (userContent *UserContent) ScanRow(row *sql.Row) *UserContent {
 		&userContent.Tag,
 		&userContent.CreatedAt,
 		&userContent.UpdatedAt,
-		&userContent.ArchivedAt,
+		&userContent.SavedAt,
 		&userContent.DeletedAt,
 	)
 

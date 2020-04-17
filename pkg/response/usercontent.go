@@ -23,5 +23,5 @@ type WireUserContent struct {
 	URL            string              `json:"url"`
 
 	CreatedAt  time.Time         `json:"created_at"`
-	ArchivedAt wrappers.NullTime `json:"archived_at"`
+	SavedAt wrappers.NullTime `json:"saved_at"`
 }

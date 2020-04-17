@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// UserContentArchiveRequestBody ...
-type UserContentArchiveRequestBody struct {
+// UserContentSaveRequestBody ...
+type UserContentSaveRequestBody struct {
 	ID  uuid.UUID           `form:"id" json:"id" binding:"required"`
 	Tag wrappers.NullString `form:"tag" json:"tag"`
 }

@@ -6,8 +6,9 @@ import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import EntypoIcons from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-function Icon(props) {
+function RenderIcon(props) {
     switch (props.type) {
 
         /**
@@ -61,7 +62,7 @@ function Icon(props) {
 
         case 'tag':
             return <AntIcons name='tag' {...props} />
-        case 'archive':
+        case 'save':
             return <AntIcons name='inbox' {...props} />
 
         /**
@@ -77,6 +78,14 @@ function Icon(props) {
         default:
             return null
     }
+}
+
+function Icon(props) {
+    return (
+        <TouchableOpacity onPress={props.onPress}>
+            {RenderIcon(props)}
+        </TouchableOpacity>
+    )
 }
 
 export default Icon

@@ -43,7 +43,7 @@ func (service *UserContent) Filter(
 	userID uuid.UUID,
 	tag *string,
 	contentType *string,
-	archived bool,
+	saved bool,
 	limit int,
 ) []model.UserContent {
 
@@ -51,17 +51,17 @@ func (service *UserContent) Filter(
 		userID,
 		tag,
 		contentType,
-		archived,
+		saved,
 		limit,
 	)
 }
 
-// Archive a piece of user content, providing an optional tag
-func (service *UserContent) Archive(
+// Save a piece of user content, providing an optional tag
+func (service *UserContent) Save(
 	id uuid.UUID,
 	tag wrappers.NullString,
 ) error {
-	return service.Repository.Archive(id, tag)
+	return service.Repository.Save(id, tag)
 }
 
 // Delete a post

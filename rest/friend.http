@@ -1,8 +1,8 @@
 # POST http://localhost:8000/friend-requests/send
 
 # {
-#     "sender_user_id": "23be1933-f90c-42e4-b8b1-b7ec733d9e4d",
-#     "recipient_user_id": "683fca78-1a29-4570-8e3c-d39d07483551"
+#     "sender_user_id": "2ef129c3-1301-4959-9710-df31688e88d4",
+#     "recipient_user_id": "512ec34c-1bac-4ec1-98d0-845712de9ef6"
 # }
 
 # GET http://localhost:8000/friend-requests/pending?user_id=d862d942-6d43-48a4-b018-d5edd45d63e9
@@ -10,7 +10,7 @@
 PUT http://localhost:8000/friend-requests/accept
 
 {
-    "id": "558a349f-38f7-4003-82e9-48199807c4a8"
+    "id": "60d9b95f-4742-45aa-abab-2fc699ab4110"
 }
 
 # GET http://localhost:8000/friends/for-user?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915

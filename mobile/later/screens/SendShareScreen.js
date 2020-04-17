@@ -33,7 +33,7 @@ function SendShareScreen({ navigation, route }) {
 
     const onSend = () => {
         sendShares(preview.url, Object.keys(selectedFriends))
-        navigation.navigate('Share', { success: true })
+        navigation.navigate(route.params.previousScreen, { success: true })
     }
 
     const backIcon = (

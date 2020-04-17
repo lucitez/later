@@ -31,13 +31,13 @@ func NewUserContent(
 func (server *UserContent) RegisterEndpoints(router *gin.Engine) {
 	router.GET("/user-content/filter", server.filter)
 
-	router.PUT("/user-content/archive", server.archive)
+	router.PUT("/user-content/save", server.save)
 	router.PUT("/user-content/delete", server.delete)
 	router.PUT("/user-content/update", server.update)
 }
 
 func (server *UserContent) filter(context *gin.Context) {
-	defaultArchived := "false"
+	defaultSaved := "false"
 	defaultLimit := "20"
 
 	deser := NewDeser(
@@ -45,7 +45,7 @@ func (server *UserContent) filter(context *gin.Context) {
 		QueryParameter{name: "user_id", kind: UUID, required: true},
 		QueryParameter{name: "tag", kind: Str},
 		QueryParameter{name: "content_type", kind: Str},
-		QueryParameter{name: "archived", kind: Bool, fallback: &defaultArchived},
+		QueryParameter{name: "saved", kind: Bool, fallback: &defaultSaved},
 		QueryParameter{name: "limit", kind: Int, fallback: &defaultLimit},
 	)
 
@@ -53,14 +53,14 @@ func (server *UserContent) filter(context *gin.Context) {
 		userID := qp["user_id"].(*uuid.UUID)
 		tag := qp["tag"].(*string)
 		contentType := qp["content_type"].(*string)
-		archived := qp["archived"].(*bool)
+		saved := qp["saved"].(*bool)
 		limit := qp["limit"].(*int)
 
 		userContent := server.Service.Filter(
 			*userID,
 			tag,
 			contentType,
-			*archived,
+			*saved,
 			*limit,
 		)
 
@@ -70,15 +70,15 @@ func (server *UserContent) filter(context *gin.Context) {
 	}
 }
 
-func (server *UserContent) archive(context *gin.Context) {
-	var body request.UserContentArchiveRequestBody
+func (server *UserContent) save(context *gin.Context) {
+	var body request.UserContentSaveRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := server.Service.Archive(body.ID, body.Tag); err != nil {
+	if err := server.Service.Save(body.ID, body.Tag); err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}

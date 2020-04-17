@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ContentPreview from './ContentPreview';
 import ContentBottomSheet from './ContentBottomSheet';
 
-function HomeContentPreview(props) {
+function SavedContentPreview(props) {
     const [optionsActive, setOptionsActive] = useState(false)
 
     return (
@@ -14,7 +14,7 @@ function HomeContentPreview(props) {
                 {...props}
             />
             <ContentBottomSheet
-                type='archive'
+                type='save'
                 optionsActive={optionsActive}
                 setOptionsActive={value => setOptionsActive(value)}
                 {...props}
@@ -23,4 +23,4 @@ function HomeContentPreview(props) {
     );
 }
 
-export default HomeContentPreview
+export default SavedContentPreview

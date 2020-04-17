@@ -41,7 +41,7 @@ func (repository *UserContent) Insert(userContent model.UserContent) error {
 		userContent.Tag,
 		userContent.CreatedAt,
 		userContent.UpdatedAt,
-		userContent.ArchivedAt,
+		userContent.SavedAt,
 		userContent.DeletedAt,
 	)
 
@@ -76,14 +76,14 @@ func (repository *UserContent) All(limit int) []model.UserContent {
 	return repository.scanRows(rows)
 }
 
-// Archive a post, optionally update the tag
-func (repository *UserContent) Archive(
+// Save a post, optionally update the tag
+func (repository *UserContent) Save(
 	id uuid.UUID,
 	tag wrappers.NullString,
 ) error {
 	statement := `
 	UPDATE user_content
-	SET archived_at = now(),
+	SET saved_at = now(),
 		tag = $1
 	WHERE id = $2;
 	`
@@ -136,7 +136,7 @@ func (repository *UserContent) Filter(
 	userID uuid.UUID,
 	tag *string,
 	contentType *string,
-	archived bool,
+	saved bool,
 	limit int,
 ) []model.UserContent {
 
@@ -157,10 +157,10 @@ func (repository *UserContent) Filter(
 		counter++
 	}
 
-	if archived {
-		statement += `AND archived_at IS NOT NULL`
+	if saved {
+		statement += `AND saved_at IS NOT NULL`
 	} else {
-		statement += `AND archived_at IS NULL`
+		statement += `AND saved_at IS NULL`
 	}
 
 	statement += `

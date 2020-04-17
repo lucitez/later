@@ -65,7 +65,7 @@ CREATE TRIGGER update_content BEFORE UPDATE ON content
 
 -- Used to generate a user's feed. Comprised of references to shares.
 -- Shares are never deleted (so you can see what you have sent other people)
--- User content can be deleted or archived
+-- User content can be deleted or saved
 CREATE TABLE IF NOT EXISTS user_content (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     share_id uuid NOT NULL,
@@ -77,14 +77,14 @@ CREATE TABLE IF NOT EXISTS user_content (
 
     created_at timestamp with time zone NOT NULL default now(),
     updated_at timestamp with time zone NOT NULL default now(),
-    archived_at timestamp with time zone,
+    saved_at timestamp with time zone,
     deleted_at timestamp with time zone
 );
 
 CREATE TRIGGER update_user_content BEFORE UPDATE ON user_content
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
-CREATE INDEX idx_user_content_on_user_id_and_archived_at ON user_content(user_id, archived_at)
+CREATE INDEX idx_user_content_on_user_id_and_saved_at ON user_content(user_id, saved_at)
 WHERE deleted_at IS NULL;
 
 CREATE INDEX idx_user_content_on_user_id_and_content_type_and_tag ON user_content(user_id, content_type, tag)

@@ -50,6 +50,6 @@ func wireUserContent(userContent model.UserContent, content model.Content, user 
 		SentBy:         userContent.SentByUserID,
 		SentByUsername: user.Username,
 		CreatedAt:      userContent.CreatedAt,
-		ArchivedAt:     userContent.ArchivedAt,
+		SavedAt:     userContent.SavedAt,
 	}
 }

@@ -29,7 +29,7 @@ VALUES ('steven', 'Steve', 'McQueen', 'smq@gmail.com', '9999999999');
 -- $do$
 -- BEGIN
 -- for i in 1..10000 LOOP
--- INSERT INTO user_content (share_id, content_id, user_id, sent_by_user_id, content_type, tag, archived_at)
+-- INSERT INTO user_content (share_id, content_id, user_id, sent_by_user_id, content_type, tag, saved_at)
 -- VALUES (
 --     uuid_generate_v4(),
 --     uuid_generate_v4(),
@@ -47,7 +47,7 @@ VALUES ('steven', 'Steve', 'McQueen', 'smq@gmail.com', '9999999999');
 -- $do$
 -- BEGIN
 -- for i in 1..1000 LOOP
--- INSERT INTO user_content (share_id, content_id, user_id, sent_by_user_id, content_type, tag, archived_at)
+-- INSERT INTO user_content (share_id, content_id, user_id, sent_by_user_id, content_type, tag, saved_at)
 -- VALUES (
 --     uuid_generate_v4(),
 --     uuid_generate_v4(),

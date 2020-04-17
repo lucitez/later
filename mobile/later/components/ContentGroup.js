@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
 import HomeContentPreview from './HomeContentPreview';
-import ArchiveContentPreview from './ArchiveContentPreview';
+import SavedContentPreview from './SavedContentPreview';
 import Divider from './Divider'
 
 function ContentGroup(props) {
@@ -26,12 +26,12 @@ function Preview(props, content) {
                 <HomeContentPreview
                     content={content}
                     onForward={() => props.onForward(content)}
-                    onArchive={tag => props.onArchive(content, tag)}
+                    onSave={tag => props.onSave(content, tag)}
                 />
             )
-        case 'archive':
+        case 'save':
             return (
-                <ArchiveContentPreview
+                <SavedContentPreview
                     content={content}
                     onForward={() => props.onForward(content)}
                     onUpdateTag={tag => props.onUpdateTag(content, tag)}

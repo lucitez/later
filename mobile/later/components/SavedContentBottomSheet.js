@@ -7,7 +7,7 @@ import SearchBar from './SearchBar';
 import BottomSheetContainer from './BottomSheetContainer';
 import { colors } from '../assets/colors';
 
-function ArchiveContentBottomSheet(props) {
+function SavedContentBottomSheet(props) {
     const [tagValue, setTagValue] = useState('')
     const [tags, setTags] = useState([])
 
@@ -37,11 +37,11 @@ function ArchiveContentBottomSheet(props) {
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
-                <View style={styles.archiveButtonContainer}>
-                    <Button theme='primary' name='Archive' size='medium' onPress={() => {
+                <View style={styles.saveButtonContainer}>
+                    <Button theme='primary' name='Save' size='medium' onPress={() => {
                         Keyboard.dismiss()
                         props.onHide()
-                        props.onArchive(tagValue)
+                        props.onSave(tagValue)
                     }} />
                 </View>
             </BottomSheetContainer>
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     addTagContainer: {
         margin: 10,
     },
-    archiveButtonContainer: {
+    saveButtonContainer: {
         paddingLeft: 15,
         paddingRight: 15,
     },
@@ -74,4 +74,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ArchiveContentBottomSheet
+export default SavedContentBottomSheet
