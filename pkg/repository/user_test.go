@@ -1,6 +1,7 @@
 package repository_test
 
 import (
+	"later/pkg/service/body"
 	"testing"
 
 	// Postgres driver
@@ -196,4 +197,21 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 	)
 
 	testUtil.Assert.Contains(actual, user3)
+}
+
+func TestUpdateUser(t *testing.T) {
+	beforeEach(t)
+
+	userRepo.Insert(user)
+
+	updateBody := body.UserUpdate{
+		ID:        user.ID,
+		FirstName: wrappers.NewNullStringFromString("glump"),
+	}
+
+	userRepo.Update(updateBody)
+
+	actual := userRepo.ByID(user.ID)
+
+	testUtil.Assert.Equal(actual.FirstName.String, "glump")
 }

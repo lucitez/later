@@ -31,6 +31,8 @@ func (server *User) RegisterEndpoints(router *gin.Engine) {
 	router.GET("/users/by-id", server.byID)
 	router.GET("/users/filter", server.filter)
 	router.GET("/users/add-friend-filter", server.addFriendFilter)
+
+	router.PUT("/users/update", server.update)
 }
 
 func (server *User) signUp(context *gin.Context) {
@@ -110,4 +112,22 @@ func (server *User) addFriendFilter(context *gin.Context) {
 
 		context.JSON(http.StatusOK, wireFriendUsers)
 	}
+}
+
+func (server *User) update(context *gin.Context) {
+	var body request.UserUpdate
+
+	if err := context.BindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err := server.service.Update(body.ToUserUpdateBody())
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	context.JSON(http.StatusOK, true)
 }

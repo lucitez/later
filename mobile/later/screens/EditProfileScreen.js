@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, View, ScrollView, TouchableOpacity, Text, Alert } from 'react-native';
 import { colors } from '../assets/colors';
 import Header from '../components/Header';
 import PlainText from '../components/forms/PlainText'
+import Network from '../util/Network';
+import Button from '../components/Button';
 
-function EditProfileScreen({ route }) {
+function EditProfileScreen({ navigation, route }) {
 
     const user = route.params.user
 
@@ -25,7 +27,9 @@ function EditProfileScreen({ route }) {
     }
 
     const submitForm = () => {
-
+        Network.PUT("/users/update", formData)
+            .then(() => navigation.navigate('Profile', { newUserData: formData }))
+            .catch(err => Alert.alert(err))
     }
 
     console.log(formData)
@@ -69,18 +73,16 @@ function EditProfileScreen({ route }) {
                             onChange={onFormDataChange}
                         />
                     </View>
+                    <View onPress={submitForm} style={{ width: '100%', alignItems: 'flex-end', paddingTop: 10, }}>
+                        <Button name='Submit' theme='light' size='medium' />
+                    </View>
                 </ScrollView>
+
             </View>
 
-            <TouchableOpacity>
-                <Text>Submit</Text>
-            </TouchableOpacity>
+
         </View >
     )
-}
-
-function updateProfile(formData) {
-    return
 }
 
 const styles = StyleSheet.create({

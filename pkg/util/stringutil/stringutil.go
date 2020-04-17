@@ -12,6 +12,10 @@ func NullIfBlank(str string) *string {
 	return &str
 }
 
+func PointerFromString(str string) *string {
+	return &str
+}
+
 var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
 var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
 

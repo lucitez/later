@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
+	"later/pkg/service/body"
 	"log"
 	"strconv"
 
@@ -191,6 +193,16 @@ func (repository *User) Filter(
 	}
 
 	return repository.scanRows(rows)
+}
+
+func (repository *User) Update(body body.UserUpdate) error {
+	statement, arguments := util.GenerateUpdateStatement("users", body)
+
+	fmt.Println(statement)
+
+	_, err := repository.DB.Exec(statement, arguments...)
+
+	return err
 }
 
 func (repository *User) scanRows(rows *sql.Rows) []model.User {

@@ -9,7 +9,7 @@ import BottomSheetContainer from '../components/BottomSheetContainer';
 import ButtonGroup from '../components/ButtonGroup';
 import Button from '../components/Button';
 
-function ProfileScreen({ navigation }) {
+function ProfileScreen({ navigation, route }) {
     const [user, setUser] = useState(null)
     const [editVisible, setEditVisible] = useState(false)
 
@@ -18,6 +18,12 @@ function ProfileScreen({ navigation }) {
             .then(u => setUser(u))
             .catch(err => console.error(err))
     }, [])
+
+    useEffect(() => {
+        if (route.params) {
+            setUser({ ...user, ...route.params.newUserData })
+        }
+    }, [route.params])
 
     return (
         <View style={styles.container}>

@@ -39,6 +39,14 @@ func NewNullStringFromString(str string) NullString {
 		Valid:  true}}
 }
 
+func (nullStr *NullString) ToPointer() *string {
+	if nullStr.Valid {
+		return &nullStr.String
+	}
+
+	return nil
+}
+
 // NullInt64 wraps sql.NullInt64 and implements Marshalling for serialization / deserialization
 type NullInt64 struct {
 	sql.NullInt64

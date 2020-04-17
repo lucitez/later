@@ -4,6 +4,7 @@ import (
 	"later/pkg/model"
 	"later/pkg/repository"
 	"later/pkg/request"
+	"later/pkg/service/body"
 	"later/pkg/util/wrappers"
 
 	"github.com/google/uuid"
@@ -77,4 +78,9 @@ func (manager *User) AddFriendFilter(
 		userID,
 		search,
 	)
+}
+
+// Update ...
+func (manager *User) Update(body body.UserUpdate) error {
+	return manager.Repository.Update(body)
 }
