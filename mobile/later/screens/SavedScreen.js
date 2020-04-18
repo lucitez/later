@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
-import Header from '../components/Header';
 import { userId } from '../util/constants';
-import ContentFilter from '../components/ContentFilter';
-import ContentGroup from '../components/ContentGroup';
-import SearchBar from '../components/SearchBar';
-import Icon from '../components/Icon';
+import { Header, SearchBar, Icon } from '../components/common';
+import { ContentFilter, ContentGroup } from '../components/content';
 
 function SavedScreen({ navigation }) {
     const [content, setContent] = useState([])

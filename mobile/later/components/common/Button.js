@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { colors } from '../assets/colors';
+import { colors } from '../../assets/colors';
 
 function Button(props) {
     return (
@@ -55,10 +55,8 @@ const buttonStyleFromSize = size => {
 
 const styles = StyleSheet.create({
     buttonContainer: {
-        flexDirection: 'row',
-        flexGrow: 1,
         borderRadius: 5,
-        justifyContent: 'center',
+        alignItems: 'center',
         marginTop: 5,
         marginBottom: 5,
     },
@@ -68,7 +66,9 @@ const styles = StyleSheet.create({
         borderColor: colors.white
     },
     lightButtonContainer: {
-        backgroundColor: colors.white
+        backgroundColor: colors.white,
+        borderWidth: 1.5,
+        borderColor: colors.primary
     },
     primaryButton: {
         color: colors.white

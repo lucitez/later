@@ -1,11 +1,10 @@
 
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, View, ScrollView, TouchableOpacity, Text, Keyboard } from 'react-native'
-import BottomSheet from './BottomSheet';
-import Button from './Button';
-import SearchBar from './SearchBar';
+import BottomSheet from './BottomSheet'
 import BottomSheetContainer from './BottomSheetContainer';
-import { colors } from '../assets/colors';
+import { Button, SearchBar } from '../common';
+import { colors } from '../../assets/colors';
 
 function SavedContentBottomSheet(props) {
     const [tagValue, setTagValue] = useState('')

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableWithoutFeedback } from 'react-native';
-// import { colors } from '../assets/colors';
-import Icon from '../components/Icon';
-import { colors, contentTypes } from '../assets/colors';
+import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
+import { Icon } from '../common';
+import { colors, contentTypes } from '../../assets/colors';
 
 function FilterOption(props) {
 

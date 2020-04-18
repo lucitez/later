@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Button, TouchableOpacity, Alert } from 'react-native';
-import Header from '../components/Header';
-import SearchBar from '../components/SearchBar';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Header, SearchBar } from '../components/common';
 import Network from '../util/Network';
-import ContentPreview from '../components/ContentPreview';
+import { ContentPreview } from '../components/content';
 import { colors } from '../assets/colors';
 
 function SharePreviewScreen({ navigation, route }) {

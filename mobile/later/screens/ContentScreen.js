@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Alert } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
-import Header from '../components/Header';
 import { userId } from '../util/constants';
-import ContentGroup from '../components/ContentGroup';
-import Icon from '../components/Icon';
+import { Header, Icon } from '../components/common';
+import { ContentGroup } from '../components/content';
 
 function ContentScreen({ navigation }) {
     const [content, setContent] = useState([])

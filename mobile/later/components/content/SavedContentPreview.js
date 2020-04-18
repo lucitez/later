@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ContentPreview from './ContentPreview';
-import ContentBottomSheet from './ContentBottomSheet';
+import { ContentBottomSheet } from '../modals';
 
 function SavedContentPreview(props) {
     const [optionsActive, setOptionsActive] = useState(false)

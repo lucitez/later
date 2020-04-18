@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ScrollView } from 'react-native';
 import HomeContentPreview from './HomeContentPreview';
 import SavedContentPreview from './SavedContentPreview';
-import Divider from './Divider'
+import { Divider } from '../common'
 
 function ContentGroup(props) {
     return (

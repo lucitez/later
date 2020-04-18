@@ -1,11 +1,10 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { colors } from '../assets/colors';
-import Icon from '../components/Icon';
+import { StyleSheet, Text, View } from 'react-native';
+import { colors } from '../../assets/colors';
+import { Icon } from '../common';
 
-function ShareWithFriendPreview(props) {
+function FriendPreview(props) {
     let user = props.user
-    let selected = user.selected
 
     return (
         <View style={styles.container}>
@@ -17,12 +16,7 @@ function ShareWithFriendPreview(props) {
                 <Text style={styles.username}>@{user.username}</Text>
             </View>
             <View style={styles.chatContainer}>
-                {
-                    selected ?
-                        <Icon type='check_filled' size={30} />
-                        :
-                        <Icon type='circle' size={30} />
-                }
+                <Icon type='chat' size={30} />
             </View>
         </View>
     );
@@ -72,4 +66,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ShareWithFriendPreview
+export default FriendPreview

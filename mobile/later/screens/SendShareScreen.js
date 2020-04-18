@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, NavigationActions, Text } from 'react-native';
-import Header from '../components/Header';
-import SearchBar from '../components/SearchBar';
-import ContentPreview from '../components/ContentPreview';
-import Icon from '../components/Icon';
+import { StyleSheet, View, KeyboardAvoidingView, Text } from 'react-native';
+import { Header, SearchBar, Icon } from '../components/common';
+import { ContentPreview } from '../components/content';
+import { UserGroup } from '../components/user';
 import Network from '../util/Network';
 import { colors } from '../assets/colors';
 import { userId } from '../util/constants';
-import UserGroup from '../components/UserGroup';
 
 function SendShareScreen({ navigation, route }) {
 

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, View, Keyboard } from 'react-native'
-import { colors } from '../assets/colors';
+import { colors } from '../../assets/colors';
 
 function BottomSheetContainer(props) {
     const [isKeyboardShowing, setKeyboardShowing] = useState(false)

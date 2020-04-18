@@ -3,13 +3,17 @@ import { StyleSheet, View, Text } from 'react-native';
 import { userId } from '../util/constants';
 import Network from '../util/Network';
 import { colors } from '../assets/colors';
-import Icon from '../components/Icon';
-import BottomSheet from '../components/BottomSheet';
-import BottomSheetContainer from '../components/BottomSheetContainer';
-import ButtonGroup from '../components/ButtonGroup';
-import Button from '../components/Button';
+import { Icon, Button, ButtonGroup, TabBar } from '../components/common';
+import { BottomSheet, BottomSheetContainer } from '../components/modals';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import FriendScreen from './FriendScreen';
+import ConversationScreen from './ConversationsScreen';
+import NotificationsScreen from './NotificationsScreen';
+
+const ProfileTab = createMaterialTopTabNavigator()
 
 function ProfileScreen({ navigation, route }) {
+
     const [user, setUser] = useState(null)
     const [editVisible, setEditVisible] = useState(false)
 
@@ -49,6 +53,12 @@ function ProfileScreen({ navigation, route }) {
                         null
                 }
             </View>
+            <View style={styles.tabContainer}>
+                <ProfileTab.Navigator initialRouteName='Conversations' tabBar={props => <TabBar {...props} />}>
+                    <ProfileTab.Screen name='Conversations' component={ConversationScreen} />
+                    <ProfileTab.Screen name='Notifications' component={NotificationsScreen} />
+                </ProfileTab.Navigator>
+            </View>
             <BottomSheet
                 visible={editVisible}
                 onHide={() => setEditVisible(false)}
@@ -80,13 +90,17 @@ const styles = StyleSheet.create({
         backgroundColor: colors.lightGray,
     },
     topContainer: {
-        height: '25%',
+        height: '22%',
         backgroundColor: colors.primary,
         paddingTop: 50,
         justifyContent: 'flex-start',
     },
     profileContainer: {
         flexDirection: 'row',
+    },
+    tabContainer: {
+        flexGrow: 1,
+        flexBasis: 0,
     },
     leftContainer: {
         width: '25%',

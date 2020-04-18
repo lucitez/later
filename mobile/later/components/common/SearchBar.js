@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, TextInput, View, Keyboard, TouchableOpacity } from 'react-native';
-import { colors } from '../assets/colors';
-import Icon from '../components/Icon';
+import { colors } from '../../assets/colors';
+import Icon from './Icon';
 
 function SearchBar(props) {
     const [search, setSearch] = useState(props.startingValue ? props.startingValue : '')

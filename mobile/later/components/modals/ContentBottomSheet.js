@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import BottomSheet from './BottomSheet';
-import Button from './Button';
-import ButtonGroup from './ButtonGroup';
-import SavedContentBottomSheet from './SavedContentBottomSheet';
-import EditTagBottomSheet from './EditTagBottomSheet';
-import BottomSheetContainer from './BottomSheetContainer';
+import BottomSheet from './BottomSheet'
+import SavedContentBottomSheet from './SavedContentBottomSheet'
+import EditTagBottomSheet from './EditTagBottomSheet'
+import BottomSheetContainer from './BottomSheetContainer'
+import { Button, ButtonGroup } from '../common';
 
 function ContentBottomSheet(props) {
     const [optionsActive, setOptionsActive] = useState(false)

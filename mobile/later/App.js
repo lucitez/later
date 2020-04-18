@@ -3,11 +3,9 @@ import { registerRootComponent } from 'expo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import Icon from './components/Icon';
+import { Icon } from './components/common';
 import ContentScreen from './screens/ContentScreen';
 import SavedScreen from './screens/SavedScreen';
-import FriendScreen from './screens/FriendScreen';
-import AddFriendScreen from './screens/AddFriendScreen';
 import { colors } from './assets/colors';
 import SharePreviewScreen from './screens/SharePreviewScreen';
 import SendShareScreen from './screens/SendShareScreen';
@@ -49,14 +47,6 @@ function CreateShareStack() {
   )
 }
 
-function CreateChatStack() {
-  return (
-    <ChatStack.Navigator initialRouteName='Todo' headerMode='none'>
-      <ChatStack.Screen name='Todo' component={DiscoverScreen} />
-    </ChatStack.Navigator>
-  )
-}
-
 function CreateProfileStack() {
   return (
     <ProfileStack.Navigator initialRouteName='Profile' headerMode='none'>
@@ -84,7 +74,6 @@ class App extends React.Component {
           <Tab.Screen name='Home' component={CreateContentStack} />
           <Tab.Screen name='Discover' component={CreateDiscoverStack} />
           <Tab.Screen name='Share' component={CreateShareStack} />
-          <Tab.Screen name='Chat' component={CreateChatStack} />
           <Tab.Screen name='Profile' component={CreateProfileStack} />
         </Tab.Navigator>
       </NavigationContainer>

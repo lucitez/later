@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, View, ScrollView, TouchableOpacity, Text, Keyboard } from 'react-native'
-import BottomSheet from './BottomSheet';
-import Button from './Button';
-import SearchBar from './SearchBar';
+import { Button, SearchBar } from '../common';
 import BottomSheetContainer from './BottomSheetContainer';
-import { colors } from '../assets/colors';
+import BottomSheet from './BottomSheet'
+import { colors } from '../../assets/colors';
 
 function EditTagBottomSheet(props) {
     const [tagValue, setTagValue] = useState(props.content.tag)

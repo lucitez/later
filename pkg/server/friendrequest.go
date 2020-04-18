@@ -33,7 +33,7 @@ func (server *FriendRequest) RegisterEndpoints(router *gin.Engine) {
 	router.POST("/friend-requests/send", server.send)
 	router.GET("/friend-requests/pending", server.pending)
 	router.PUT("/friend-requests/accept", server.accept)
-	router.PUT("/friend-requests/declilne", server.decline)
+	router.PUT("/friend-requests/decline", server.decline)
 }
 
 func (server *FriendRequest) send(context *gin.Context) {

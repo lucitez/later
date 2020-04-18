@@ -1,9 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import Icon from './Icon';
-import Link from './Link';
-import Tag from './Tag';
-import { contentTypes, colors } from '../assets/colors';
+import { Icon, Link, Tag } from '../common';
+import { contentTypes, colors } from '../../assets/colors';
 
 function ContentPreview({ onDotPress, content, linkActive }) {
     return (

@@ -1,53 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Icon, SearchBar } from '../components/common';
+import { SearchBar } from '../components/common';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { UserGroup } from '../components/user';
 import { userId } from '../util/constants';
 
-function FriendScreen({ navigation }) {
-    const [friends, setFriends] = useState([])
+function ConversationScreen() {
+    const [conversations, setConversations] = useState([])
     const [search, setSearch] = useState(null)
     const [offset, setOffset] = useState(0)
 
     useEffect(() => {
-        getFriends(userId, search, offset)
-            .then(nextPage => setFriends(friends.concat(nextPage)))
-            .catch(error => console.error(error))
+        getConversations(search, offset)
+            .then(conversations => setConversations(conversations))
+            .catch(err => console.error(err))
     }, [])
 
     useEffect(() => {
-        if (offset > 0) {
-            getFriends(userId, search, offset)
-                .then(nextPage => setFriends(friends.concat(nextPage)))
-                .catch(error => console.error(error))
-        }
-
+        if (offset > 0)
+            getConversations(search, offset)
+                .then(conversations => setConversations(conversations))
+                .catch(err => console.error(err))
     }, [offset])
 
     useEffect(() => {
         if (search)
-            getFriends(userId, search, offset)
-                .then(friends => setFriends(friends))
+            getConversations(search, offset)
+                .then(conversations => setConversations(conversations))
                 .catch(error => console.error(error))
     }, [search])
 
     return (
         <View style={styles.container}>
             <SearchBar onChange={search => setSearch(search)} />
-            <UserGroup users={friends} type='friend' />
+            <UserGroup users={conversations} type='convo' />
         </View>
     );
 }
 
-function AddFriendsIcon(navigation) {
-    return (
-        <Icon type="add_friend" size={25} color={colors.white} onPress={() => navigation.navigate("Test")} />
-    )
-}
-
-const getFriends = (userId, search, offset) => {
+const getConversations = (search, offset) => {
     params = {
         userId: userId,
         search: search,
@@ -73,4 +65,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default FriendScreen;
+export default ConversationScreen;

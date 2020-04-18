@@ -1,13 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, TouchableOpacity, Text, Alert, Keyboard } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, ScrollView, Text } from 'react-native';
 import { colors } from '../assets/colors';
-import Header from '../components/Header';
-import PlainText from '../components/forms/PlainText'
 import Network from '../util/Network';
-import Button from '../components/Button';
-import Email from '../components/forms/Email';
-import Icon from '../components/Icon';
-import BackIcon from '../components/BackIcon';
+import { PlainText, Email, PhoneNumber } from '../components/forms';
+import { Header, Button, BackIcon } from '../components/common';
 
 function EditProfileScreen({ navigation, route }) {
     const user = route.params.user
@@ -22,7 +18,7 @@ function EditProfileScreen({ navigation, route }) {
     })
 
     const [validationErrors, setValidationErrors] = useState({})
-    const [validationError, setValidationError] = useState(null)
+    const [error, setError] = useState(null)
     const [submitting, setSubmitting] = useState(false)
 
     const onFormDataChange = (name, value, valid) => {
@@ -37,10 +33,10 @@ function EditProfileScreen({ navigation, route }) {
     }
 
     const validate = () => {
-        setValidationError(null)
+        setError(null)
         for (let [key, valid] of Object.entries(validationErrors)) {
             if (!valid) {
-                setValidationError(`Please provide a valid ${key}`)
+                setError(`Please provide a valid ${key}`)
                 return false
             }
         }
@@ -51,28 +47,18 @@ function EditProfileScreen({ navigation, route }) {
         if (validate()) {
             Network.PUT("/users/update", formData)
                 .then(() => navigation.navigate('Profile', { newUserData: formData }))
-                .catch(err => Alert.alert(err))
+                .catch(err => setError(err))
                 .finally(() => setSubmitting(false))
         } else {
             setSubmitting(false)
         }
     }
 
-    console.log(submitting)
-
     return (
         <View style={styles.container}>
             <Header name='Edit Profile' leftIcon={<BackIcon navigation={navigation} />} />
             <View style={styles.formContainer}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContainer} keyboardShouldPersistTaps='handled' >
-                    <View style={styles.usernameFormContainer}>
-                        <PlainText
-                            name='username'
-                            title='Username'
-                            value={formData.username}
-                            onChange={onFormDataChange}
-                        />
-                    </View>
                     <View style={styles.nameFormContainer}>
                         <View style={styles.firstNameFormContainer}>
                             <PlainText
@@ -99,6 +85,14 @@ function EditProfileScreen({ navigation, route }) {
                             onChange={onFormDataChange}
                         />
                     </View>
+                    <View style={styles.phoneFormContainer}>
+                        <PhoneNumber
+                            name='phoneNumber'
+                            title='Phone Number'
+                            value={formData.phoneNumber}
+                            onChange={onFormDataChange}
+                        />
+                    </View>
                     <View style={styles.bottomContainer}>
                         <View style={styles.submitButtonContainer}>
                             <Button name={submitting ? 'Submitting...' : 'Submit'} theme='light' size='medium' onPress={() => {
@@ -106,9 +100,9 @@ function EditProfileScreen({ navigation, route }) {
                                 submitForm()
                             }} />
                         </View>
-                        {validationError &&
+                        {error &&
                             <View style={styles.errorMessageContainer}>
-                                <Text style={styles.errorMessage}>{validationError}</Text>
+                                <Text style={styles.errorMessage}>{error}</Text>
                             </View>}
                     </View>
                 </ScrollView>
@@ -153,13 +147,16 @@ const styles = StyleSheet.create({
     lastNameFormContainer: {
         flex: 1,
     },
+    phoneFormContainer: {
+        width: '50%'
+    },
     bottomContainer: {
         width: '100%',
         alignItems: 'flex-end',
         marginTop: 25,
     },
     submitButtonContainer: {
-        width: '33%'
+        width: '35%'
     },
     errorMessageContainer: {
         paddingTop: 10
