@@ -66,3 +66,8 @@ func (manager *FriendRequest) Accept(id uuid.UUID) error {
 func (manager *FriendRequest) Decline(id uuid.UUID) {
 	manager.Repository.Decline(id)
 }
+
+// Delete ...
+func (manager *FriendRequest) Delete(id uuid.UUID) {
+	manager.Repository.Delete(id)
+}

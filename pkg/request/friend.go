@@ -19,6 +19,12 @@ func (requestBody *FriendRequestCreateRequestBody) ToFriendRequestCreateBody() b
 		RecipientUserID: requestBody.RecipientUserID}
 }
 
+// FriendDeleteRequestBody request body for sending a new friend request
+type FriendDeleteRequestBody struct {
+	UserID       uuid.UUID `form:"user_id" json:"user_id" binding:"required"`
+	FriendUserID uuid.UUID `form:"friend_user_id" json:"friend_user_id" binding:"required"`
+}
+
 // FriendRequestAcceptRequestBody ...
 type FriendRequestAcceptRequestBody struct {
 	ID uuid.UUID `form:"id" json:"id" binding:"required"`
@@ -26,5 +32,10 @@ type FriendRequestAcceptRequestBody struct {
 
 // FriendRequestDeclineRequestBody ...
 type FriendRequestDeclineRequestBody struct {
+	ID uuid.UUID `form:"id" json:"id" binding:"required"`
+}
+
+// FriendRequestDeleteRequestBody ...
+type FriendRequestDeleteRequestBody struct {
 	ID uuid.UUID `form:"id" json:"id" binding:"required"`
 }

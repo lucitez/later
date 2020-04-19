@@ -58,3 +58,17 @@ func (manager *Friend) ForUser(
 		offset,
 	)
 }
+
+func (manager *Friend) ByUserIDAndFriendUserID(
+	userID uuid.UUID,
+	friendUserID uuid.UUID,
+) *model.Friend {
+	return manager.Repository.ByUserIDAndFriendUserID(userID, friendUserID)
+}
+
+func (service *Friend) DeleteByUserID(
+	userID uuid.UUID,
+	friendUserID uuid.UUID,
+) {
+	service.Repository.DeleteByUserIDs(userID, friendUserID)
+}

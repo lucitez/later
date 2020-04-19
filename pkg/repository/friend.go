@@ -101,6 +101,46 @@ func (repository *Friend) ForUser(
 	return repository.scanRows(rows)
 }
 
+func (repository *Friend) ByUserIDAndFriendUserID(
+	userID uuid.UUID,
+	friendUserID uuid.UUID,
+) *model.Friend {
+	var friend model.Friend
+
+	statement := friendSelectStatement + `
+	WHERE user_id = $1
+	AND friend_user_id = $2
+	AND deleted_at IS NULL;`
+
+	row := repository.DB.QueryRow(statement, userID, friendUserID)
+
+	return friend.ScanRow(row)
+}
+
+func (repository *Friend) DeleteByUserIDs(
+	userID1 uuid.UUID,
+	userID2 uuid.UUID,
+) {
+	statement := `
+	UPDATE friends
+	SET deleted_at = now()
+	WHERE (
+		user_id = $1
+		AND friend_user_id = $2
+	)
+	OR (
+		user_id = $2
+		AND friend_user_id = $1
+	);
+	`
+
+	_, err := repository.DB.Exec(statement, userID1, userID2)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func (repository *Friend) scanRows(rows *sql.Rows) []model.Friend {
 	friends := []model.Friend{}
 

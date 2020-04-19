@@ -1,15 +1,16 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { colors } from '../../assets/colors';
-import UserDetails from './UserDetails';
+import UserDetailsPreview from './UserDetailsPreview';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-function UserPreview({ user }) {
+function UserPreview({ user, onPress }) {
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container} onPress={() => onPress()}>
             <View style={styles.userDetailsContainer}>
-                <UserDetails user={user} />
+                <UserDetailsPreview user={user} />
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }
 

@@ -33,6 +33,7 @@ CREATE TABLE friend_requests (
 CREATE UNIQUE INDEX idx_uniq_friend_requests_on_sent_by_and_recipient
 ON friend_requests(sent_by_user_id, recipient_user_id)
 WHERE declined_at IS NULL
+AND accepted_at IS NULL
 AND deleted_at IS NULL;
 
 CREATE TRIGGER update_friend_requests

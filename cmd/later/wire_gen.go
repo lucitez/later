@@ -93,7 +93,7 @@ func InitializeUser(db *sql.DB) server.User {
 	friend := repository.NewFriend(db)
 	serviceFriend := service.NewFriend(serviceUser, friend)
 	serviceFriendRequest := service.NewFriendRequest(friendRequest, serviceFriend, serviceUser)
-	transferUser := transfer.NewUser(serviceFriendRequest)
+	transferUser := transfer.NewUser(serviceFriendRequest, serviceFriend)
 	serverUser := server.NewUser(serviceUser, transferUser)
 	return serverUser
 }

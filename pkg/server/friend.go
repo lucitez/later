@@ -1,6 +1,7 @@
 package server
 
 import (
+	"later/pkg/request"
 	"later/pkg/service"
 	"later/pkg/transfer"
 	"net/http"
@@ -11,17 +12,17 @@ import (
 
 // Friend ...
 type Friend struct {
-	Manager  service.Friend
+	Service  service.Friend
 	Transfer transfer.Friend
 }
 
 // NewFriend for wire generation
 func NewFriend(
-	manager service.Friend,
+	service service.Friend,
 	transfer transfer.Friend,
 ) Friend {
 	return Friend{
-		manager,
+		service,
 		transfer,
 	}
 }
@@ -29,6 +30,7 @@ func NewFriend(
 // RegisterEndpoints defines handlers for endpoints for the user service
 func (server *Friend) RegisterEndpoints(router *gin.Engine) {
 	router.GET("/friends/for-user", server.forUser)
+	router.PUT("/friends/delete-by-user-id", server.deleteByUserID)
 }
 
 func (server *Friend) forUser(context *gin.Context) {
@@ -49,7 +51,7 @@ func (server *Friend) forUser(context *gin.Context) {
 		limit := parameters["limit"].(*int)
 		offset := parameters["offset"].(*int)
 
-		friends := server.Manager.ForUser(
+		friends := server.Service.ForUser(
 			*userID,
 			search,
 			*limit,
@@ -59,4 +61,17 @@ func (server *Friend) forUser(context *gin.Context) {
 
 		context.JSON(http.StatusOK, wireFriends)
 	}
+}
+
+func (server *Friend) deleteByUserID(context *gin.Context) {
+	var body request.FriendDeleteRequestBody
+
+	if err := context.BindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	server.Service.DeleteByUserID(body.UserID, body.FriendUserID)
+
+	context.JSON(http.StatusOK, true)
 }

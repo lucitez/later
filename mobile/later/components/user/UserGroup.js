@@ -24,7 +24,7 @@ function UserGroup(props) {
 function Preview(props, user) {
     switch (props.type) {
         case 'user':
-            return <UserPreview user={user} onPress={() => null} />
+            return <UserPreview user={user} onPress={() => props.onPress(user.id)} />
         case 'friend':
             return <FriendPreview user={user} />
         case 'convo':

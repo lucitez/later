@@ -86,6 +86,7 @@ const SavedContent = (content, tag) => {
 
 const styles = StyleSheet.create({
     container: {
+        marginBottom: 80,
         flex: 1,
         backgroundColor: colors.lightGray,
     },

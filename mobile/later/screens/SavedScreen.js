@@ -103,6 +103,7 @@ const updateContentTag = (content, contentId, tag) => (
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        // marginBottom: 80,
         backgroundColor: colors.white,
     },
     searchContainer: {

@@ -6,6 +6,9 @@ import (
 
 	"github.com/google/uuid"
 
+	// pq driver
+	_ "github.com/lib/pq"
+
 	"later/pkg/model"
 	"later/pkg/repository/util"
 )
@@ -100,11 +103,24 @@ func (repository *FriendRequest) Accept(ID uuid.UUID) {
 	}
 }
 
-// Decline updates accepted_at
+// Decline updates declined_At
 func (repository *FriendRequest) Decline(ID uuid.UUID) {
 	statement := `
 	UPDATE friend_requests
 	SET declined_at = now()
+	WHERE id = $1;
+	`
+
+	if _, err := repository.DB.Exec(statement, ID); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// Delete updates deleted_at
+func (repository *FriendRequest) Delete(ID uuid.UUID) {
+	statement := `
+	UPDATE friend_requests
+	SET deleted_at = now()
 	WHERE id = $1;
 	`
 

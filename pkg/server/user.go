@@ -29,6 +29,7 @@ func (server *User) RegisterEndpoints(router *gin.Engine) {
 	router.POST("/users/sign-up", server.signUp)
 
 	router.GET("/users/by-id", server.byID)
+	router.GET("/users/profile-by-id", server.profileByID)
 	router.GET("/users/search", server.search)
 
 	router.PUT("/users/update", server.update)
@@ -63,6 +64,28 @@ func (server *User) byID(context *gin.Context) {
 		user := server.service.ByID(*userID)
 
 		context.JSON(http.StatusOK, user)
+	}
+}
+
+func (server *User) profileByID(context *gin.Context) {
+	deser := NewDeser(
+		context,
+		QueryParameter{name: "request_user_id", kind: UUID, required: true},
+		QueryParameter{name: "id", kind: UUID, required: true},
+	)
+
+	if qp, ok := deser.DeserQueryParams(); ok {
+		requestUserID := qp["request_user_id"].(*uuid.UUID)
+		userID := qp["id"].(*uuid.UUID)
+		user := server.service.ByID(*userID)
+
+		if user == nil {
+			context.JSON(http.StatusBadRequest, "User not found")
+		}
+
+		wireUserProfile := server.Transfer.WireUserProfileFrom(*requestUserID, *user)
+
+		context.JSON(http.StatusOK, wireUserProfile)
 	}
 }
 

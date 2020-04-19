@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { userId } from '../util/constants';
 import Network from '../util/Network';
 import { colors } from '../assets/colors';
-import { Icon, Button, ButtonGroup, TabBar } from '../components/common';
+import { Button, ButtonGroup, TabBar, Icon } from '../components/common';
 import { BottomSheet, BottomSheetContainer } from '../components/modals';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import FriendScreen from './FriendScreen';
 import ConversationScreen from './ConversationsScreen';
 import NotificationsScreen from './NotificationsScreen';
+import { UserDetails } from '../components/user';
 
 const ProfileTab = createMaterialTopTabNavigator()
 
@@ -32,26 +32,15 @@ function ProfileScreen({ navigation, route }) {
     return (
         <View style={styles.container}>
             <View style={styles.topContainer}>
-                {
-                    user ?
-                        <View style={styles.profileContainer}>
-                            <View style={styles.leftContainer}>
-                                <View style={styles.imageContainer} />
-                                <View style={styles.tasteContainer}>
-                                    <Text style={styles.taste}>28 taste</Text>
-                                </View>
-                            </View>
-                            <View style={styles.infoContainer}>
-                                <Text style={styles.name}>{user.firstName} {user.lastName}</Text>
-                                <Text style={styles.username}>@{user.username}</Text>
-                            </View>
-                            <View style={styles.gearIconContainer}>
-                                <Icon type='gear' size={25} color={colors.white} onPress={() => setEditVisible(true)} />
-                            </View>
-                        </View>
-                        :
-                        null
-                }
+                <View style={styles.topContentContainer}>
+                    <View style={styles.userInfoContainer}>
+                        {user && <UserDetails user={user} />}
+                    </View>
+                    <View style={styles.gearIconContainer}>
+                        <Icon type='gear' size={25} color={colors.white} onPress={() => setEditVisible(true)} />
+                    </View>
+                </View>
+
             </View>
             <View style={styles.tabContainer}>
                 <ProfileTab.Navigator initialRouteName='Conversations' tabBar={props => <TabBar {...props} />}>
@@ -91,48 +80,25 @@ const styles = StyleSheet.create({
     },
     topContainer: {
         height: '22%',
+        justifyContent: 'flex-end',
         backgroundColor: colors.primary,
-        paddingTop: 50,
-        justifyContent: 'flex-start',
+        paddingBottom: 5,
     },
-    profileContainer: {
+    topContentContainer: {
         flexDirection: 'row',
     },
     tabContainer: {
         flexGrow: 1,
         flexBasis: 0,
     },
-    leftContainer: {
-        width: '25%',
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-    },
-    imageContainer: {
-        height: 75,
-        width: 75,
-        borderRadius: 50,
-        backgroundColor: colors.lightGray,
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    infoContainer: {
-        justifyContent: 'center',
+    userInfoContainer: {
         flexGrow: 1,
-    },
-    taste: {
-        color: colors.white,
-    },
-    name: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: colors.white
-    },
-    username: {
-        color: colors.white
+        flexBasis: 0
     },
     gearIconContainer: {
-        paddingLeft: 10,
-        paddingRight: 10,
+        height: '100%',
+        paddingRight: 15,
+        paddingTop: 10,
     }
 })
 

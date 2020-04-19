@@ -6,7 +6,7 @@ import { userId } from '../util/constants';
 import Network from '../util/Network'
 import UserGroup from '../components/user/UserGroup'
 
-function DiscoverScreen() {
+function DiscoverScreen({ navigation }) {
     const [users, setUsers] = useState([])
     const [search, setSearch] = useState('')
     const [offset, setOffset] = useState(0)
@@ -32,10 +32,9 @@ function DiscoverScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-
                 <SearchBar onChange={search => setSearch(search)} showCancelOnKeyboardActive={true} />
             </View>
-            <UserGroup type='user' users={users} />
+            <UserGroup type='user' users={users} onPress={userId => navigation.navigate('User', { userId })} />
         </View>
     )
 }

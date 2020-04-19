@@ -12,6 +12,7 @@ import SendShareScreen from './screens/SendShareScreen';
 import DiscoverScreen from './screens/DiscoverScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
+import UserScreen from './screens/UserScreen';
 
 const Tab = createBottomTabNavigator();
 const ContentStack = createStackNavigator();
@@ -33,6 +34,7 @@ function CreateDiscoverStack() {
   return (
     <DiscoverStack.Navigator initialRouteName='Discover' headerMode='none'>
       <DiscoverStack.Screen name='Discover' component={DiscoverScreen} />
+      <DiscoverStack.Screen name='User' component={UserScreen} />
     </DiscoverStack.Navigator>
   )
 }

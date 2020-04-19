@@ -22,7 +22,7 @@ function Header(props) {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.primary,
-        height: '11%',
+        height: '12%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: "flex-end",

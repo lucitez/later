@@ -1,7 +1,7 @@
 POST http://localhost:8000/shares/new
 
 {
-    "sender_user_id": "4774ec20-fc35-4190-8f95-d22e5c092f8f",
-    "recipient_user_ids": ["d29e3ba3-d083-4238-96d7-63c20369f3da"],
-    "url": "https://www.latimes.com/california/story/2020-04-18/california-north-states-cannabis-industry-jackpot"
+    "sender_user_id": "9854d987-e4de-479a-87f4-c82358a1906e",
+    "recipient_user_ids": ["77fcce77-82cc-40ad-820f-0c13810db41a"],
+    "url": "https://www.youtube.com/watch?v=sR67JvLNn9U"
 }

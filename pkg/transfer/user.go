@@ -4,16 +4,24 @@ import (
 	"later/pkg/model"
 	"later/pkg/response"
 	"later/pkg/service"
+	"later/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )
 
 type User struct {
 	FriendRequestService service.FriendRequest
+	FriendService        service.Friend
 }
 
-func NewUser(friendRequestService service.FriendRequest) User {
-	return User{friendRequestService}
+func NewUser(
+	friendRequestService service.FriendRequest,
+	friendService service.Friend,
+) User {
+	return User{
+		friendRequestService,
+		friendService,
+	}
 }
 
 // WireAddFriendUsersFrom tranfers DB model User to DTO WireAddFriendUser
@@ -38,4 +46,27 @@ func wireAddFriendUser(user model.User, existingPendingRequest bool) response.Wi
 		PendingRequest: existingPendingRequest,
 		CreatedAt:      user.CreatedAt,
 	}
+}
+
+func (transfer *User) WireUserProfileFrom(requestUserID uuid.UUID, user model.User) response.WireUserProfile {
+	wireUser := response.WireUserProfile{
+		ID:           user.ID,
+		FirstName:    user.FirstName,
+		LastName:     user.LastName,
+		Username:     user.Username,
+		FriendStatus: wrappers.NewNullString(nil),
+	}
+
+	if existingFriend := transfer.FriendService.ByUserIDAndFriendUserID(requestUserID, user.ID); existingFriend != nil {
+		wireUser.FriendStatus = wrappers.NewNullStringFromString("friends")
+		return wireUser
+	}
+
+	if pendingRequest := transfer.FriendRequestService.PendingBySenderAndRecipient(requestUserID, user.ID); pendingRequest != nil {
+		wireUser.FriendStatus = wrappers.NewNullStringFromString("pending")
+		wireUser.FriendRequestID = wrappers.NewNullUUIDFromUUID(pendingRequest.ID)
+		return wireUser
+	}
+
+	return wireUser
 }

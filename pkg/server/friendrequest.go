@@ -31,6 +31,7 @@ func NewFriendRequest(
 // RegisterEndpoints defines handlers for endpoints for the user service
 func (server *FriendRequest) RegisterEndpoints(router *gin.Engine) {
 	router.POST("/friend-requests/send", server.send)
+	router.PUT("/friend-requests/delete", server.delete)
 	router.GET("/friend-requests/pending", server.pending)
 	router.PUT("/friend-requests/accept", server.accept)
 	router.PUT("/friend-requests/decline", server.decline)
@@ -97,6 +98,19 @@ func (server *FriendRequest) decline(context *gin.Context) {
 	}
 
 	server.Manager.Decline(body.ID)
+
+	context.Status(http.StatusOK)
+}
+
+func (server *FriendRequest) delete(context *gin.Context) {
+	var body request.FriendRequestDeleteRequestBody
+
+	if err := context.BindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	server.Manager.Delete(body.ID)
 
 	context.Status(http.StatusOK)
 }

@@ -80,6 +80,14 @@ type NullUUID struct {
 	Valid bool
 }
 
+// NewNullUUIDFromUUID constructor for NullTime
+func NewNullUUIDFromUUID(id uuid.UUID) NullUUID {
+	return NullUUID{
+		ID:    id,
+		Valid: true,
+	}
+}
+
 // MarshalJSON ...
 func (nullString NullString) MarshalJSON() ([]byte, error) {
 	if nullString.Valid {
