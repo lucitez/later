@@ -18,7 +18,6 @@ func (body *ShareCreateBody) ToUserContentCreateBody(shareID uuid.UUID) UserCont
 	return UserContentCreateBody{
 		ShareID:         shareID,
 		ContentID:       body.Content.ID,
-		ContentType:     body.Content.ContentType,
 		RecipientUserID: body.RecipientUserID,
 		SenderUserID:    body.SenderUserID,
 	}

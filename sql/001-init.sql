@@ -70,7 +70,6 @@ CREATE TABLE IF NOT EXISTS user_content (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     share_id uuid NOT NULL,
     content_id uuid NOT NULL,
-    content_type text, -- [watch, read, listen]
     user_id uuid NOT NULL,
     sent_by_user_id uuid NOT NULL, -- [self, friend, us]
     tag text, -- [memes, videos, etc.] (freeform, added by user)
@@ -87,7 +86,7 @@ CREATE TRIGGER update_user_content BEFORE UPDATE ON user_content
 CREATE INDEX idx_user_content_on_user_id_and_saved_at ON user_content(user_id, saved_at)
 WHERE deleted_at IS NULL;
 
-CREATE INDEX idx_user_content_on_user_id_and_content_type_and_tag ON user_content(user_id, content_type, tag)
+CREATE INDEX idx_user_content_on_user_id_and_tag ON user_content(user_id, tag)
 WHERE deleted_at IS NULL;
 
 COMMIT;

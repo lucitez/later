@@ -6,18 +6,16 @@ import { colors } from '../../assets/colors';
 function BottomSheetContainer(props) {
     const [isKeyboardShowing, setKeyboardShowing] = useState(false)
 
-    Keyboard.addListener('keyboardWillShow', function () {
-        setKeyboardShowing(true)
-    })
-    Keyboard.addListener('keyboardWillHide', function () {
-        setKeyboardShowing(false)
-    })
+    const _keyboardWillShow = () => setKeyboardShowing(true)
+    const _keyboardWillHide = () => setKeyboardShowing(false)
 
     useEffect(() => {
-        return function cleanup() {
-            Keyboard.removeAllListeners('keyboardWillShow')
-            Keyboard.removeAllListeners('keyboardWillHide')
-        };
+        Keyboard.addListener("keyboardWillShow", _keyboardWillShow);
+        Keyboard.addListener("keyboardWillHide", _keyboardWillHide);
+        return () => {
+            Keyboard.removeListener("keyboardWillShow", _keyboardWillShow);
+            Keyboard.removeListener("keyboardWillHide", _keyboardWillHide);
+        }
     })
 
     return (

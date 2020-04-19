@@ -9,7 +9,7 @@ import (
 var shareRepo repository.Share
 
 var share = model.NewShare(
-	contentID,
+	content.ID,
 	userID,
 	userID)
 

@@ -56,7 +56,6 @@ const toDisplayValue = (rawText) => {
 }
 
 const isValid = (value) => {
-    console.log(value)
     const pattern = /^[\d]{10}$/
 
     return pattern.test(value)

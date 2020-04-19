@@ -12,10 +12,10 @@ var contentRepo repository.Content
 var content = model.NewContent(
 	wrappers.NewNullStringFromString("title"),
 	wrappers.NewNullStringFromString("description"),
-	wrappers.NewNullStringFromString("image.com"),
-	wrappers.NewNullStringFromString("jpeg"),
-	"glump.com",
-	"glump",
+	wrappers.NewNullStringFromString("thumbnail.jpg"),
+	wrappers.NewNullStringFromString("watch"),
+	"youtube.com",
+	"youtube",
 )
 
 func TestContentInsertAndByID(t *testing.T) {

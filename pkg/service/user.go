@@ -23,7 +23,7 @@ func NewUser(repository repository.User) User {
 // NewUserFromPhoneNumber inserts a new user using just phone number
 func (manager *User) NewUserFromPhoneNumber(phoneNumber string) (*model.User, error) {
 	user := model.NewUserFromShare(
-		wrappers.NewNullString(nil), // user_name
+		wrappers.NewNullString(nil), // username
 		wrappers.NewNullString(nil), // email
 		phoneNumber,
 	)

@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"later/pkg/service/body"
 	"log"
 	"strconv"
@@ -197,8 +196,6 @@ func (repository *User) Filter(
 
 func (repository *User) Update(body body.UserUpdate) error {
 	statement, arguments := util.GenerateUpdateStatement("users", body)
-
-	fmt.Println(statement)
 
 	_, err := repository.DB.Exec(statement, arguments...)
 

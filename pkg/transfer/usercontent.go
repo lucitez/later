@@ -43,13 +43,13 @@ func wireUserContent(userContent model.UserContent, content model.Content, user 
 		Title:          content.Title,
 		Description:    content.Description,
 		ImageURL:       content.ImageURL,
-		ContentType:    userContent.ContentType,
+		ContentType:    content.ContentType,
 		Tag:            userContent.Tag,
 		Domain:         content.Domain,
 		URL:            content.URL,
 		SentBy:         userContent.SentByUserID,
 		SentByUsername: user.Username,
 		CreatedAt:      userContent.CreatedAt,
-		SavedAt:     userContent.SavedAt,
+		SavedAt:        userContent.SavedAt,
 	}
 }

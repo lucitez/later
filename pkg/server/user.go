@@ -29,8 +29,7 @@ func (server *User) RegisterEndpoints(router *gin.Engine) {
 	router.POST("/users/sign-up", server.signUp)
 
 	router.GET("/users/by-id", server.byID)
-	router.GET("/users/filter", server.filter)
-	router.GET("/users/add-friend-filter", server.addFriendFilter)
+	router.GET("/users/search", server.search)
 
 	router.PUT("/users/update", server.update)
 }
@@ -67,7 +66,7 @@ func (server *User) byID(context *gin.Context) {
 	}
 }
 
-func (server *User) filter(context *gin.Context) {
+func (server *User) search(context *gin.Context) {
 	defaultLimit := "20"
 	defaultOffset := "0"
 
@@ -89,28 +88,6 @@ func (server *User) filter(context *gin.Context) {
 		)
 
 		context.JSON(http.StatusOK, users)
-	}
-}
-
-func (server *User) addFriendFilter(context *gin.Context) {
-
-	deser := NewDeser(
-		context,
-		QueryParameter{name: "user_id", kind: UUID, required: true},
-		QueryParameter{name: "search", kind: Str},
-	)
-
-	if qp, ok := deser.DeserQueryParams(); ok {
-		userID := qp["user_id"].(*uuid.UUID)
-		search := qp["search"].(*string)
-		users := server.service.AddFriendFilter(
-			*userID,
-			search,
-		)
-
-		wireFriendUsers := server.Transfer.WireAddFriendUsersFrom(*userID, users)
-
-		context.JSON(http.StatusOK, wireFriendUsers)
 	}
 }
 

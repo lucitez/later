@@ -15,22 +15,20 @@ type UserContent struct {
 	ID           uuid.UUID
 	ShareID      uuid.UUID
 	ContentID    uuid.UUID
-	ContentType  wrappers.NullString
 	UserID       uuid.UUID
 	SentByUserID uuid.UUID
 	Tag          wrappers.NullString
 
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	SavedAt wrappers.NullTime
-	DeletedAt  wrappers.NullTime
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	SavedAt   wrappers.NullTime
+	DeletedAt wrappers.NullTime
 }
 
 // NewUserContent constructor for UserContent
 func NewUserContent(
 	shareID uuid.UUID,
 	contentID uuid.UUID,
-	contentType wrappers.NullString,
 	userID uuid.UUID,
 	sentByUserID uuid.UUID,
 ) UserContent {
@@ -43,7 +41,6 @@ func NewUserContent(
 		ID:           id,
 		ShareID:      shareID,
 		ContentID:    contentID,
-		ContentType:  contentType,
 		UserID:       userID,
 		SentByUserID: sentByUserID,
 
@@ -60,7 +57,6 @@ func (userContent *UserContent) ScanRows(rows *sql.Rows) {
 		&userContent.ID,
 		&userContent.ShareID,
 		&userContent.ContentID,
-		&userContent.ContentType,
 		&userContent.UserID,
 		&userContent.SentByUserID,
 		&userContent.Tag,
@@ -81,7 +77,6 @@ func (userContent *UserContent) ScanRow(row *sql.Row) *UserContent {
 		&userContent.ID,
 		&userContent.ShareID,
 		&userContent.ContentID,
-		&userContent.ContentType,
 		&userContent.UserID,
 		&userContent.SentByUserID,
 		&userContent.Tag,

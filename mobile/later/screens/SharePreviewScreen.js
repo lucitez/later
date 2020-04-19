@@ -52,7 +52,7 @@ function SharePreviewScreen({ navigation, route }) {
                         </View>
                         <View style={styles.footerContainer}>
                             <TouchableOpacity onPress={() => {
-                                navigation.navigate('Send Share', { contentPreview: contentPreview })
+                                navigation.navigate('Send Share', { contentPreview: contentPreview, previousScreen: 'Share' })
                             }}>
                                 <View style={styles.nextButtonContainer}>
                                     <Text style={styles.nextButton}>Next</Text>
@@ -69,7 +69,7 @@ function SharePreviewScreen({ navigation, route }) {
                                 <Text>
                                     {
                                         sent ? "Share successful!" :
-                                            url.length == 0 ? "Paste a URL to get started!" :
+                                            url.length == 0 ? "Paste a URL to get started" :
                                                 "We could not generate a preview of your link"
                                     }
                                 </Text>

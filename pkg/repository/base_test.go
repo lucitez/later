@@ -18,15 +18,14 @@ var tableNames = []string{
 	"friends",
 	"friend_requests",
 	"content",
-	"domains"}
+	"domains",
+}
 
 var testUtil util.RepositoryTestUtil
 
 /**
  * Declare some default vars to be reused across tests
  */
-var shareID, _ = uuid.NewRandom()
-var contentID, _ = uuid.NewRandom()
 var userID, _ = uuid.NewRandom()
 var userID2, _ = uuid.NewRandom()
 

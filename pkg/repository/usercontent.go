@@ -35,7 +35,6 @@ func (repository *UserContent) Insert(userContent model.UserContent) error {
 		userContent.ID,
 		userContent.ShareID,
 		userContent.ContentID,
-		userContent.ContentType,
 		userContent.UserID,
 		userContent.SentByUserID,
 		userContent.Tag,
@@ -137,38 +136,60 @@ func (repository *UserContent) Filter(
 	tag *string,
 	contentType *string,
 	saved bool,
+	search *string,
 	limit int,
 ) []model.UserContent {
+	statement := selectUserContent
 
-	statement := selectUserContent + `
-		WHERE user_id = $1
-		AND deleted_at IS NULL
-	`
+	statement += `
+		JOIN content c ON user_content.content_id = c.id
+		WHERE user_content.user_id = $1
+		AND user_content.deleted_at IS NULL`
 
 	counter := 2
+	var fuzzySearch *string = nil
+
+	if search != nil {
+		statement += `
+		AND (
+			c.title ILIKE $2
+			OR c.domain ILIKE $2
+			OR user_content.tag ILIKE $2
+		)
+		`
+
+		counter++
+		fuzzySearch = search
+		*fuzzySearch = "%" + *fuzzySearch + "%"
+	}
 
 	if tag != nil {
-		statement += `AND tag = $` + strconv.Itoa(counter)
+		statement += `
+		AND tag = $` + strconv.Itoa(counter)
 		counter++
 	}
 
 	if contentType != nil {
-		statement += `AND content_type = $` + strconv.Itoa(counter)
+		statement += `
+		AND c.content_type = $` + strconv.Itoa(counter)
 		counter++
 	}
 
 	if saved {
-		statement += `AND saved_at IS NOT NULL`
+		statement += `
+		AND saved_at IS NOT NULL`
 	} else {
-		statement += `AND saved_at IS NULL`
+		statement += `
+		AND saved_at IS NULL`
 	}
 
 	statement += `
-	ORDER BY created_at DESC
+	ORDER BY user_content.created_at DESC
 	LIMIT $` + strconv.Itoa(counter) + `;`
 
 	args := util.GenerateArguments(
 		userID,
+		fuzzySearch,
 		tag,
 		contentType,
 		limit,

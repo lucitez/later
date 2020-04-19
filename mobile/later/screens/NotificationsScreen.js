@@ -15,22 +15,11 @@ function NotificationsScreen() {
             .catch(err => console.error(err))
     }, [])
 
-    const onAccept = (friendRequest) => {
+    const onAction = (friendRequest, action) => {
         // Preemptively update UI
-        setFriendRequests(updateFriendRequests(friendRequests, friendRequest.id, 'accepted'))
+        setFriendRequests(updateFriendRequests(friendRequests, friendRequest.id, action))
 
-        respondToFriendRequest(friendRequest.id, 'accept')
-            .catch(() => {
-                // Reset UI if request fails
-                setFriendRequests(updateFriendRequests(friendRequests, friendRequest.id, undefined))
-            })
-    }
-
-    const onDecline = (friendRequest) => {
-        // Preemptively update UI
-        setFriendRequests(updateFriendRequests(friendRequests, friendRequest.id, 'declinled'))
-
-        respondToFriendRequest(friendRequest.id, 'decline')
+        respondToFriendRequest(friendRequest.id, action)
             .catch(() => {
                 // Reset UI if request fails
                 setFriendRequests(updateFriendRequests(friendRequests, friendRequest.id, undefined))
@@ -43,8 +32,7 @@ function NotificationsScreen() {
                 <View key={index}>
                     <FriendRequest
                         request={friendRequest}
-                        onAccept={() => onAccept(friendRequest)}
-                        onDecline={() => onDecline(friendRequest)}
+                        onAction={action => onAction(friendRequest, action)}
                     />
                     {index < friendRequests.length - 1 && <Divider />}
                 </View>
@@ -65,10 +53,14 @@ const getFriendRequests = () => {
 }
 
 const respondToFriendRequest = (id, action) => {
+    actions = {
+        'Declined': 'decline',
+        'Accepted': 'accept'
+    }
     params = {
         id: id
     }
-    return Network.PUT(`/friend-requests/${action}`, params)
+    return Network.PUT(`/friend-requests/${actions[action]}`, params)
 }
 
 const styles = StyleSheet.create({

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ScrollView, TouchableHighlight } from 'react-native';
 import { Divider } from '../common';
-import AddFriendPreview from './AddFriendPreview'
+import UserPreview from './UserPreview'
 import FriendPreview from './FriendPreview'
 import ShareWithFriendPreview from './ShareWithFriendPreview'
 import ConversationPreview from './ConversationPreview'
@@ -23,15 +23,15 @@ function UserGroup(props) {
 
 function Preview(props, user) {
     switch (props.type) {
-        case 'add_friend':
-            return <AddFriendPreview user={user} key={user.id} onRequestSent={() => props.onRequestSent(user.id)} />
+        case 'user':
+            return <UserPreview user={user} onPress={() => null} />
         case 'friend':
-            return <FriendPreview user={user} key={user.id} />
+            return <FriendPreview user={user} />
         case 'convo':
-            return <ConversationPreview user={user} key={user.id} />
+            return <ConversationPreview user={user} />
         case 'share':
             return (
-                <TouchableHighlight key={user.id} onPress={() => props.onSelectToggle(user)}>
+                <TouchableHighlight onPress={() => props.onSelectToggle(user)}>
                     <ShareWithFriendPreview user={user} />
                 </TouchableHighlight>
             )

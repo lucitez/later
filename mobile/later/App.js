@@ -17,7 +17,6 @@ const Tab = createBottomTabNavigator();
 const ContentStack = createStackNavigator();
 const DiscoverStack = createStackNavigator();
 const ShareStack = createStackNavigator();
-const ChatStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 
 function CreateContentStack() {
@@ -32,8 +31,8 @@ function CreateContentStack() {
 
 function CreateDiscoverStack() {
   return (
-    <DiscoverStack.Navigator initialRouteName='Todo' headerMode='none'>
-      <DiscoverStack.Screen name='Todo' component={DiscoverScreen} />
+    <DiscoverStack.Navigator initialRouteName='Discover' headerMode='none'>
+      <DiscoverStack.Screen name='Discover' component={DiscoverScreen} />
     </DiscoverStack.Navigator>
   )
 }
@@ -72,7 +71,7 @@ class App extends React.Component {
           }}
         >
           <Tab.Screen name='Home' component={CreateContentStack} />
-          <Tab.Screen name='Discover' component={CreateDiscoverStack} />
+          <Tab.Screen name='Search' component={CreateDiscoverStack} />
           <Tab.Screen name='Share' component={CreateShareStack} />
           <Tab.Screen name='Profile' component={CreateProfileStack} />
         </Tab.Navigator>

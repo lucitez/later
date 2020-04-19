@@ -11,7 +11,6 @@ import (
 type UserContentCreateBody struct {
 	ShareID         uuid.UUID
 	ContentID       uuid.UUID
-	ContentType     wrappers.NullString
 	RecipientUserID uuid.UUID
 	SenderUserID    uuid.UUID
 }
@@ -21,7 +20,6 @@ func (body *UserContentCreateBody) ToUserContent() model.UserContent {
 	return model.NewUserContent(
 		body.ShareID,
 		body.ContentID,
-		body.ContentType,
 		body.RecipientUserID,
 		body.SenderUserID,
 	)

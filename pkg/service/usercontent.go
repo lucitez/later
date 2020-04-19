@@ -44,6 +44,7 @@ func (service *UserContent) Filter(
 	tag *string,
 	contentType *string,
 	saved bool,
+	search *string,
 	limit int,
 ) []model.UserContent {
 
@@ -52,6 +53,7 @@ func (service *UserContent) Filter(
 		tag,
 		contentType,
 		saved,
+		search,
 		limit,
 	)
 }

@@ -5,6 +5,19 @@ import Icon from './Icon';
 
 function SearchBar(props) {
     const [search, setSearch] = useState(props.startingValue ? props.startingValue : '')
+    const [isKeyboardShowing, setKeyboardShowing] = useState(false)
+
+    const _keyboardWillShow = () => setKeyboardShowing(true)
+    const _keyboardWillHide = () => setKeyboardShowing(false)
+
+    useEffect(() => {
+        Keyboard.addListener("keyboardWillShow", _keyboardWillShow);
+        Keyboard.addListener("keyboardWillHide", _keyboardWillHide);
+        return () => {
+            Keyboard.removeListener("keyboardWillShow", _keyboardWillShow);
+            Keyboard.removeListener("keyboardWillHide", _keyboardWillHide);
+        }
+    }, [])
 
     useEffect(() => {
         props.onChange(search)
@@ -15,6 +28,34 @@ function SearchBar(props) {
             setSearch('')
         }
     }, [props.clear])
+
+    const _cancelButton = () => {
+        if (props.showCancelOnKeyboardActive && !isKeyboardShowing) {
+            return null
+        } else {
+            return (
+                <TouchableOpacity onPress={() => {
+                    setSearch('')
+                    Keyboard.dismiss()
+                    if (props.onCancel) props.onCancel()
+                }}>
+                    <View style={styles.cancelContainer} >
+                        <Text style={styles.cancel}>Cancel</Text>
+                    </View>
+                </TouchableOpacity>
+            )
+        }
+    }
+
+    const _clearButton = () => {
+        if (search.length > 0) {
+            return (
+                <View style={styles.clearIconContainer}>
+                    <Icon type='close' size={20} color={colors.darkGray} onPress={() => setSearch('')} />
+                </View>
+            )
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -32,24 +73,9 @@ function SearchBar(props) {
                         value={search}
                     />
                 </View>
-                {
-                    search.length > 0 ?
-                        <View style={styles.clearIconContainer}>
-                            <Icon type='close' size={20} color={colors.darkGray} onPress={() => setSearch('')} />
-                        </View>
-                        : null
-                }
+                {_clearButton()}
             </View>
-            <TouchableOpacity onPress={() => {
-                console.log('HUH')
-                setSearch('')
-                Keyboard.dismiss()
-                if (props.onCancel) props.onCancel()
-            }}>
-                <View style={styles.cancelContainer} >
-                    <Text style={{ color: colors.white }}>Cancel</Text>
-                </View>
-            </TouchableOpacity>
+            {_cancelButton()}
         </View>
     );
 }
@@ -63,7 +89,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: "center",
         padding: 5,
-        paddingLeft: 7,
+        paddingLeft: 10,
+        paddingRight: 10
     },
     searchBarContainer: {
         flexGrow: 1,
@@ -94,6 +121,10 @@ const styles = StyleSheet.create({
         marginRight: 5,
         justifyContent: 'center',
         height: '100%',
+    },
+    cancel: {
+        color: colors.white,
+        fontSize: 16,
     }
 });
 

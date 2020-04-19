@@ -1,7 +1,7 @@
 POST http://localhost:8000/shares/new
 
 {
-    "sender_user_id": "512ec34c-1bac-4ec1-98d0-845712de9ef6",
-    "recipient_user_ids": ["2ef129c3-1301-4959-9710-df31688e88d4"],
-    "url": "https://medium.com/@ASlavitt/donald-trump-thinks-his-willpower-can-restart-the-economy-it-cant-ca99f2d58fad"
+    "sender_user_id": "4774ec20-fc35-4190-8f95-d22e5c092f8f",
+    "recipient_user_ids": ["d29e3ba3-d083-4238-96d7-63c20369f3da"],
+    "url": "https://www.latimes.com/california/story/2020-04-18/california-north-states-cannabis-industry-jackpot"
 }

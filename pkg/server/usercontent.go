@@ -46,6 +46,7 @@ func (server *UserContent) filter(context *gin.Context) {
 		QueryParameter{name: "tag", kind: Str},
 		QueryParameter{name: "content_type", kind: Str},
 		QueryParameter{name: "saved", kind: Bool, fallback: &defaultSaved},
+		QueryParameter{name: "search", kind: Str},
 		QueryParameter{name: "limit", kind: Int, fallback: &defaultLimit},
 	)
 
@@ -54,6 +55,7 @@ func (server *UserContent) filter(context *gin.Context) {
 		tag := qp["tag"].(*string)
 		contentType := qp["content_type"].(*string)
 		saved := qp["saved"].(*bool)
+		search := qp["search"].(*string)
 		limit := qp["limit"].(*int)
 
 		userContent := server.Service.Filter(
@@ -61,6 +63,7 @@ func (server *UserContent) filter(context *gin.Context) {
 			tag,
 			contentType,
 			*saved,
+			search,
 			*limit,
 		)
 

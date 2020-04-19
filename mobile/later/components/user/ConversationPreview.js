@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
     userInfoContainer: {
         flexDirection: 'row',
         paddingTop: 5,
+        marginBottom: 2,
     },
     nameContainer: {
         marginLeft: 5,

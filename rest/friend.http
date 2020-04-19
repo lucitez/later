@@ -1,11 +1,11 @@
-# POST http://localhost:8000/friend-requests/send
+POST http://localhost:8000/friend-requests/send
 
-# {
-#     "sender_user_id": "c6b22867-e303-4571-adf7-0467e32a7638",
-#     "recipient_user_id": "2ef129c3-1301-4959-9710-df31688e88d4"
-# }
+{
+    "sender_user_id": "4774ec20-fc35-4190-8f95-d22e5c092f8f",
+    "recipient_user_id": "d29e3ba3-d083-4238-96d7-63c20369f3da"
+}
 
-GET http://localhost:8000/friend-requests/pending?user_id=2ef129c3-1301-4959-9710-df31688e88d4
+# GET http://localhost:8000/friend-requests/pending?user_id=2ef129c3-1301-4959-9710-df31688e88d4
 
 # PUT http://localhost:8000/friend-requests/accept
 

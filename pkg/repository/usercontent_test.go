@@ -13,9 +13,8 @@ import (
 var userContentRepo repository.UserContent
 
 var userContent = model.NewUserContent(
-	shareID,
-	contentID,
-	wrappers.NewNullStringFromString("watch"),
+	share.ID,
+	content.ID,
 	userID,
 	userID,
 )
@@ -80,12 +79,14 @@ func TestFilter(t *testing.T) {
 	beforeEach(t)
 
 	userContentRepo.Insert(userContent)
+	contentRepo.Insert(content)
 
 	actual := userContentRepo.Filter(
 		userContent.UserID,
 		nil,
 		&contentType,
 		false,
+		nil,
 		1,
 	)
 
@@ -97,12 +98,14 @@ func TestFilterSaved(t *testing.T) {
 	beforeEach(t)
 
 	userContentRepo.Insert(userContent)
+	contentRepo.Insert(content)
 
 	actual := userContentRepo.Filter(
 		userContent.UserID,
 		nil,
 		&contentType,
 		true, // saved
+		nil,
 		1,
 	)
 
@@ -115,6 +118,34 @@ func TestFilterSaved(t *testing.T) {
 		nil,
 		&contentType,
 		true, // saved
+		nil,
+		1,
+	)
+
+	testUtil.Assert.NotEmpty(actual)
+}
+
+func TestFilterSearchTag(t *testing.T) {
+	beforeEach(t)
+
+	userContentRepo.Insert(userContent)
+	contentRepo.Insert(content)
+
+	updateBody := body.UserContentUpdateBody{
+		ID:  userContent.ID,
+		Tag: wrappers.NewNullStringFromString("memes"),
+	}
+
+	userContentRepo.Update(updateBody)
+
+	search := "memes"
+
+	actual := userContentRepo.Filter(
+		userContent.UserID,
+		nil,
+		nil,
+		false,
+		&search,
 		1,
 	)
 

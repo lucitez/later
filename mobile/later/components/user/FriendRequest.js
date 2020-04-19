@@ -1,9 +1,10 @@
 import React from 'react'
-import { StyleSheet, View, Text } from 'react-native'
+import { StyleSheet, View, Text, Platform } from 'react-native'
 import { colors } from '../../assets/colors'
 import { Button } from '../common'
 
-function FriendRequest({ request, onAccept, onDecline }) {
+function FriendRequest({ request, onAction }) {
+    console.log(request)
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>
@@ -20,14 +21,16 @@ function FriendRequest({ request, onAccept, onDecline }) {
             <View style={styles.actionContainer}>
                 {
                     request.status ?
-                        <Text>{request.status}</Text>
+                        <View style={styles.actionTakenContainer}>
+                            <Text style={styles.action}>{request.status}</Text>
+                        </View>
                         :
                         <>
                             <View style={styles.buttonContainer}>
-                                <Button theme='light' size='small' name='Decline' onPress={() => onDecline()} />
+                                <Button theme='light' size='small' name='Decline' onPress={() => onAction('Declined')} />
                             </View>
                             <View style={styles.buttonContainer}>
-                                <Button theme='primary' size='small' name='Accept' onPress={() => onAccept()} />
+                                <Button theme='primary' size='small' name='Accept' onPress={() => onAction('Accepted')} />
                             </View>
                         </>
                 }
@@ -79,12 +82,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '40%',
         justifyContent: 'flex-end',
-        alignItems: 'center'
+        alignItems: 'center',
+        paddingRight: 5,
     },
     buttonContainer: {
         flexGrow: 1,
         padding: 3,
         justifyContent: 'center'
+    },
+    actionTakenContainer: {
+        marginRight: 5,
+    },
+    action: {
+        fontStyle: 'italic',
     }
 })
 
