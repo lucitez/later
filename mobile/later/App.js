@@ -1,4 +1,6 @@
 import React from 'react';
+import { Provider } from 'react-redux';
+import store from './store'
 import { registerRootComponent } from 'expo';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -14,6 +16,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import LoginScreen from './screens/LoginScreen';
 import UserScreen from './screens/UserScreen';
+
 
 const Tab = createBottomTabNavigator();
 const ContentStack = createStackNavigator();
@@ -58,29 +61,33 @@ function CreateProfileStack() {
   )
 }
 
+// is refresh token in async storage? if so, try to auto log in. if fails or no token, go to login screen :D
+
 class App extends React.Component {
   render() {
     return (
-      <NavigationContainer>
-        <Tab.Navigator
-          initialRouteName='listen'
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ _, color, size }) => (
-              <Icon type={route.name.toLowerCase()} size={size} color={color} />
-            )
-          })}
-          tabBarOptions={{
-            activeTintColor: colors.primary,
-            inactiveTintColor: 'gray',
-          }}
-        >
-          <Tab.Screen name='Home' component={CreateContentStack} />
-          <Tab.Screen name='listen' component={LoginScreen} />
-          <Tab.Screen name='Search' component={CreateDiscoverStack} />
-          <Tab.Screen name='Share' component={CreateShareStack} />
-          <Tab.Screen name='Profile' component={CreateProfileStack} />
-        </Tab.Navigator>
-      </NavigationContainer>
+      <Provider store={store}>
+        <NavigationContainer>
+          <Tab.Navigator
+            initialRouteName='listen'
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ _, color, size }) => (
+                <Icon type={route.name.toLowerCase()} size={size} color={color} />
+              )
+            })}
+            tabBarOptions={{
+              activeTintColor: colors.primary,
+              inactiveTintColor: 'gray',
+            }}
+          >
+            <Tab.Screen name='Home' component={CreateContentStack} />
+            <Tab.Screen name='listen' component={LoginScreen} />
+            <Tab.Screen name='Search' component={CreateDiscoverStack} />
+            <Tab.Screen name='Share' component={CreateShareStack} />
+            <Tab.Screen name='Profile' component={CreateProfileStack} />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </Provider>
     )
   }
 }

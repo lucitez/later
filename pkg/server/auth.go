@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"later/pkg/auth"
 	"later/pkg/request"
 	"later/pkg/service"
@@ -51,7 +50,6 @@ func (server *Auth) login(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(identifier, password)
 	/** Lookup user by identifier and password */
 	user := server.UserService.ByIdentifierAndPassword(identifier, password)
 

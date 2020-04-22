@@ -1,5 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
+import store from '../store'
 
 const host = {
     local: 'http://192.168.254.64:8000'
@@ -19,14 +20,26 @@ client.interceptors.response.use(response => {
     return { ...response, ['data']: dataToCamelCase(response.data) }
 })
 
+const addAuthHeaders = (url, headers) => {
+    if (url.startsWith("/auth")) {
+        return {
+            ...headers,
+            'Client-ID': settings.clientId
+        }
+    } else {
+        let accessToken = store.getState().auth.tokens.accessToken
+        console.log('ACCESS TOKEN: ', accessToken)
+        return {
+            ...headers,
+            'Authorization': `Basic ${accessToken}`
+        }
+    }
+}
+
 function request(options) {
     options = {
         ...options,
-
-        headers: {
-            ...options.headers,
-            'Client-ID': settings.clientId,
-        },
+        headers: addAuthHeaders(options.url, options.headers),
     }
     return new Promise((resolve, reject) => {
         client.request(options)

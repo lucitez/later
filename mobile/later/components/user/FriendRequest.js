@@ -4,7 +4,6 @@ import { colors } from '../../assets/colors'
 import { Button } from '../common'
 
 function FriendRequest({ request, onAction }) {
-    console.log(request)
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>

@@ -67,17 +67,17 @@ func (s *Server) protectedAuth() gin.HandlerFunc {
 		token, err := auth.ParseToken(c.GetHeader("Authorization"))
 
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, err.Error())
+			c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
+			return
 		}
 
 		activeSession, err := s.AuthService.ActiveByID(token.SessionID)
 
 		if activeSession == nil || err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "session expired", "message": err.Error()})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "session expired", "message": err.Error()})
+			return
 		}
 
 		c.Set("user_id", activeSession.UserID)
-
-		return
 	}
 }

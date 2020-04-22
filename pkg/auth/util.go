@@ -1,9 +1,10 @@
 package auth
 
 import (
-	"encoding/base64"
 	"errors"
+	"fmt"
 	"later/pkg/model"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -47,18 +48,17 @@ func ParseToken(authHeader string) (*Token, error) {
 		return nil, errors.New("Authorization Required")
 	}
 
-	const prefix = "Basic "
+	authParts := strings.Split(authHeader, " ")
 
-	tokenPart, err := base64.StdEncoding.DecodeString(authHeader[len(prefix):])
-	if err != nil {
+	if len(authParts) != 2 {
 		return nil, errors.New("Malformed JWT")
 	}
 
-	jwt, err := jwt.ParseWithClaims(string(tokenPart), &Token{}, KeyFunc)
+	jwt, err := jwt.ParseWithClaims(authParts[1], &Token{}, KeyFunc)
 
 	// jwt.ParseWithClaims performs validation against the Token such as expiration
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Error parsing jwt: %s", err.Error())
 	}
 
 	return jwt.Claims.(*Token), nil
