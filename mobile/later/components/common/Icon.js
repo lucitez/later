@@ -21,6 +21,8 @@ function RenderIcon(props) {
             return <SimpleLineIcons name='eyeglass' {...props} />
         case 'listen':
             return <SimpleLineIcons name='earphones' {...props} />
+        case 'login':
+            return <SimpleLineIcons name='earphones' {...props} />
 
         /**
         Tab Nav

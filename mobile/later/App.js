@@ -1,28 +1,37 @@
-import React from 'react';
-import { Provider } from 'react-redux';
+import React, { useEffect, useState, useMemo } from 'react'
+import { AsyncStorage } from 'react-native'
+import { Provider } from 'react-redux'
 import store from './store'
-import { registerRootComponent } from 'expo';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
-import { Icon } from './components/common';
-import ContentScreen from './screens/ContentScreen';
-import SavedScreen from './screens/SavedScreen';
-import { colors } from './assets/colors';
-import SharePreviewScreen from './screens/SharePreviewScreen';
-import SendShareScreen from './screens/SendShareScreen';
-import DiscoverScreen from './screens/DiscoverScreen';
-import ProfileScreen from './screens/ProfileScreen';
-import EditProfileScreen from './screens/EditProfileScreen';
-import LoginScreen from './screens/LoginScreen';
-import UserScreen from './screens/UserScreen';
+import { registerRootComponent } from 'expo'
+import { NavigationContainer } from '@react-navigation/native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createStackNavigator } from '@react-navigation/stack'
+import { Icon } from './components/common'
+import {
+  ContentScreen,
+  SavedScreen,
+  SharePreviewScreen,
+  SendShareScreen,
+  DiscoverScreen,
+  ProfileScreen,
+  EditProfileScreen,
+  UserScreen,
+  SignupScreen,
+  SplashScreen
+} from './screens/index'
+import { colors } from './assets/colors'
+import { LoginScreen } from './screens/index'
+import Network from './util/Network'
+import * as actions from './actions'
+import { AuthContext } from './context'
+import { authHeader } from './util/headers'
 
-
-const Tab = createBottomTabNavigator();
-const ContentStack = createStackNavigator();
-const DiscoverStack = createStackNavigator();
-const ShareStack = createStackNavigator();
-const ProfileStack = createStackNavigator();
+const ApplicationStack = createStackNavigator()
+const ApplicationTabs = createBottomTabNavigator()
+const ContentStack = createStackNavigator()
+const DiscoverStack = createStackNavigator()
+const ShareStack = createStackNavigator()
+const ProfileStack = createStackNavigator()
 
 function CreateContentStack() {
   return (
@@ -61,35 +70,91 @@ function CreateProfileStack() {
   )
 }
 
-// is refresh token in async storage? if so, try to auto log in. if fails or no token, go to login screen :D
+function CreateApplicationTabs() {
+  return (
+    <ApplicationTabs.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ _, color, size }) => (
+          <Icon type={route.name.toLowerCase()} size={size} color={color} />
+        )
+      })}
+      tabBarOptions={{
+        activeTintColor: colors.primary,
+        inactiveTintColor: 'gray',
+      }}
+    >
+      <ApplicationTabs.Screen name='Home' component={CreateContentStack} />
+      <ApplicationTabs.Screen name='Search' component={CreateDiscoverStack} />
+      <ApplicationTabs.Screen name='Share' component={CreateShareStack} />
+      <ApplicationTabs.Screen name='Profile' component={CreateProfileStack} />
+    </ApplicationTabs.Navigator>
+  )
+}
 
-class App extends React.Component {
-  render() {
-    return (
+const updateTokens = async (newTokens) => {
+  store.dispatch(actions.setTokens(newTokens))
+  await AsyncStorage.setItem('refresh_token', newTokens.refreshToken)
+}
+
+const autoLogin = async () => {
+  let refreshToken = await AsyncStorage.getItem('refresh_token')
+
+  if (refreshToken) {
+    let refreshAuthHeader = authHeader(refreshToken)
+    let newTokens = await Network.POST('/auth/refresh', {}, refreshAuthHeader)
+
+    updateTokens(newTokens)
+    return
+  }
+
+  throw new Error("No refresh token")
+}
+
+function App() {
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSignedIn, setIsSignedIn] = useState(false)
+
+  useEffect(() => {
+    const init = async () => {
+      await autoLogin()
+        .then(setIsSignedIn(true))
+        .catch(err => console.log(err))
+      setIsLoading(false)
+    }
+
+    init()
+  }, [])
+
+  const authContext = useMemo(
+    () => ({
+      signIn: () => { setIsSignedIn(true) },
+      signOut: () => { setIsSignedIn(false) },
+    }),
+    []
+  );
+
+  return (
+    <AuthContext.Provider value={authContext}>
       <Provider store={store}>
         <NavigationContainer>
-          <Tab.Navigator
-            initialRouteName='listen'
-            screenOptions={({ route }) => ({
-              tabBarIcon: ({ _, color, size }) => (
-                <Icon type={route.name.toLowerCase()} size={size} color={color} />
-              )
-            })}
-            tabBarOptions={{
-              activeTintColor: colors.primary,
-              inactiveTintColor: 'gray',
-            }}
-          >
-            <Tab.Screen name='Home' component={CreateContentStack} />
-            <Tab.Screen name='listen' component={LoginScreen} />
-            <Tab.Screen name='Search' component={CreateDiscoverStack} />
-            <Tab.Screen name='Share' component={CreateShareStack} />
-            <Tab.Screen name='Profile' component={CreateProfileStack} />
-          </Tab.Navigator>
+          <ApplicationStack.Navigator headerMode='none'>
+            {
+              isLoading ? (
+                <ApplicationStack.Screen name='Splash' component={SplashScreen} />
+              ) : isSignedIn ? (
+                <ApplicationStack.Screen name='Home' component={CreateApplicationTabs} />
+              ) : (
+                    <>
+                      <ApplicationStack.Screen name='Sign Up' component={SignupScreen} />
+                      <ApplicationStack.Screen name='Login' component={LoginScreen} />
+                    </>
+                  )
+            }
+          </ApplicationStack.Navigator>
         </NavigationContainer>
-      </Provider>
-    )
-  }
+      </Provider >
+    </AuthContext.Provider>
+  )
 }
 
 registerRootComponent(App)

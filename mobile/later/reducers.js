@@ -4,16 +4,6 @@ import {
 } from './actions'
 import { combineReducers } from 'redux'
 
-const initialState = {
-    auth: {
-        tokens: {
-            accessToken: '',
-            refreshToken: ''
-        },
-        somethingElse: []
-    }
-}
-
 const tokens = (state = {}, action) => {
     switch (action.type) {
         case SET_TOKENS:

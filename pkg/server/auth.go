@@ -105,7 +105,8 @@ func (server *Auth) refreshToken(c *gin.Context) {
 	token, err := auth.ParseToken(c.GetHeader("Authorization"))
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.AbortWithStatusJSON(http.StatusUnauthorized, err.Error())
+		return
 	}
 
 	// Expire old session once we have issued the new one
@@ -115,11 +116,12 @@ func (server *Auth) refreshToken(c *gin.Context) {
 	session, err := server.AuthService.ByID(token.SessionID)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	if session == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Could not find session"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Could not find session"})
 		return
 	}
 
