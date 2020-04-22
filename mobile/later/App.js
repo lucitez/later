@@ -12,6 +12,7 @@ import SendShareScreen from './screens/SendShareScreen';
 import DiscoverScreen from './screens/DiscoverScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
+import LoginScreen from './screens/LoginScreen';
 import UserScreen from './screens/UserScreen';
 
 const Tab = createBottomTabNavigator();
@@ -62,6 +63,7 @@ class App extends React.Component {
     return (
       <NavigationContainer>
         <Tab.Navigator
+          initialRouteName='listen'
           screenOptions={({ route }) => ({
             tabBarIcon: ({ _, color, size }) => (
               <Icon type={route.name.toLowerCase()} size={size} color={color} />
@@ -73,6 +75,7 @@ class App extends React.Component {
           }}
         >
           <Tab.Screen name='Home' component={CreateContentStack} />
+          <Tab.Screen name='listen' component={LoginScreen} />
           <Tab.Screen name='Search' component={CreateDiscoverStack} />
           <Tab.Screen name='Share' component={CreateShareStack} />
           <Tab.Screen name='Profile' component={CreateProfileStack} />

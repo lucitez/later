@@ -5,6 +5,11 @@ const host = {
     local: 'http://192.168.254.64:8000'
 }
 
+const settings = {
+    clientId: '315aac7e-467f-4acd-b325-71c86f491f54',
+    host: host
+}
+
 const client = axios.create({
     baseURL: host.local,
     timeout: 10000
@@ -15,6 +20,14 @@ client.interceptors.response.use(response => {
 })
 
 function request(options) {
+    options = {
+        ...options,
+
+        headers: {
+            ...options.headers,
+            'Client-ID': settings.clientId,
+        },
+    }
     return new Promise((resolve, reject) => {
         client.request(options)
             .then(response => {
@@ -79,10 +92,11 @@ const dataToCamelCase = (data) => {
 }
 
 const Network = {
-    POST(url, body = {}) {
+    POST(url, body = {}, headers = {}) {
         let options = {
             method: 'post',
             url: url,
+            headers: headers,
             data: objToSnakeCase(body),
         }
         return request(options)

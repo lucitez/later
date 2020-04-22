@@ -1,6 +1,7 @@
 BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE OR REPLACE FUNCTION update_updated_at() RETURNS TRIGGER AS $update_updated_at$
     BEGIN
@@ -17,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users
     last_name text,
     email text,
     phone_number text,
+    password text,
 
     created_at timestamptz NOT NULL default now(),
     signed_up_at timestamptz,

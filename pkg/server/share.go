@@ -39,11 +39,17 @@ func NewShareServer(
 	}
 }
 
-// RegisterEndpoints defines handlers for endpoints for the user service
-func (server *ShareServer) RegisterEndpoints(router *gin.Engine) {
-	router.POST("/shares/new", server.new)
-	router.POST("/shares/forward", server.new)
-	router.POST("/shares/new/by-phone-number", server.newByPhoneNumber)
+func (server *ShareServer) Prefix() string {
+	return "shares"
+}
+
+// Routes defines handlers for endpoints for the share service
+func (server *ShareServer) Routes(router *gin.RouterGroup) []gin.IRoutes {
+	return []gin.IRoutes{
+		router.POST("/new", server.new),
+		router.POST("/forward", server.forward),
+		router.POST("/new/by-phone-number", server.newByPhoneNumber),
+	}
 }
 
 func (server *ShareServer) forward(context *gin.Context) {

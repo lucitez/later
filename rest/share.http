@@ -1,7 +1,7 @@
 POST http://localhost:8000/shares/new
 
 {
-    "sender_user_id": "9854d987-e4de-479a-87f4-c82358a1906e",
+    "sender_user_id": "221d0161-e9fa-4614-81a8-357f3ec66a06",
     "recipient_user_ids": ["77fcce77-82cc-40ad-820f-0c13810db41a"],
-    "url": "https://www.youtube.com/watch?v=sR67JvLNn9U"
+    "url": "https://soundcloud.com/samgellaitry"
 }

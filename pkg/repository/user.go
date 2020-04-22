@@ -29,7 +29,34 @@ var userSelectStatement = util.GenerateSelectStatement(model.User{}, "users")
 
 // Insert inserts a new user
 func (repository *User) Insert(user model.User) error {
-	statement := util.GenerateInsertStatement(user, "users")
+
+	statement := `
+	INSERT INTO USERS (
+		id,
+		first_name,
+		last_name,
+		username,
+		email,
+		phone_number,
+		password,
+		created_at,
+		signed_up_at,
+		updated_at,
+		deleted_at
+	) VALUES (
+		$1,
+		$2,
+		$3,
+		$4,
+		$5,
+		$6,
+		crypt($7, gen_salt('bf')),
+		$8,
+		$9,
+		$10,
+		$11
+	);
+	`
 
 	_, err := repository.DB.Exec(
 		statement,
@@ -39,6 +66,7 @@ func (repository *User) Insert(user model.User) error {
 		user.Username,
 		user.Email,
 		user.PhoneNumber,
+		user.Password,
 		user.CreatedAt,
 		user.SignedUpAt,
 		user.UpdatedAt,
@@ -55,6 +83,24 @@ func (repository *User) ByID(id uuid.UUID) *model.User {
 	statement := userSelectStatement + ` WHERE id = $1;`
 
 	row := repository.DB.QueryRow(statement, id)
+
+	return user.ScanRow(row)
+}
+
+// ByIdentifierAndPassword gets a user by id
+func (repository *User) ByIdentifierAndPassword(identifier string, password string) *model.User {
+	var user model.User
+
+	statement := userSelectStatement + `
+	WHERE (
+		email = $1
+		OR username = $1
+		OR phone_number = $1
+	) AND password = crypt($2, password)
+	AND deleted_at IS NULL;
+	`
+
+	row := repository.DB.QueryRow(statement, identifier, password)
 
 	return user.ScanRow(row)
 }

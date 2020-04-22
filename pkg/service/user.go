@@ -3,7 +3,6 @@ package service
 import (
 	"later/pkg/model"
 	"later/pkg/repository"
-	"later/pkg/request"
 	"later/pkg/service/body"
 	"later/pkg/util/wrappers"
 
@@ -36,7 +35,7 @@ func (manager *User) NewUserFromPhoneNumber(phoneNumber string) (*model.User, er
 }
 
 // SignUp ...
-func (manager *User) SignUp(body request.UserSignUpRequestBody) (*model.User, error) {
+func (manager *User) SignUp(body body.UserSignUp) (*model.User, error) {
 	user := body.ToUser()
 
 	if err := manager.Repository.Insert(user); err != nil {
@@ -49,6 +48,11 @@ func (manager *User) SignUp(body request.UserSignUpRequestBody) (*model.User, er
 // ByID ...
 func (manager *User) ByID(id uuid.UUID) *model.User {
 	return manager.Repository.ByID(id)
+}
+
+// ByIdentifierAndPassword ...
+func (manager *User) ByIdentifierAndPassword(identifier string, password string) *model.User {
+	return manager.Repository.ByIdentifierAndPassword(identifier, password)
 }
 
 // ByPhoneNumber ...

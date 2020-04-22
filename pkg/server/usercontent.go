@@ -27,13 +27,19 @@ func NewUserContent(
 	}
 }
 
-// RegisterEndpoints defines handlers for endpoints for the user service
-func (server *UserContent) RegisterEndpoints(router *gin.Engine) {
-	router.GET("/user-content/filter", server.filter)
+func (server *UserContent) Prefix() string {
+	return "/user-content"
+}
 
-	router.PUT("/user-content/save", server.save)
-	router.PUT("/user-content/delete", server.delete)
-	router.PUT("/user-content/update", server.update)
+// RegisterEndpoints defines handlers for endpoints for the user service
+func (server *UserContent) Routes(router *gin.RouterGroup) []gin.IRoutes {
+	return []gin.IRoutes{
+		router.GET("/filter", server.filter),
+
+		router.PUT("/save", server.save),
+		router.PUT("/delete", server.delete),
+		router.PUT("/update", server.update),
+	}
 }
 
 func (server *UserContent) filter(context *gin.Context) {

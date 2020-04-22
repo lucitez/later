@@ -4,7 +4,10 @@
 #     "url": "https://soundcloud.com/itskforest/stwo-kmh-lovin-u"
 # }
 
-GET http://localhost:8000/user-content/filter?saved=true&user_id=2ef129c3-1301-4959-9710-df31688e88d4&search=Trum
+# GET http://localhost:8000/user-content/filter?saved=true&user_id=2ef129c3-1301-4959-9710-df31688e88d4&search=Trum
+
+GET http://localhost:8000/content/preview
+    ?id=2cc0f186-e52f-455d-8d2f-c02048f49bb6
 
 # GET http://localhost:8000/content/preview
 #     ?url=/content/preview?url=https://www.nytimes.com/2020/04/13/world/coronavirus-news-world-international-global.html?referringSource=articleShare

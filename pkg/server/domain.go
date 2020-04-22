@@ -11,24 +11,34 @@ import (
 )
 
 // NewDomain for wire gen
-func NewDomain(manager service.Domain) Domain {
-	return Domain{manager}
+func NewDomain(
+	service service.Domain,
+) Domain {
+	return Domain{
+		service,
+	}
 }
 
 // Domain exposes endpoints for domain related REST requests
 type Domain struct {
-	Manager service.Domain
+	Service service.Domain
 }
 
-// RegisterEndpoints defines handlers for endpoints for the domain service
-func (server *Domain) RegisterEndpoints(router *gin.Engine) {
-	router.POST("/domains/create", server.create)
-
-	router.GET("/domains/by-domain", server.byDomain)
-	router.GET("/domains/all", server.all)
+func (s *Domain) Prefix() string {
+	return "/domains"
 }
 
-func (server *Domain) create(context *gin.Context) {
+// Routes defines the routes for content API
+func (s *Domain) Routes(router *gin.RouterGroup) []gin.IRoutes {
+	return []gin.IRoutes{
+		router.POST("/create", s.create),
+
+		router.GET("/by-domain", s.byDomain),
+		router.GET("/all", s.all),
+	}
+}
+
+func (s *Domain) create(context *gin.Context) {
 	var body request.DomainCreateRequestBody
 
 	if err := context.ShouldBindJSON(&body); err != nil {
@@ -36,7 +46,7 @@ func (server *Domain) create(context *gin.Context) {
 		return
 	}
 
-	domain, err := server.Manager.Create(body.ToDomainCreateBody())
+	domain, err := s.Service.Create(body.ToDomainCreateBody())
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
@@ -46,7 +56,7 @@ func (server *Domain) create(context *gin.Context) {
 	context.JSON(http.StatusOK, domain)
 }
 
-func (server *Domain) byDomain(context *gin.Context) {
+func (s *Domain) byDomain(context *gin.Context) {
 	deser := NewDeser(
 		context,
 		QueryParameter{name: "domain", kind: Str, required: true},
@@ -55,13 +65,13 @@ func (server *Domain) byDomain(context *gin.Context) {
 	if qp, ok := deser.DeserQueryParams(); ok {
 		domainName := qp["domain"].(*string)
 
-		domain := server.Manager.ByDomain(*domainName)
+		domain := s.Service.ByDomain(*domainName)
 
 		context.JSON(http.StatusOK, domain)
 	}
 }
 
-func (server *Domain) all(context *gin.Context) {
+func (s *Domain) all(context *gin.Context) {
 	defaultLimit := "100"
 
 	deser := NewDeser(
@@ -71,7 +81,7 @@ func (server *Domain) all(context *gin.Context) {
 
 	if qp, ok := deser.DeserQueryParams(); ok {
 		limit := qp["limit"].(*int)
-		users := server.Manager.All(*limit)
+		users := s.Service.All(*limit)
 
 		context.JSON(http.StatusOK, users)
 	}

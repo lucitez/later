@@ -8,6 +8,15 @@ import (
 	"github.com/google/uuid"
 )
 
+type WireUser struct {
+	ID        uuid.UUID           `json:"id"`
+	FirstName wrappers.NullString `json:"first_name"`
+	LastName  wrappers.NullString `json:"last_name"`
+	Username  wrappers.NullString `json:"username"`
+	Email     wrappers.NullString `json:"email"`
+	CreatedAt time.Time
+}
+
 type WireAddFriendUser struct {
 	ID             uuid.UUID           `json:"id"`
 	FirstName      wrappers.NullString `json:"first_name"`

@@ -1,7 +1,6 @@
 package request
 
 import (
-	"later/pkg/model"
 	"later/pkg/service/body"
 	"later/pkg/util/wrappers"
 
@@ -10,21 +9,21 @@ import (
 
 // UserSignUpRequestBody Binding from json
 type UserSignUpRequestBody struct {
-	Username    string              `form:"username" json:"username" binding:"required"`
-	FirstName   string              `form:"first_name" json:"first_name" binding:"required"`
-	LastName    wrappers.NullString `form:"last_name" json:"last_name"`
-	Email       wrappers.NullString `form:"email" json:"email"`
-	PhoneNumber string              `form:"phone_number" json:"phone_number" binding:"required"`
+	Username  string              `form:"username" json:"username" binding:"required"`
+	FirstName string              `form:"first_name" json:"first_name" binding:"required"`
+	LastName  wrappers.NullString `form:"last_name" json:"last_name"`
+	Email     wrappers.NullString `form:"email" json:"email"`
 }
 
-func (body *UserSignUpRequestBody) ToUser() model.User {
-	return model.NewUserFromSignUp(
-		body.Username,
-		body.FirstName,
-		body.LastName,
-		body.Email,
-		body.PhoneNumber,
-	)
+func (b *UserSignUpRequestBody) ToUserSignUpBody(phoneNumber string, password string) body.UserSignUp {
+	return body.UserSignUp{
+		Username:    b.Username,
+		FirstName:   b.FirstName,
+		LastName:    b.LastName,
+		Email:       b.Email,
+		PhoneNumber: phoneNumber,
+		Password:    password,
+	}
 }
 
 // UserUpdate Binding from json

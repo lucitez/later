@@ -1,15 +1,12 @@
 package main
 
 import (
-	"log"
-
-	"github.com/gin-gonic/gin"
-
+	"later"
 	"later/pkg/repository/util"
+	"log"
 )
 
 func main() {
-	router := gin.Default()
 
 	db, err := util.InitDB()
 
@@ -17,6 +14,7 @@ func main() {
 		log.Panic(err)
 	}
 
+	authServer := InitializeAuth(db)
 	contentServer := InitializeContent(db)
 	domainServer := InitializeDomain(db)
 	friendServer := InitializeFriend(db)
@@ -25,13 +23,20 @@ func main() {
 	userContentServer := InitializeUserContent(db)
 	userServer := InitializeUser(db)
 
-	contentServer.RegisterEndpoints(router)
-	domainServer.RegisterEndpoints(router)
-	friendServer.RegisterEndpoints(router)
-	friendRequestServer.RegisterEndpoints(router)
-	shareServer.RegisterEndpoints(router)
-	userContentServer.RegisterEndpoints(router)
-	userServer.RegisterEndpoints(router)
+	server := InitializeServer(db)
 
-	router.Run(":8000")
+	server.Init(
+		[]later.RouteGroup{
+			&contentServer,
+			&domainServer,
+			&friendServer,
+			&friendRequestServer,
+			&shareServer,
+			&userContentServer,
+			&userServer,
+		},
+		[]later.RouteGroup{
+			&authServer,
+		},
+	)
 }

@@ -19,6 +19,7 @@ type User struct {
 	Username    wrappers.NullString `json:"username"`
 	Email       wrappers.NullString `json:"email"`
 	PhoneNumber string              `json:"phone_number"`
+	Password    string              `json:"password"`
 
 	CreatedAt  time.Time         `json:"created_at"`
 	SignedUpAt wrappers.NullTime `json:"signed_up_at"`
@@ -34,6 +35,7 @@ func NewUserFromSignUp(
 	lastName wrappers.NullString,
 	email wrappers.NullString,
 	phoneNumber string,
+	password string,
 ) User {
 
 	newUUID, _ := uuid.NewRandom()
@@ -47,10 +49,11 @@ func NewUserFromSignUp(
 		LastName:    lastName,
 		Email:       email,
 		PhoneNumber: phoneNumber,
-		SignedUpAt:  wrappers.NewNullTime(&now),
+		Password:    password,
 
-		CreatedAt: now,
-		UpdatedAt: now,
+		SignedUpAt: wrappers.NewNullTime(&now),
+		CreatedAt:  now,
+		UpdatedAt:  now,
 	}
 }
 
@@ -86,10 +89,12 @@ func (user *User) ScanRows(rows *sql.Rows) {
 		&user.Username,
 		&user.Email,
 		&user.PhoneNumber,
+		&user.Password,
 		&user.CreatedAt,
 		&user.SignedUpAt,
 		&user.UpdatedAt,
-		&user.DeletedAt)
+		&user.DeletedAt,
+	)
 
 	if err != nil {
 		log.Fatal(err)
@@ -104,11 +109,13 @@ func (user *User) ScanRow(row *sql.Row) *User {
 		&user.LastName,
 		&user.Username,
 		&user.Email,
+		&user.Password,
 		&user.PhoneNumber,
 		&user.CreatedAt,
 		&user.SignedUpAt,
 		&user.UpdatedAt,
-		&user.DeletedAt)
+		&user.DeletedAt,
+	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

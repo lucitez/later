@@ -24,10 +24,16 @@ func NewContent(
 	}
 }
 
-// RegisterEndpoints defines handlers for endpoints for the content service
-func (server *Content) RegisterEndpoints(router *gin.Engine) {
-	router.POST("/content/create", server.create)
-	router.GET("/content/preview", server.preview)
+func (server *Content) Prefix() string {
+	return "/content"
+}
+
+// Routes defines the routes for content API
+func (server *Content) Routes(router *gin.RouterGroup) []gin.IRoutes {
+	return []gin.IRoutes{
+		router.POST("/create", server.create),
+		router.GET("/preview", server.preview),
+	}
 }
 
 func (server *Content) create(context *gin.Context) {

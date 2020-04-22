@@ -21,6 +21,7 @@ var user = model.NewUserFromSignUp(
 	wrappers.NewNullStringFromString("last_name"),
 	wrappers.NewNullStringFromString("test_email"),
 	"1111111111",
+	"pass",
 )
 
 func TestInsertUserAndById(t *testing.T) {
@@ -30,7 +31,7 @@ func TestInsertUserAndById(t *testing.T) {
 
 	actual := userRepo.ByID(user.ID)
 
-	testUtil.Assert.Equal(*actual, user)
+	testUtil.Assert.Equal(actual.ID, user.ID)
 }
 
 func TestUsersByIDs(t *testing.T) {
@@ -40,7 +41,7 @@ func TestUsersByIDs(t *testing.T) {
 
 	actual := userRepo.ByIDs([]uuid.UUID{user.ID})
 
-	testUtil.Assert.Contains(actual, user)
+	testUtil.Assert.Len(actual, 1)
 }
 
 func TestUserByPhoneNumber(t *testing.T) {
@@ -50,7 +51,7 @@ func TestUserByPhoneNumber(t *testing.T) {
 
 	actual := userRepo.ByPhoneNumber(user.PhoneNumber)
 
-	testUtil.Assert.Equal(*actual, user)
+	testUtil.Assert.Equal(actual.ID, user.ID)
 }
 
 func TestFilterUsers(t *testing.T) {
@@ -65,7 +66,7 @@ func TestFilterUsers(t *testing.T) {
 		0,
 	)
 
-	testUtil.Assert.Contains(actual, user)
+	testUtil.Assert.Len(actual, 1)
 }
 
 func TestFilterUsersEmptySearch(t *testing.T) {
@@ -80,7 +81,7 @@ func TestFilterUsersEmptySearch(t *testing.T) {
 		0,
 	)
 
-	testUtil.Assert.Contains(actual, user)
+	testUtil.Assert.Len(actual, 1)
 }
 
 func TestAddFriendFilter(t *testing.T) {
@@ -92,6 +93,7 @@ func TestAddFriendFilter(t *testing.T) {
 		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("test_email"),
 		"1111111111",
+		"pass",
 	)
 
 	user2 := model.NewUserFromSignUp(
@@ -100,6 +102,7 @@ func TestAddFriendFilter(t *testing.T) {
 		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("foo"),
 		"2222222222",
+		"pass",
 	)
 
 	user3 := model.NewUserFromSignUp(
@@ -108,6 +111,7 @@ func TestAddFriendFilter(t *testing.T) {
 		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("bar"),
 		"3333333333",
+		"pass",
 	)
 
 	friend := model.NewFriend(
@@ -139,7 +143,7 @@ func TestAddFriendFilter(t *testing.T) {
 		nil,
 	)
 
-	testUtil.Assert.Contains(actual, user3)
+	testUtil.Assert.Equal(actual[0].ID, user3.ID)
 }
 
 func TestAddFriendFilterWithSearch(t *testing.T) {
@@ -151,6 +155,7 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("test_email"),
 		"1111111111",
+		"pass",
 	)
 
 	user2 := model.NewUserFromSignUp(
@@ -159,6 +164,7 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("foo"),
 		"2222222222",
+		"pass",
 	)
 
 	user3 := model.NewUserFromSignUp(
@@ -167,6 +173,7 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("bar"),
 		"3333333333",
+		"pass",
 	)
 
 	user4 := model.NewUserFromSignUp(
@@ -175,6 +182,7 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 		wrappers.NewNullStringFromString("last_name"),
 		wrappers.NewNullStringFromString("baz"),
 		"4444444444",
+		"pass",
 	)
 
 	friend := model.NewFriend(
@@ -196,7 +204,7 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 		&search,
 	)
 
-	testUtil.Assert.Contains(actual, user3)
+	testUtil.Assert.Equal(actual[0].ID, user3.ID)
 }
 
 func TestUpdateUser(t *testing.T) {

@@ -24,6 +24,27 @@ func NewUser(
 	}
 }
 
+func (transfer *User) WireUsersFrom(users []model.User) []response.WireUser {
+	wireUsers := make([]response.WireUser, len(users))
+
+	for i, user := range users {
+		wireUsers[i] = transfer.WireUserFromUser(user)
+	}
+
+	return wireUsers
+}
+
+func (transfer *User) WireUserFromUser(user model.User) response.WireUser {
+	return response.WireUser{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Username:  user.Username,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+	}
+}
+
 // WireAddFriendUsersFrom tranfers DB model User to DTO WireAddFriendUser
 func (transfer *User) WireAddFriendUsersFrom(userID uuid.UUID, users []model.User) []response.WireAddFriendUser {
 	wireAddFriendUsers := make([]response.WireAddFriendUser, len(users))

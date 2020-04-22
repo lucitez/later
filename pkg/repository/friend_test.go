@@ -37,6 +37,7 @@ func TestForUserWithSearch(t *testing.T) {
 		wrappers.NewNullStringFromString("first"),
 		wrappers.NewNullStringFromString("last"),
 		"2222222222",
+		"pass",
 	)
 
 	friend := model.NewFriend(

@@ -28,13 +28,21 @@ func NewFriendRequest(
 	}
 }
 
-// RegisterEndpoints defines handlers for endpoints for the user service
-func (server *FriendRequest) RegisterEndpoints(router *gin.Engine) {
-	router.POST("/friend-requests/send", server.send)
-	router.PUT("/friend-requests/delete", server.delete)
-	router.GET("/friend-requests/pending", server.pending)
-	router.PUT("/friend-requests/accept", server.accept)
-	router.PUT("/friend-requests/decline", server.decline)
+func (server *FriendRequest) Prefix() string {
+	return "/friend-requests"
+}
+
+// Routes defines handlers for endpoints for the friend request service
+func (server *FriendRequest) Routes(router *gin.RouterGroup) []gin.IRoutes {
+	return []gin.IRoutes{
+		router.POST("/send", server.send),
+
+		router.GET("/pending", server.pending),
+
+		router.PUT("/delete", server.delete),
+		router.PUT("/accept", server.accept),
+		router.PUT("/decline", server.decline),
+	}
 }
 
 func (server *FriendRequest) send(context *gin.Context) {

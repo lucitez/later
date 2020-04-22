@@ -22,35 +22,19 @@ func NewUser(service service.User, transfer transfer.User) User {
 	return User{service, transfer}
 }
 
-// RegisterEndpoints defines handlers for endpoints for the user service
-// TODO add endpoint to get users but exclude users that requester is friends with already
-// Same endpoint should return WireFriendUser with information about whether the requesting user has a _pending_ FR
-func (server *User) RegisterEndpoints(router *gin.Engine) {
-	router.POST("/users/sign-up", server.signUp)
-
-	router.GET("/users/by-id", server.byID)
-	router.GET("/users/profile-by-id", server.profileByID)
-	router.GET("/users/search", server.search)
-
-	router.PUT("/users/update", server.update)
+func (server *User) Prefix() string {
+	return "/users"
 }
 
-func (server *User) signUp(context *gin.Context) {
-	var body request.UserSignUpRequestBody
+// RegisterEndpoints defines handlers for endpoints for the user service
+func (server *User) Routes(router *gin.RouterGroup) []gin.IRoutes {
+	return []gin.IRoutes{
+		router.GET("/by-id", server.byID),
+		router.GET("/profile-by-id", server.profileByID),
+		router.GET("/search", server.search),
 
-	if err := context.BindJSON(&body); err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
-		return
+		router.PUT("/update", server.update),
 	}
-
-	user, err := server.service.SignUp(body)
-
-	if err != nil {
-		context.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	context.JSON(http.StatusOK, user)
 }
 
 func (server *User) byID(context *gin.Context) {
@@ -63,7 +47,11 @@ func (server *User) byID(context *gin.Context) {
 		userID := qp["id"].(*uuid.UUID)
 		user := server.service.ByID(*userID)
 
-		context.JSON(http.StatusOK, user)
+		if user == nil {
+			context.JSON(http.StatusOK, nil)
+		}
+
+		context.JSON(http.StatusOK, server.Transfer.WireUserFromUser(*user))
 	}
 }
 
@@ -110,7 +98,7 @@ func (server *User) search(context *gin.Context) {
 			*offset,
 		)
 
-		context.JSON(http.StatusOK, users)
+		context.JSON(http.StatusOK, server.Transfer.WireUsersFrom(users))
 	}
 }
 

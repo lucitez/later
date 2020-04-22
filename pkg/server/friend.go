@@ -27,10 +27,16 @@ func NewFriend(
 	}
 }
 
-// RegisterEndpoints defines handlers for endpoints for the user service
-func (server *Friend) RegisterEndpoints(router *gin.Engine) {
-	router.GET("/friends/for-user", server.forUser)
-	router.PUT("/friends/delete-by-user-id", server.deleteByUserID)
+func (server *Friend) Prefix() string {
+	return "/friends"
+}
+
+// Routes defines handlers for endpoints for the user service
+func (server *Friend) Routes(router *gin.RouterGroup) []gin.IRoutes {
+	return []gin.IRoutes{
+		router.GET("/for-user", server.forUser),
+		router.PUT("/delete-by-user-id", server.deleteByUserID),
+	}
 }
 
 func (server *Friend) forUser(context *gin.Context) {
