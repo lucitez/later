@@ -49,6 +49,7 @@ func (server *User) byID(context *gin.Context) {
 
 		if user == nil {
 			context.JSON(http.StatusOK, nil)
+			return
 		}
 
 		context.JSON(http.StatusOK, server.Transfer.WireUserFromUser(*user))
@@ -69,6 +70,7 @@ func (server *User) profileByID(context *gin.Context) {
 
 		if user == nil {
 			context.JSON(http.StatusBadRequest, "User not found")
+			return
 		}
 
 		wireUserProfile := server.Transfer.WireUserProfileFrom(*requestUserID, *user)

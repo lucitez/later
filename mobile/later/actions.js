@@ -8,6 +8,6 @@ export const setTokens = (tokens) => {
     }
 }
 
-export const clearTokens = token => {
-    return { type: SET_REFRESH_TOKEN, token }
+export const clearTokens = () => {
+    return { type: CLEAR_TOKENS }
 }

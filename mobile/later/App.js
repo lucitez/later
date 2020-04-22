@@ -17,10 +17,10 @@ import {
   EditProfileScreen,
   UserScreen,
   SignupScreen,
+  LoginScreen,
   SplashScreen
 } from './screens/index'
 import { colors } from './assets/colors'
-import { LoginScreen } from './screens/index'
 import Network from './util/Network'
 import * as actions from './actions'
 import { AuthContext } from './context'
@@ -116,9 +116,12 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
+      console.log('init')
       await autoLogin()
         .then(setIsSignedIn(true))
-        .catch(err => console.log(err))
+        .catch(err => {
+          setIsSignedIn(false)
+        })
       setIsLoading(false)
     }
 
@@ -145,8 +148,8 @@ function App() {
                 <ApplicationStack.Screen name='Home' component={CreateApplicationTabs} />
               ) : (
                     <>
-                      <ApplicationStack.Screen name='Sign Up' component={SignupScreen} />
                       <ApplicationStack.Screen name='Login' component={LoginScreen} />
+                      <ApplicationStack.Screen name='Sign Up' component={SignupScreen} />
                     </>
                   )
             }

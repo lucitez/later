@@ -36,6 +36,7 @@ func (server *Auth) Prefix() string {
 func (server *Auth) Routes(router *gin.RouterGroup) []gin.IRoutes {
 	return []gin.IRoutes{
 		router.POST("/login", server.login),
+		router.POST("/logout", server.logout),
 		router.POST("/sign-up", server.signUp),
 		router.POST("/refresh", server.refreshToken),
 	}
@@ -66,6 +67,10 @@ func (server *Auth) login(c *gin.Context) {
 			"refresh_token": refreshToken,
 		})
 	}
+}
+
+func (server *Auth) logout(c *gin.Context) {
+	// TODO
 }
 
 func (server *Auth) signUp(c *gin.Context) {

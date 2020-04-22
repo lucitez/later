@@ -28,7 +28,6 @@ const addAuthHeaders = (url, headers) => {
         }
     } else {
         let accessToken = store.getState().auth.tokens.accessToken
-        console.log('ACCESS TOKEN: ', accessToken)
         return {
             ...headers,
             'Authorization': `Basic ${accessToken}`
@@ -92,6 +91,9 @@ const objToCamelCase = (obj) => {
 
 // THIS IS BRITTLE AF
 const dataToCamelCase = (data) => {
+    if (!data) {
+        return data
+    }
     switch (typeof data) {
         case 'object':
             if (Array.isArray(data)) {
