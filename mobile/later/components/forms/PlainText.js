@@ -1,66 +1,44 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, TextInput, StyleSheet } from 'react-native'
+import { TextInput, StyleSheet } from 'react-native'
 import { colors } from '../../assets/colors'
+import FormInputWrapper from './FormInputWrapper'
 
 export default function PlainText(props) {
-
-
-
     const color = props.theme == 'light' ? colors.white : colors.black
-
-    const [value, setValue] = useState(props.value)
-
+    const [value, setValue] = useState(props.value ? props.value : '')
 
     useEffect(() => {
-        let valid = isValid(value)
-        props.onChange(props.name, value, valid)
+        let error = hasError(value)
+        props.onChange(props.name, value, error)
     }, [value])
 
-    const isValid = () => {
-        if (props.isValid) {
-            return props.isValid(value)
+    const hasError = () => {
+        if (props.hasError) {
+            return props.hasError(value)
         } else {
-            return true
+            if (props.required && value == '') {
+                return `${props.name} is required`
+            } else {
+                return null
+            }
         }
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.nameContainer}>
-                <Text style={[styles.name, { color: color }]}>{props.title}</Text>
-            </View>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    {...props}
-                    autoCapitalize='none'
-                    style={[styles.input, { color: color }]}
-                    onChangeText={text => setValue(text)}
-                    value={value}
-                    selectionColor={color}
-                />
-            </View>
-            <View style={[styles.underline, { backgroundColor: color }]} />
-        </View>
+        <FormInputWrapper {...props}>
+            <TextInput
+                {...props.inputProps}
+                autoCapitalize='none'
+                style={[styles.input, { color: color }]}
+                onChangeText={text => setValue(text)}
+                value={value}
+                selectionColor={color}
+            />
+        </FormInputWrapper>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 5,
-    },
-    nameContainer: {
-        marginBottom: 10,
-    },
-    underline: {
-        height: 1,
-        marginTop: 5,
-        opacity: 0.5,
-        backgroundColor: colors.white
-    },
-    name: {
-        fontWeight: '300',
-        fontSize: 14,
-    },
     input: {
         fontWeight: '400',
         fontSize: 18,

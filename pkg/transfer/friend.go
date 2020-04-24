@@ -32,8 +32,7 @@ func wireFriend(friend model.Friend, user model.User) response.WireFriend {
 	return response.WireFriend{
 		ID:          friend.ID,
 		UserID:      user.ID,
-		FirstName:   user.FirstName,
-		LastName:    user.LastName,
+		Name:        user.Name,
 		Username:    user.Username,
 		Email:       user.Email,
 		PhoneNumber: user.PhoneNumber,

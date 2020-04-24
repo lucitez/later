@@ -53,6 +53,8 @@ func (server *ShareServer) Routes(router *gin.RouterGroup) []gin.IRoutes {
 }
 
 func (server *ShareServer) forward(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
 	var body request.ShareForwardRequestBody
 
 	err := context.ShouldBindJSON(&body)
@@ -69,7 +71,7 @@ func (server *ShareServer) forward(context *gin.Context) {
 		return
 	}
 
-	shares, err := server.createSharesFromContent(*content, body.SenderUserID, body.RecipientUserIDs)
+	shares, err := server.createSharesFromContent(body.ToShareCreateBodies(userID, *content))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
@@ -85,6 +87,8 @@ func (server *ShareServer) forward(context *gin.Context) {
 *	3. Create new _user_content_ for recipient
  */
 func (server *ShareServer) new(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
 	var body request.ShareCreateRequestBody
 
 	if err := context.ShouldBindJSON(&body); err != nil {
@@ -99,7 +103,7 @@ func (server *ShareServer) new(context *gin.Context) {
 		return
 	}
 
-	shares, err := server.createSharesFromContent(*content, body.SenderUserID, body.RecipientUserIDs)
+	shares, err := server.createSharesFromContent(body.ToShareCreateBodies(userID, *content))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
@@ -113,52 +117,52 @@ func (server *ShareServer) new(context *gin.Context) {
 *	1. When user wants to share content
  */
 func (server *ShareServer) newByPhoneNumber(context *gin.Context) {
-	var body request.ShareCreateByPhoneNumberRequestBody
+	userID := context.MustGet("user_id").(uuid.UUID)
 
-	if err := context.ShouldBindJSON(&body); err != nil {
+	var requestBody request.ShareCreateByPhoneNumberRequestBody
+
+	if err := context.ShouldBindJSON(&requestBody); err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	content, err := server.Content.CreateFromURL(body.URL)
+	content, err := server.Content.CreateFromURL(requestBody.URL)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	userFromPhoneNumber, err := server.userFromPhoneNumber(body.PhoneNumber)
+	userFromPhoneNumber, err := server.userFromPhoneNumber(requestBody.PhoneNumber)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	shares, err := server.createSharesFromContent(*content, body.SenderUserID, []uuid.UUID{userFromPhoneNumber.ID})
+	createBody := body.ShareCreateBody{
+		Content:         *content,
+		SenderUserID:    userID,
+		RecipientUserID: userFromPhoneNumber.ID,
+	}
+
+	share, err := server.Manager.Create(createBody)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	context.JSON(http.StatusOK, shares)
+	context.JSON(http.StatusOK, share)
 }
 
-func (server *ShareServer) createSharesFromContent(content model.Content, sharer uuid.UUID, sharees []uuid.UUID) ([]model.Share, error) {
+func (server *ShareServer) createSharesFromContent(bodies []body.ShareCreateBody) ([]model.Share, error) {
 	var shares []model.Share
 	var err error
 
-	for _, sharee := range sharees {
-		createBody := body.ShareCreateBody{
-			Content:         content,
-			SenderUserID:    sharer,
-			RecipientUserID: sharee,
-		}
+	for _, body := range bodies {
+		share, _ := server.Manager.Create(body)
 
-		share, err := server.Manager.Create(createBody)
-
-		if err != nil {
-			break
-		} else if share != nil {
+		if share != nil {
 			shares = append(shares, *share)
 		}
 	}

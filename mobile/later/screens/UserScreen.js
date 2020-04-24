@@ -4,13 +4,12 @@ import Network from '../util/Network'
 import { colors } from '../assets/colors'
 import { UserDetails } from '../components/user'
 import { Button, BackIcon } from '../components/common'
-import { userId } from '../util/constants';
 
 function UserScreen({ navigation, route }) {
     const [user, setUser] = useState(null)
 
     useEffect(() => {
-        Network.GET("/users/profile-by-id", { requestUserId: userId, id: route.params.userId })
+        getUserProfile(route.params.userId)
             .then(user => setUser(user))
             .catch(error => console.error(error))
     }, [])
@@ -89,11 +88,16 @@ function UserScreen({ navigation, route }) {
     )
 }
 
+const getUserProfile = userId => {
+    let params = {
+        profileUserId: userId
+    }
 
+    Network.GET("/users/profile-by-id", params)
+}
 
 const sendFriendRequest = friendUserId => {
     let params = {
-        senderUserId: userId,
         recipientUserId: friendUserId,
     }
 

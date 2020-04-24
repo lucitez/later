@@ -11,7 +11,7 @@ function FriendRequest({ request, onAction }) {
             </View>
             <View style={styles.userInfoContainer}>
                 <View style={styles.nameContainer}>
-                    <Text style={styles.name}>{request.firstName} {request.lastName}</Text>
+                    <Text style={styles.name}>{request.name}</Text>
                 </View>
                 <View style={styles.usernameContainer}>
                     <Text style={styles.username}>@{request.username}</Text>

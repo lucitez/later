@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
-import { userId } from '../util/constants';
 import { Header, SearchBar, Icon } from '../components/common';
 import { ContentFilter, ContentGroup } from '../components/content';
 
@@ -79,7 +78,6 @@ function SavedScreen({ navigation }) {
 const getContent = (search, contentFilter) => {
     let params = {
         saved: true,
-        userId: userId,
         search: search,
         ...contentFilter
     }

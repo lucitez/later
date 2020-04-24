@@ -3,13 +3,11 @@ import ConversationsScreen from './ConversationsScreen'
 import DiscoverScreen from './DiscoverScreen'
 import EditProfileScreen from './EditProfileScreen'
 import FriendScreen from './FriendScreen'
-import LoginScreen from './LoginScreen'
 import NotificationsScreen from './NotificationsScreen'
 import ProfileScreen from './ProfileScreen'
 import SavedScreen from './SavedScreen'
 import SendShareScreen from './SendShareScreen'
 import SharePreviewScreen from './SharePreviewScreen'
-import SignupScreen from './SignupScreen'
 import SplashScreen from './SplashScreen'
 import UserScreen from './UserScreen'
 
@@ -18,12 +16,10 @@ export { ConversationsScreen }
 export { DiscoverScreen }
 export { EditProfileScreen }
 export { FriendScreen }
-export { LoginScreen }
 export { NotificationsScreen }
 export { ProfileScreen }
 export { SavedScreen }
 export { SendShareScreen }
 export { SharePreviewScreen }
-export { SignupScreen }
 export { SplashScreen }
 export { UserScreen }

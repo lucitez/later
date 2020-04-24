@@ -9,18 +9,17 @@ import (
 )
 
 type WireUser struct {
-	ID        uuid.UUID           `json:"id"`
-	FirstName wrappers.NullString `json:"first_name"`
-	LastName  wrappers.NullString `json:"last_name"`
-	Username  wrappers.NullString `json:"username"`
-	Email     wrappers.NullString `json:"email"`
-	CreatedAt time.Time
+	ID          uuid.UUID           `json:"id"`
+	Name        wrappers.NullString `json:"name"`
+	Username    wrappers.NullString `json:"username"`
+	Email       wrappers.NullString `json:"email"`
+	PhoneNumber string              `json:"phone_number"`
+	CreatedAt   time.Time
 }
 
 type WireAddFriendUser struct {
 	ID             uuid.UUID           `json:"id"`
-	FirstName      wrappers.NullString `json:"first_name"`
-	LastName       wrappers.NullString `json:"last_name"`
+	Name           wrappers.NullString `json:"name"`
 	Username       wrappers.NullString `json:"username"`
 	PendingRequest bool                `json:"pending_request"`
 	CreatedAt      time.Time           `json:"created_at"`
@@ -28,8 +27,7 @@ type WireAddFriendUser struct {
 
 type WireUserProfile struct {
 	ID              uuid.UUID           `json:"id"`
-	FirstName       wrappers.NullString `json:"first_name"`
-	LastName        wrappers.NullString `json:"last_name"`
+	Name            wrappers.NullString `json:"name"`
 	Username        wrappers.NullString `json:"username"`
 	FriendStatus    wrappers.NullString `json:"friend_status"`
 	FriendRequestID wrappers.NullUUID   `json:"friend_request_id"`

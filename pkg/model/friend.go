@@ -49,8 +49,7 @@ func (friend *Friend) ToWire(friendUser *User) response.WireFriend {
 	return response.WireFriend{
 		ID:        friend.ID,
 		UserID:    friendUser.ID,
-		FirstName: friendUser.FirstName,
-		LastName:  friendUser.LastName,
+		Name:      friendUser.Name,
 		Username:  friendUser.Username,
 		CreatedAt: friend.CreatedAt,
 	}

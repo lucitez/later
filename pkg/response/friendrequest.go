@@ -11,8 +11,7 @@ import (
 type WireFriendRequest struct {
 	ID        uuid.UUID           `json:"id"`
 	UserID    uuid.UUID           `json:"user_id"`
-	FirstName wrappers.NullString `json:"first_name"`
-	LastName  wrappers.NullString `json:"last_name"`
+	Name      wrappers.NullString `json:"name"`
 	Username  wrappers.NullString `json:"username"`
 	CreatedAt time.Time           `json:"created_at"`
 }

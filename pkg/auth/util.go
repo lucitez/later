@@ -10,20 +10,20 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func GenerateTokenFromSession(session model.Session) (signedAt string, signedRt string, err error) {
+func GenerateTokenFromUserSession(userSession model.UserSession) (signedAt string, signedRt string, err error) {
 	accessToken := Token{
-		SessionID: session.ID,
+		UserSessionID: userSession.ID,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: session.ExpiresAt.Unix(),
-			IssuedAt:  session.CreatedAt.Unix(),
+			ExpiresAt: userSession.ExpiresAt.Unix(),
+			IssuedAt:  userSession.CreatedAt.Unix(),
 		},
 	}
 
 	refreshToken := Token{
-		SessionID: session.ID,
+		UserSessionID: userSession.ID,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: session.CreatedAt.Add(time.Hour * 24 * 7).Unix(),
-			IssuedAt:  session.CreatedAt.Unix(),
+			ExpiresAt: userSession.CreatedAt.Add(time.Hour * 24 * 7).Unix(),
+			IssuedAt:  userSession.CreatedAt.Unix(),
 		},
 	}
 

@@ -33,8 +33,7 @@ func (repository *User) Insert(user model.User) error {
 	statement := `
 	INSERT INTO USERS (
 		id,
-		first_name,
-		last_name,
+		name,
 		username,
 		email,
 		phone_number,
@@ -49,20 +48,18 @@ func (repository *User) Insert(user model.User) error {
 		$3,
 		$4,
 		$5,
-		$6,
-		crypt($7, gen_salt('bf')),
+		crypt($6, gen_salt('bf')),
+		$7,
 		$8,
 		$9,
-		$10,
-		$11
+		$10
 	);
 	`
 
 	_, err := repository.DB.Exec(
 		statement,
 		user.ID,
-		user.FirstName,
-		user.LastName,
+		user.Name,
 		user.Username,
 		user.Email,
 		user.PhoneNumber,
@@ -160,8 +157,8 @@ func (repository *User) AddFriendFilter(
 		AND (
 			username ILIKE $2
 			OR email ILIKE $2
-			OR first_name ILIKE $2
-			OR last_name ILIKE $2
+			OR name ILIKE $2
+		
 		)
 		AND deleted_at IS NULL
 		`
@@ -203,8 +200,8 @@ func (repository *User) Filter(
 		WHERE (
 			username ILIKE $1
 			OR email ILIKE $1
-			OR first_name ILIKE $1
-			OR last_name ILIKE $1
+			OR name ILIKE $1
+		
 		)
 		AND deleted_at IS NULL
 		`
@@ -238,6 +235,26 @@ func (repository *User) Filter(
 	}
 
 	return repository.scanRows(rows)
+}
+
+func (repository *User) ByIdentifiers(
+	phoneNumber string,
+	username string,
+) *model.User {
+	var user model.User
+
+	statement := util.GenerateSelectStatement(user, "users")
+
+	statement += `
+	WHERE (
+		phone_number = $1
+		OR username = $2
+	) AND deleted_at IS NULL;
+	`
+
+	row := repository.DB.QueryRow(statement, phoneNumber, username)
+
+	return user.ScanRow(row)
 }
 
 func (repository *User) Update(body body.UserUpdate) error {

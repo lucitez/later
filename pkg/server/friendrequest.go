@@ -46,6 +46,8 @@ func (server *FriendRequest) Routes(router *gin.RouterGroup) []gin.IRoutes {
 }
 
 func (server *FriendRequest) send(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
 	var body request.FriendRequestCreateRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
@@ -53,7 +55,7 @@ func (server *FriendRequest) send(context *gin.Context) {
 		return
 	}
 
-	friendRequest, err := server.Manager.Create(body.ToFriendRequestCreateBody())
+	friendRequest, err := server.Manager.Create(body.ToFriendRequestCreateBody(userID))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
@@ -64,19 +66,12 @@ func (server *FriendRequest) send(context *gin.Context) {
 }
 
 func (server *FriendRequest) pending(context *gin.Context) {
-	deser := NewDeser(
-		context,
-		QueryParameter{name: "user_id", kind: UUID, required: true},
-	)
+	userID := context.MustGet("user_id").(uuid.UUID)
 
-	if qp, ok := deser.DeserQueryParams(); ok {
-		userID := qp["user_id"].(*uuid.UUID)
-		friendRequests := server.Manager.Pending(*userID)
+	friendRequests := server.Manager.Pending(userID)
+	wireFriendRequests := server.Transfer.WireFriendRequestsFrom(friendRequests)
 
-		wireFriendRequests := server.Transfer.WireFriendRequestsFrom(friendRequests)
-
-		context.JSON(http.StatusOK, wireFriendRequests)
-	}
+	context.JSON(http.StatusOK, wireFriendRequests)
 }
 
 func (server *FriendRequest) accept(context *gin.Context) {

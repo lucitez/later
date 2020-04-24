@@ -6,7 +6,6 @@ import Network from '../util/Network';
 import SearchBar from '../components/SearchBar';
 import UserGroup from '../components/UserGroup';
 import Icon from '../components/Icon';
-import { userId } from '../util/constants';
 
 const setRequestSent = (users, userId) => {
     return users.map(user =>
@@ -64,7 +63,6 @@ function BackIcon(navigation) {
 function sendFriendRequest(friendUserId) {
     let queryString = `/friend-requests/send`
     let body = {
-        senderUserId: userId,
         recipientUserId: friendUserId
     }
 
@@ -73,7 +71,6 @@ function sendFriendRequest(friendUserId) {
 
 const getUsers = (search) => {
     params = {
-        userId: userId,
         search: search
     }
     let queryString = `/users/add-friend-filter`

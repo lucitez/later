@@ -43,12 +43,13 @@ func (server *UserContent) Routes(router *gin.RouterGroup) []gin.IRoutes {
 }
 
 func (server *UserContent) filter(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
 	defaultSaved := "false"
 	defaultLimit := "20"
 
 	deser := NewDeser(
 		context,
-		QueryParameter{name: "user_id", kind: UUID, required: true},
 		QueryParameter{name: "tag", kind: Str},
 		QueryParameter{name: "content_type", kind: Str},
 		QueryParameter{name: "saved", kind: Bool, fallback: &defaultSaved},
@@ -57,7 +58,6 @@ func (server *UserContent) filter(context *gin.Context) {
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
-		userID := qp["user_id"].(*uuid.UUID)
 		tag := qp["tag"].(*string)
 		contentType := qp["content_type"].(*string)
 		saved := qp["saved"].(*bool)
@@ -65,7 +65,7 @@ func (server *UserContent) filter(context *gin.Context) {
 		limit := qp["limit"].(*int)
 
 		userContent := server.Service.Filter(
-			*userID,
+			userID,
 			tag,
 			contentType,
 			*saved,

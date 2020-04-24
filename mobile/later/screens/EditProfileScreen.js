@@ -10,9 +10,7 @@ function EditProfileScreen({ navigation, route }) {
 
     const [formData, setFormData] = useState({
         id: user.id,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        name: user.name,
         email: user.email,
         phoneNumber: user.phoneNumber
     })
@@ -60,25 +58,19 @@ function EditProfileScreen({ navigation, route }) {
             <View style={styles.formContainer}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContainer} keyboardShouldPersistTaps='handled' >
                     <View style={styles.nameFormContainer}>
-                        <View style={styles.firstNameFormContainer}>
+                        <View style={styles.nameFormContainer}>
                             <PlainText
-                                name='firstName'
+                                theme='light'
+                                name='name'
                                 title='First Name'
-                                value={formData.firstName}
-                                onChange={onFormDataChange}
-                            />
-                        </View>
-                        <View style={styles.firstNameFormContainer}>
-                            <PlainText
-                                name='lastName'
-                                title='Last Name'
-                                value={formData.lastName}
+                                value={formData.name}
                                 onChange={onFormDataChange}
                             />
                         </View>
                     </View>
                     <View style={styles.emailFormContainer}>
                         <Email
+                            theme='light'
                             name='email'
                             title='Email'
                             value={formData.email}
@@ -87,6 +79,7 @@ function EditProfileScreen({ navigation, route }) {
                     </View>
                     <View style={styles.phoneFormContainer}>
                         <PhoneNumber
+                            theme='light'
                             name='phoneNumber'
                             title='Phone Number'
                             value={formData.phoneNumber}
@@ -141,10 +134,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '100%',
     },
-    firstNameFormContainer: {
-        flex: 1,
-    },
-    lastNameFormContainer: {
+    nameFormContainer: {
         flex: 1,
     },
     phoneFormContainer: {

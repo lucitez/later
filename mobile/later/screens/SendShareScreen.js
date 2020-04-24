@@ -5,7 +5,6 @@ import { ContentPreview } from '../components/content';
 import { UserGroup } from '../components/user';
 import Network from '../util/Network';
 import { colors } from '../assets/colors';
-import { userId } from '../util/constants';
 
 function SendShareScreen({ navigation, route }) {
 
@@ -94,7 +93,6 @@ const updateSelectedFriends = (friendUser, selectedFriends) => {
 
 const searchFriends = search => {
     let params = {
-        userId: userId,
         search: search,
     }
     let queryString = `/friends/for-user`
@@ -103,7 +101,6 @@ const searchFriends = search => {
 
 const sendShares = (url, userIds) => {
     body = {
-        senderUserId: userId,
         recipientUserIds: userIds,
         url: url
     }

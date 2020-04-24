@@ -4,7 +4,6 @@ import { Icon, SearchBar } from '../components/common';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { UserGroup } from '../components/user';
-import { userId } from '../util/constants';
 
 function FriendScreen({ navigation }) {
     const [friends, setFriends] = useState([])
@@ -12,14 +11,14 @@ function FriendScreen({ navigation }) {
     const [offset, setOffset] = useState(0)
 
     useEffect(() => {
-        getFriends(userId, search, offset)
+        getFriends(search, offset)
             .then(nextPage => setFriends(friends.concat(nextPage)))
             .catch(error => console.error(error))
     }, [])
 
     useEffect(() => {
         if (offset > 0) {
-            getFriends(userId, search, offset)
+            getFriends(search, offset)
                 .then(nextPage => setFriends(friends.concat(nextPage)))
                 .catch(error => console.error(error))
         }
@@ -41,13 +40,7 @@ function FriendScreen({ navigation }) {
     );
 }
 
-function AddFriendsIcon(navigation) {
-    return (
-        <Icon type="add_friend" size={25} color={colors.white} onPress={() => navigation.navigate("Test")} />
-    )
-}
-
-const getFriends = (userId, search, offset) => {
+const getFriends = (search, offset) => {
     params = {
         userId: userId,
         search: search,

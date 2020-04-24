@@ -40,12 +40,15 @@ function request(options) {
         ...options,
         headers: addAuthHeaders(options.url, options.headers),
     }
+    let currTime = Date.now()
     return new Promise((resolve, reject) => {
         client.request(options)
             .then(response => {
+                console.log(`Millis elapsed: ${Date.now() - currTime}`)
                 return resolve(response.data)
             })
             .catch((error) => {
+                console.log(`Millis elapsed: ${Date.now() - currTime}`)
                 console.log(error.config)
                 if (error.response) {
                     // The request was made and the server responded with a status code

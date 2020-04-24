@@ -32,8 +32,7 @@ func wireFriendRequest(fr model.FriendRequest, user model.User) response.WireFri
 	return response.WireFriendRequest{
 		ID:        fr.ID,
 		UserID:    fr.SentByUserID,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
+		Name:      user.Name,
 		Username:  user.Username,
 		CreatedAt: user.CreatedAt,
 	}

@@ -40,25 +40,25 @@ func (server *Friend) Routes(router *gin.RouterGroup) []gin.IRoutes {
 }
 
 func (server *Friend) forUser(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
 	defaultLimit := "20"
 	defaultOffset := "0"
 
 	deser := NewDeser(
 		context,
-		QueryParameter{name: "user_id", kind: UUID, required: true},
 		QueryParameter{name: "search", kind: Str, required: false},
 		QueryParameter{name: "limit", kind: Int, fallback: &defaultLimit},
 		QueryParameter{name: "offset", kind: Int, fallback: &defaultOffset},
 	)
 
 	if parameters, ok := deser.DeserQueryParams(); ok {
-		userID := parameters["user_id"].(*uuid.UUID)
 		search := parameters["search"].(*string)
 		limit := parameters["limit"].(*int)
 		offset := parameters["offset"].(*int)
 
 		friends := server.Service.ForUser(
-			*userID,
+			userID,
 			search,
 			*limit,
 			*offset,
@@ -70,6 +70,8 @@ func (server *Friend) forUser(context *gin.Context) {
 }
 
 func (server *Friend) deleteByUserID(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
 	var body request.FriendDeleteRequestBody
 
 	if err := context.BindJSON(&body); err != nil {
@@ -77,7 +79,7 @@ func (server *Friend) deleteByUserID(context *gin.Context) {
 		return
 	}
 
-	server.Service.DeleteByUserID(body.UserID, body.FriendUserID)
+	server.Service.DeleteByUserID(userID, body.FriendUserID)
 
 	context.JSON(http.StatusOK, true)
 }

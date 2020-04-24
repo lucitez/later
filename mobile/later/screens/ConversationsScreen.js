@@ -4,7 +4,6 @@ import { SearchBar } from '../components/common';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { UserGroup } from '../components/user';
-import { userId } from '../util/constants';
 
 function ConversationScreen() {
     const [conversations, setConversations] = useState([])
@@ -41,7 +40,6 @@ function ConversationScreen() {
 
 const getConversations = (search, offset) => {
     params = {
-        userId: userId,
         search: search,
         offset: offset,
         limit: 10

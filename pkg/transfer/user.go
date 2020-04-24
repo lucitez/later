@@ -36,12 +36,12 @@ func (transfer *User) WireUsersFrom(users []model.User) []response.WireUser {
 
 func (transfer *User) WireUserFromUser(user model.User) response.WireUser {
 	return response.WireUser{
-		ID:        user.ID,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Username:  user.Username,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
+		ID:          user.ID,
+		Name:        user.Name,
+		Username:    user.Username,
+		Email:       user.Email,
+		PhoneNumber: user.PhoneNumber,
+		CreatedAt:   user.CreatedAt,
 	}
 }
 
@@ -61,8 +61,7 @@ func (transfer *User) WireAddFriendUsersFrom(userID uuid.UUID, users []model.Use
 func wireAddFriendUser(user model.User, existingPendingRequest bool) response.WireAddFriendUser {
 	return response.WireAddFriendUser{
 		ID:             user.ID,
-		FirstName:      user.FirstName,
-		LastName:       user.LastName,
+		Name:           user.Name,
 		Username:       user.Username,
 		PendingRequest: existingPendingRequest,
 		CreatedAt:      user.CreatedAt,
@@ -72,8 +71,7 @@ func wireAddFriendUser(user model.User, existingPendingRequest bool) response.Wi
 func (transfer *User) WireUserProfileFrom(requestUserID uuid.UUID, user model.User) response.WireUserProfile {
 	wireUser := response.WireUserProfile{
 		ID:           user.ID,
-		FirstName:    user.FirstName,
-		LastName:     user.LastName,
+		Name:         user.Name,
 		Username:     user.Username,
 		FriendStatus: wrappers.NewNullString(nil),
 	}

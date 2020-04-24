@@ -4,6 +4,7 @@ import (
 	"later/pkg/auth"
 	"later/pkg/request"
 	"later/pkg/service"
+	"later/pkg/util/stringutil"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -37,12 +38,14 @@ func (server *Auth) Routes(router *gin.RouterGroup) []gin.IRoutes {
 	return []gin.IRoutes{
 		router.POST("/login", server.login),
 		router.POST("/logout", server.logout),
+		router.POST("/sms-confirmation", server.smsConfirmation),
 		router.POST("/sign-up", server.signUp),
 		router.POST("/refresh", server.refreshToken),
+		router.GET("/sign-up/check-conflicts", server.checkConflicts),
 	}
 }
 
-// TODO should we check whether there is an active session and just return that session id?
+// TODO should we check whether there is an active userSession and just return that userSession id?
 func (server *Auth) login(c *gin.Context) {
 	identifier, password, ok := c.Request.BasicAuth()
 
@@ -59,8 +62,8 @@ func (server *Auth) login(c *gin.Context) {
 		return
 	}
 
-	if accessToken, refreshToken, err := server.startSession(user.ID); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Unable to start Session", "message": err.Error()})
+	if accessToken, refreshToken, err := server.startUserSession(user.ID); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Unable to start UserSession", "message": err.Error()})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
 			"access_token":  accessToken,
@@ -96,14 +99,30 @@ func (server *Auth) signUp(c *gin.Context) {
 		return
 	}
 
-	if accessToken, refreshToken, err := server.startSession(user.ID); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Unable to start Session", "message": err.Error()})
+	if accessToken, refreshToken, err := server.startUserSession(user.ID); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Unable to start UserSession", "message": err.Error()})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
 			"access_token":  accessToken,
 			"refresh_token": refreshToken,
 		})
 	}
+}
+
+func (server *Auth) smsConfirmation(c *gin.Context) {
+	var body request.SMSConfirmationRequestBody
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	confirmationCode := stringutil.RandomNInt(6)
+	content := "Your Later confirmation code is: " + confirmationCode
+
+	service.SendSMS(body.PhoneNumber, content)
+
+	c.JSON(http.StatusOK, confirmationCode)
 }
 
 func (server *Auth) refreshToken(c *gin.Context) {
@@ -114,24 +133,24 @@ func (server *Auth) refreshToken(c *gin.Context) {
 		return
 	}
 
-	// Expire old session once we have issued the new one
+	// Expire old userSession once we have issued the new one
 	// SHOULD WE EVEN DO THIS
-	defer server.AuthService.ExpireSession(token.SessionID)
+	defer server.AuthService.ExpireUserSession(token.UserSessionID)
 
-	session, err := server.AuthService.ByID(token.SessionID)
+	userSession, err := server.AuthService.ByID(token.UserSessionID)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if session == nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Could not find session"})
+	if userSession == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Could not find userSession"})
 		return
 	}
 
-	if accessToken, refreshToken, err := server.startSession(session.UserID); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Unable to start Session", "message": err.Error()})
+	if accessToken, refreshToken, err := server.startUserSession(userSession.UserID); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Unable to start UserSession", "message": err.Error()})
 	} else {
 		c.JSON(http.StatusOK, gin.H{
 			"access_token":  accessToken,
@@ -140,15 +159,38 @@ func (server *Auth) refreshToken(c *gin.Context) {
 	}
 }
 
+func (server *Auth) checkConflicts(c *gin.Context) {
+	deser := NewDeser(
+		c,
+		QueryParameter{name: "phone_number", kind: Str, required: true},
+		QueryParameter{name: "username", kind: Str, required: true},
+	)
+
+	if qp, ok := deser.DeserQueryParams(); ok {
+		phoneNumber := qp["phone_number"].(*string)
+		username := qp["username"].(*string)
+
+		if err := server.AuthService.CheckConflicts(
+			*phoneNumber,
+			*username,
+		); err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		c.AbortWithStatus(http.StatusOK)
+	}
+}
+
 /**
- * Create session and generate token with session id
+ * Create userSession and generate token with userSession id
  */
-func (server *Auth) startSession(userID uuid.UUID) (signedAt string, signedRt string, err error) {
-	session, err := server.AuthService.CreateSession(userID)
+func (server *Auth) startUserSession(userID uuid.UUID) (signedAt string, signedRt string, err error) {
+	userSession, err := server.AuthService.CreateUserSession(userID)
 
 	if err != nil {
 		return
 	}
 
-	return auth.GenerateTokenFromSession(session)
+	return auth.GenerateTokenFromUserSession(userSession)
 }

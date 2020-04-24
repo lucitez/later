@@ -14,7 +14,7 @@ function UserDetails({ user }) {
                 </View>
             </View>
             <View style={styles.infoContainer}>
-                <Text style={styles.name}>{user.firstName} {user.lastName}</Text>
+                <Text style={styles.name}>{user.name}</Text>
                 <Text style={styles.username}>@{user.username}</Text>
             </View>
         </View>

@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { FriendRequest } from '../components/user';
-import { userId } from '../util/constants';
 import { Divider } from '../components/common';
 
 function NotificationsScreen() {
@@ -46,10 +45,7 @@ const updateFriendRequests = (requests, requestId, status) => {
 }
 
 const getFriendRequests = () => {
-    params = {
-        userId: userId
-    }
-    return Network.GET('/friend-requests/pending', params)
+    return Network.GET('/friend-requests/pending')
 }
 
 const respondToFriendRequest = (id, action) => {

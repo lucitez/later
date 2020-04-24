@@ -6,8 +6,7 @@ GET http://localhost:8000/users/search
 
 # {
 #     "username": "glump",
-#     "first_name": "Glumpo",
-#     "last_name": "McSqueefy",
+#     "name": "Glumpo",
 #     "email": "glump@gmail.com",
 #     "phone_number": "9999999999"
 # }

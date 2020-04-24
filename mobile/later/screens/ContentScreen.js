@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Alert } from 'react-native';
+import { StyleSheet, View, Text, Alert, SafeAreaView } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
-import { userId } from '../util/constants';
 import { Header, Icon } from '../components/common';
 import { ContentGroup } from '../components/content';
 
@@ -37,7 +36,7 @@ function ContentScreen({ navigation }) {
     )
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Header name="Later" rightIcon={saveIcon} />
             <View style={styles.contentContainer}>
                 {
@@ -64,15 +63,12 @@ function ContentScreen({ navigation }) {
 
                 }
             </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
 const getContent = () => {
-    let params = {
-        userId: userId
-    }
-    return Network.GET(`/user-content/filter`, params)
+    return Network.GET(`/user-content/filter`)
 }
 
 const SavedContent = (content, tag) => {
@@ -86,18 +82,11 @@ const SavedContent = (content, tag) => {
 
 const styles = StyleSheet.create({
     container: {
-        marginBottom: 80,
         flex: 1,
-        backgroundColor: colors.lightGray,
-    },
-    searchContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 10
+        backgroundColor: colors.primary,
     },
     contentContainer: {
-        backgroundColor: colors.white,
+        backgroundColor: colors.lightGray,
         flexGrow: 1,
     }
 });

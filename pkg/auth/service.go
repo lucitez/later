@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"later/pkg/model"
 	"later/pkg/repository"
 
@@ -10,12 +11,13 @@ import (
 )
 
 type Service struct {
-	Repo repository.Auth
+	Repo     repository.Auth
+	UserRepo repository.User
 }
 
 type Token struct {
 	jwt.StandardClaims
-	SessionID uuid.UUID `json:"session_id"`
+	UserSessionID uuid.UUID `json:"userSession_id"`
 }
 
 func (t *Token) Valid() error {
@@ -28,32 +30,57 @@ func (t *Token) Valid() error {
 
 func NewService(
 	repo repository.Auth,
+	userRepo repository.User,
 ) Service {
 	return Service{
 		repo,
+		userRepo,
 	}
 }
 
 var secret = "secret"
 
-func (s *Service) CreateSession(userID uuid.UUID) (model.Session, error) {
-	session := model.NewSession(userID)
+func (s *Service) CreateUserSession(userID uuid.UUID) (model.UserSession, error) {
+	userSession := model.NewUserSession(userID)
 
-	err := s.Repo.InsertSession(session)
+	err := s.Repo.InsertUserSession(userSession)
 
-	return session, err
+	return userSession, err
 }
 
-func (s *Service) ExpireSession(id uuid.UUID) {
-	s.Repo.ExpireSession(id)
+func (s *Service) ExpireUserSession(id uuid.UUID) {
+	s.Repo.ExpireUserSession(id)
 }
 
-func (s *Service) ByID(id uuid.UUID) (*model.Session, error) {
+func (s *Service) ByID(id uuid.UUID) (*model.UserSession, error) {
 	return s.Repo.ByID(id)
 }
 
-func (s *Service) ActiveByID(id uuid.UUID) (*model.Session, error) {
+func (s *Service) ActiveByID(id uuid.UUID) (*model.UserSession, error) {
 	return s.Repo.ActiveByID(id)
+}
+
+func (s *Service) CheckConflicts(
+	phoneNumber string,
+	username string,
+) error {
+	existingUser := s.UserRepo.ByIdentifiers(
+		phoneNumber,
+		username,
+	)
+
+	if existingUser == nil {
+		return nil
+	}
+
+	switch {
+	case existingUser.PhoneNumber == phoneNumber:
+		return errors.New("Phone Number is already in use")
+	case existingUser.Username.String == username:
+		return errors.New("Username is already in use")
+	default:
+		return errors.New("Conflict")
+	}
 }
 
 func KeyFunc(token *jwt.Token) (interface{}, error) {

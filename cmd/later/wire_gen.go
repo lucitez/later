@@ -104,14 +104,15 @@ func InitializeAuth(db *sql.DB) server.Auth {
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
 	repositoryAuth := repository.NewAuth(db)
-	authService := auth.NewService(repositoryAuth)
+	authService := auth.NewService(repositoryAuth, user)
 	serverAuth := server.NewAuth(serviceUser, authService)
 	return serverAuth
 }
 
 func InitializeServer(db *sql.DB) later.Server {
 	repositoryAuth := repository.NewAuth(db)
-	authService := auth.NewService(repositoryAuth)
+	user := repository.NewUser(db)
+	authService := auth.NewService(repositoryAuth, user)
 	laterServer := later.NewServer(authService)
 	return laterServer
 }

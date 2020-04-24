@@ -14,8 +14,7 @@ import (
 // User object
 type User struct {
 	ID          uuid.UUID           `json:"id"`
-	FirstName   wrappers.NullString `json:"first_name"`
-	LastName    wrappers.NullString `json:"last_name"`
+	Name        wrappers.NullString `json:"name"`
 	Username    wrappers.NullString `json:"username"`
 	Email       wrappers.NullString `json:"email"`
 	PhoneNumber string              `json:"phone_number"`
@@ -31,8 +30,7 @@ type User struct {
 // TODO validate email, phone number
 func NewUserFromSignUp(
 	username string,
-	firstName string,
-	lastName wrappers.NullString,
+	Name string,
 	email wrappers.NullString,
 	phoneNumber string,
 	password string,
@@ -45,8 +43,7 @@ func NewUserFromSignUp(
 	return User{
 		ID:          newUUID,
 		Username:    wrappers.NewNullStringFromString(username),
-		FirstName:   wrappers.NewNullStringFromString(firstName),
-		LastName:    lastName,
+		Name:        wrappers.NewNullStringFromString(Name),
 		Email:       email,
 		PhoneNumber: phoneNumber,
 		Password:    password,
@@ -84,8 +81,7 @@ func NewUserFromShare(
 func (user *User) ScanRows(rows *sql.Rows) {
 	err := rows.Scan(
 		&user.ID,
-		&user.FirstName,
-		&user.LastName,
+		&user.Name,
 		&user.Username,
 		&user.Email,
 		&user.PhoneNumber,
@@ -105,12 +101,11 @@ func (user *User) ScanRows(rows *sql.Rows) {
 func (user *User) ScanRow(row *sql.Row) *User {
 	err := row.Scan(
 		&user.ID,
-		&user.FirstName,
-		&user.LastName,
+		&user.Name,
 		&user.Username,
 		&user.Email,
-		&user.Password,
 		&user.PhoneNumber,
+		&user.Password,
 		&user.CreatedAt,
 		&user.SignedUpAt,
 		&user.UpdatedAt,

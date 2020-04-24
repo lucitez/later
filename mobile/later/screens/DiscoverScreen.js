@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { StyleSheet, View, Text } from 'react-native'
 import { colors } from '../assets/colors'
 import { SearchBar } from '../components/common'
-import { userId } from '../util/constants';
 import Network from '../util/Network'
 import UserGroup from '../components/user/UserGroup'
 
@@ -17,7 +16,7 @@ function DiscoverScreen({ navigation }) {
             setUsers([])
         } else {
             searchUsers(search, 0)
-                .then(users => setUsers(filterUsers(users)))
+                .then(users => setUsers(users))
                 .catch(err => console.error(err))
         }
     }, [search])
@@ -43,10 +42,6 @@ const searchUsers = (search, offset) => {
     let params = { search, offset }
 
     return Network.GET('/users/search', params)
-}
-
-const filterUsers = users => {
-    return users.filter(user => user.id != userId)
 }
 
 const styles = StyleSheet.create({

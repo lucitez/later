@@ -17,8 +17,8 @@ var userRepo repository.User
 
 var user = model.NewUserFromSignUp(
 	"test_username",
-	"first_name",
-	wrappers.NewNullStringFromString("last_name"),
+	"name",
+	wrappers.NewNullStringFromString("name"),
 	wrappers.NewNullStringFromString("test_email"),
 	"1111111111",
 	"pass",
@@ -89,8 +89,7 @@ func TestAddFriendFilter(t *testing.T) {
 
 	user1 := model.NewUserFromSignUp(
 		"test_username",
-		"first_name",
-		wrappers.NewNullStringFromString("last_name"),
+		"name",
 		wrappers.NewNullStringFromString("test_email"),
 		"1111111111",
 		"pass",
@@ -98,8 +97,7 @@ func TestAddFriendFilter(t *testing.T) {
 
 	user2 := model.NewUserFromSignUp(
 		"foo",
-		"first_name",
-		wrappers.NewNullStringFromString("last_name"),
+		"name",
 		wrappers.NewNullStringFromString("foo"),
 		"2222222222",
 		"pass",
@@ -107,8 +105,7 @@ func TestAddFriendFilter(t *testing.T) {
 
 	user3 := model.NewUserFromSignUp(
 		"bar",
-		"first_name",
-		wrappers.NewNullStringFromString("last_name"),
+		"name",
 		wrappers.NewNullStringFromString("bar"),
 		"3333333333",
 		"pass",
@@ -151,8 +148,7 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 
 	user1 := model.NewUserFromSignUp(
 		"test_username",
-		"first_name",
-		wrappers.NewNullStringFromString("last_name"),
+		"name",
 		wrappers.NewNullStringFromString("test_email"),
 		"1111111111",
 		"pass",
@@ -160,8 +156,7 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 
 	user2 := model.NewUserFromSignUp(
 		"foo",
-		"first_name",
-		wrappers.NewNullStringFromString("last_name"),
+		"name",
 		wrappers.NewNullStringFromString("foo"),
 		"2222222222",
 		"pass",
@@ -169,8 +164,7 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 
 	user3 := model.NewUserFromSignUp(
 		"bar",
-		"first_name",
-		wrappers.NewNullStringFromString("last_name"),
+		"name",
 		wrappers.NewNullStringFromString("bar"),
 		"3333333333",
 		"pass",
@@ -178,8 +172,7 @@ func TestAddFriendFilterWithSearch(t *testing.T) {
 
 	user4 := model.NewUserFromSignUp(
 		"baz",
-		"first_name",
-		wrappers.NewNullStringFromString("last_name"),
+		"name",
 		wrappers.NewNullStringFromString("baz"),
 		"4444444444",
 		"pass",
@@ -213,13 +206,13 @@ func TestUpdateUser(t *testing.T) {
 	userRepo.Insert(user)
 
 	updateBody := body.UserUpdate{
-		ID:        user.ID,
-		FirstName: wrappers.NewNullStringFromString("glump"),
+		ID:   user.ID,
+		Name: wrappers.NewNullStringFromString("glump"),
 	}
 
 	userRepo.Update(updateBody)
 
 	actual := userRepo.ByID(user.ID)
 
-	testUtil.Assert.Equal(actual.FirstName.String, "glump")
+	testUtil.Assert.Equal(actual.Name.String, "glump")
 }

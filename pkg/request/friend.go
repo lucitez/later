@@ -8,20 +8,18 @@ import (
 
 // FriendRequestCreateRequestBody request body for sending a new friend request
 type FriendRequestCreateRequestBody struct {
-	SenderUserID    uuid.UUID `form:"sender_user_id" json:"sender_user_id" binding:"required"`
 	RecipientUserID uuid.UUID `form:"recipient_user_id" json:"recipient_user_id" binding:"required"`
 }
 
 // ToFriendRequestCreateBody ...
-func (requestBody *FriendRequestCreateRequestBody) ToFriendRequestCreateBody() body.FriendRequestCreateBody {
+func (requestBody *FriendRequestCreateRequestBody) ToFriendRequestCreateBody(userID uuid.UUID) body.FriendRequestCreateBody {
 	return body.FriendRequestCreateBody{
-		SenderUserID:    requestBody.SenderUserID,
+		SenderUserID:    userID,
 		RecipientUserID: requestBody.RecipientUserID}
 }
 
 // FriendDeleteRequestBody request body for sending a new friend request
 type FriendDeleteRequestBody struct {
-	UserID       uuid.UUID `form:"user_id" json:"user_id" binding:"required"`
 	FriendUserID uuid.UUID `form:"friend_user_id" json:"friend_user_id" binding:"required"`
 }
 

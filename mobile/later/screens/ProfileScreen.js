@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import { StyleSheet, View, AsyncStorage } from 'react-native';
-import { userId } from '../util/constants';
 import Network from '../util/Network';
 import { colors } from '../assets/colors';
 import { Button, ButtonGroup, TabBar, Icon } from '../components/common';
@@ -32,7 +31,7 @@ function ProfileScreen({ navigation, route }) {
     const [editVisible, setEditVisible] = useState(false)
 
     useEffect(() => {
-        getUser()
+        getProfile()
             .then(u => setUser(u))
             .catch(err => console.error(err))
     }, [])
@@ -89,11 +88,8 @@ function ProfileScreen({ navigation, route }) {
     )
 }
 
-const getUser = () => {
-    let params = {
-        id: userId
-    }
-    return Network.GET('/users/by-id', params)
+const getProfile = () => {
+    return Network.GET('/users/profile')
 }
 
 const styles = StyleSheet.create({

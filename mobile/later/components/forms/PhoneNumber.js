@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, TextInput, StyleSheet } from 'react-native'
+import { TextInput, StyleSheet } from 'react-native'
 import { colors } from '../../assets/colors'
+import FormInputWrapper from './FormInputWrapper'
 
 export default function PhoneNumber(props) {
+    const color = props.theme == 'light' ? colors.white : colors.black
 
-    const [rawValue, setRawValue] = useState(props.value)
-    const [displayValue, setDisplayValue] = useState(toDisplayValue(props.value))
+    const [rawValue, setRawValue] = useState(props.value ? props.value : '')
+    const [displayValue, setDisplayValue] = useState(toDisplayValue(props.value ? props.value : ''))
 
     const onChangeText = (text) => {
         let rawValue = toRawValue(text)
@@ -14,26 +16,20 @@ export default function PhoneNumber(props) {
     }
 
     useEffect(() => {
-        let valid = isValid(rawValue)
-        props.onChange(props.name, rawValue, valid)
+        let error = hasError(props.required, rawValue)
+        props.onChange(props.name, rawValue, error)
     }, [rawValue])
 
     return (
-        <View style={styles.container}>
-            <View style={styles.nameContainer}>
-                <Text style={styles.name}>{props.title}:</Text>
-            </View>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    keyboardType='phone-pad'
-                    style={styles.input}
-                    onChangeText={onChangeText}
-                    value={displayValue}
-                    selectionColor={colors.white}
-                />
-            </View>
-            <View style={[styles.underline]} />
-        </View>
+        <FormInputWrapper {...props}>
+            <TextInput
+                keyboardType='phone-pad'
+                style={[styles.input, { color: color }]}
+                onChangeText={onChangeText}
+                value={displayValue}
+                selectionColor={color}
+            />
+        </FormInputWrapper>
     )
 }
 
@@ -55,32 +51,25 @@ const toDisplayValue = (rawText) => {
     }
 }
 
-const isValid = (value) => {
+const hasError = (required, value) => {
+    if (required && value == '') {
+        return 'phone number is required'
+    }
+
     const pattern = /^[\d]{10}$/
 
-    return pattern.test(value)
+    let valid = pattern.test(value)
+
+    if (valid) {
+        return null
+    }
+
+    return 'Invalid phone number format'
 }
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 5,
-    },
-    nameContainer: {
-        marginBottom: 5,
-    },
-    underline: {
-        height: 1.5,
-        marginTop: 5,
-        backgroundColor: colors.white
-    },
-    name: {
-        color: colors.white,
-        fontWeight: '300',
-        fontSize: 14,
-    },
     input: {
-        color: colors.white,
-        fontWeight: '500',
+        fontWeight: '400',
         fontSize: 18,
     },
 })

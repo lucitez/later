@@ -16,10 +16,14 @@ import {
   ProfileScreen,
   EditProfileScreen,
   UserScreen,
-  SignupScreen,
-  LoginScreen,
   SplashScreen
 } from './screens/index'
+import {
+  SignupScreen,
+  LoginScreen,
+  SMSCodeScreen,
+  CreatePasswordScreen,
+} from './screens/onboarding/index'
 import { colors } from './assets/colors'
 import Network from './util/Network'
 import * as actions from './actions'
@@ -116,7 +120,6 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
-      console.log('init')
       await autoLogin()
         .then(setIsSignedIn(true))
         .catch(err => {
@@ -148,14 +151,16 @@ function App() {
                 <ApplicationStack.Screen name='Home' component={CreateApplicationTabs} />
               ) : (
                     <>
-                      <ApplicationStack.Screen name='Login' component={LoginScreen} />
                       <ApplicationStack.Screen name='Sign Up' component={SignupScreen} />
+                      <ApplicationStack.Screen name='Login' component={LoginScreen} />
+                      <ApplicationStack.Screen name='SMS' component={SMSCodeScreen} />
+                      <ApplicationStack.Screen name='Password' component={CreatePasswordScreen} />
                     </>
                   )
             }
           </ApplicationStack.Navigator>
         </NavigationContainer>
-      </Provider >
+      </Provider>
     </AuthContext.Provider>
   )
 }

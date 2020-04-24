@@ -30,7 +30,8 @@ func (server *User) Prefix() string {
 func (server *User) Routes(router *gin.RouterGroup) []gin.IRoutes {
 	return []gin.IRoutes{
 		router.GET("/by-id", server.byID),
-		router.GET("/profile-by-id", server.profileByID),
+		router.GET("/profile", server.profile),                // get own profile
+		router.GET("/profile-by-user-id", server.profileByID), // get profile of other user
 		router.GET("/search", server.search),
 
 		router.PUT("/update", server.update),
@@ -56,24 +57,38 @@ func (server *User) byID(context *gin.Context) {
 	}
 }
 
+func (server *User) profile(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
+	user := server.service.ByID(userID)
+	if user == nil {
+		context.JSON(http.StatusBadRequest, "User not found")
+		return
+	}
+
+	wireUser := server.Transfer.WireUserFromUser(*user)
+
+	context.JSON(http.StatusOK, wireUser)
+}
+
 func (server *User) profileByID(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
 	deser := NewDeser(
 		context,
-		QueryParameter{name: "request_user_id", kind: UUID, required: true},
-		QueryParameter{name: "id", kind: UUID, required: true},
+		QueryParameter{name: "profile_user_id", kind: UUID, required: true},
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
-		requestUserID := qp["request_user_id"].(*uuid.UUID)
-		userID := qp["id"].(*uuid.UUID)
-		user := server.service.ByID(*userID)
+		profileUserID := qp["profile_user_id"].(*uuid.UUID)
+		profileUser := server.service.ByID(*profileUserID)
 
-		if user == nil {
+		if profileUser == nil {
 			context.JSON(http.StatusBadRequest, "User not found")
 			return
 		}
 
-		wireUserProfile := server.Transfer.WireUserProfileFrom(*requestUserID, *user)
+		wireUserProfile := server.Transfer.WireUserProfileFrom(userID, *profileUser)
 
 		context.JSON(http.StatusOK, wireUserProfile)
 	}
@@ -105,6 +120,8 @@ func (server *User) search(context *gin.Context) {
 }
 
 func (server *User) update(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
 	var body request.UserUpdate
 
 	if err := context.BindJSON(&body); err != nil {
@@ -112,7 +129,7 @@ func (server *User) update(context *gin.Context) {
 		return
 	}
 
-	err := server.service.Update(body.ToUserUpdateBody())
+	err := server.service.Update(body.ToUserUpdateBody(userID))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())

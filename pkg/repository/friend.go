@@ -62,8 +62,7 @@ func (repository *Friend) ForUser(
 		AND (
 			users.username ILIKE $2
 			OR users.email ILIKE $2
-			OR users.first_name ILIKE $2
-			OR users.last_name ILIKE $2
+			OR users.name ILIKE $2
 		)
 		AND friends.deleted_at IS NULL
 		`

@@ -22,11 +22,10 @@ function Header(props) {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.primary,
-        height: '12%',
+        height: '7%',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: "flex-end",
-        paddingTop: 40,
+        alignItems: "center",
     },
     leftIconContainer: {
         height: '100%',

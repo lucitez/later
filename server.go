@@ -61,7 +61,7 @@ func unprotected() gin.HandlerFunc {
 	}
 }
 
-// protectedAuth requires you to have a valid session_id in your access_token. Gives user_id of the session to the context
+// protectedAuth requires you to have a valid userSession_id in your access_token. Gives user_id of the userSession to the context
 func (s *Server) protectedAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token, err := auth.ParseToken(c.GetHeader("Authorization"))
@@ -71,13 +71,13 @@ func (s *Server) protectedAuth() gin.HandlerFunc {
 			return
 		}
 
-		activeSession, err := s.AuthService.ActiveByID(token.SessionID)
+		activeUserSession, err := s.AuthService.ActiveByID(token.UserSessionID)
 
-		if activeSession == nil || err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "session expired", "message": err.Error()})
+		if activeUserSession == nil || err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "userSession expired", "message": err.Error()})
 			return
 		}
 
-		c.Set("user_id", activeSession.UserID)
+		c.Set("user_id", activeUserSession.UserID)
 	}
 }

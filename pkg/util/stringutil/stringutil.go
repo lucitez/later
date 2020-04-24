@@ -1,8 +1,11 @@
 package stringutil
 
 import (
+	"math/rand"
 	"regexp"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func NullIfBlank(str string) *string {
@@ -14,6 +17,18 @@ func NullIfBlank(str string) *string {
 
 func PointerFromString(str string) *string {
 	return &str
+}
+
+func RandomNInt(n int) string {
+	rand.Seed(time.Now().Unix())
+
+	nInt := ""
+
+	for i := 0; i < n; i++ {
+		nInt += strconv.Itoa(rand.Intn(10))
+	}
+
+	return nInt
 }
 
 var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")

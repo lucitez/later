@@ -13,7 +13,7 @@ function FriendPreview(props) {
             <View style={{ flexGrow: 1 }}>
                 <View style={styles.userInfoContainer}>
                     <View style={styles.nameContainer}>
-                        <Text style={styles.name}>{user.firstName} {user.lastName}</Text>
+                        <Text style={styles.name}>{user.name}</Text>
                     </View>
                     <View style={styles.usernameContainer}>
                         <Text style={styles.username}>@{user.username}</Text>

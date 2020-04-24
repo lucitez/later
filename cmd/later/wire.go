@@ -127,6 +127,7 @@ func InitializeServer(db *sql.DB) later.Server {
 	wire.Build(
 		later.NewServer,
 		auth.NewService,
+		repository.NewUser,
 		repository.NewAuth,
 	)
 	return later.Server{}
