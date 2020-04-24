@@ -1,3 +1,4 @@
+import ByTagScreen from './ByTagScreen'
 import ContentScreen from './ContentScreen'
 import ConversationsScreen from './ConversationsScreen'
 import DiscoverScreen from './DiscoverScreen'
@@ -11,6 +12,7 @@ import SharePreviewScreen from './SharePreviewScreen'
 import SplashScreen from './SplashScreen'
 import UserScreen from './UserScreen'
 
+export { ByTagScreen }
 export { ContentScreen }
 export { ConversationsScreen }
 export { DiscoverScreen }

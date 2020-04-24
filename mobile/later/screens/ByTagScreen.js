@@ -2,24 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
-import { Header, SearchBar, Icon, BackIcon } from '../components/common';
-import { ContentFilter, ContentGroup } from '../components/content';
+import { Header, SearchBar, BackIcon } from '../components/common';
+import { ContentGroup } from '../components/content';
 
-function SavedScreen({ navigation }) {
+function ByTagScreen({ navigation, route }) {
+    let tag = route.params.tag
+
     const [content, setContent] = useState([])
-    const [search, setSearch] = useState('')
-    const [filter, setFilter] = useState({})
     const [loading, setLoading] = useState(true)
 
-    useEffect(() => {
-        setLoading(true)
-        getContent(search, filter)
-            .then(content => {
-                setContent(content)
+    const getContent = () => {
+        Network.GET('/user-content/by-tag', { tag })
+            .then(c => {
+                setContent(c)
                 setLoading(false)
             })
-            .catch(error => console.error(error))
-    }, [filter, search])
+            .catch(err => {
+                console.error(err)
+                setLoading(false)
+            })
+    }
+
+    useEffect(() => {
+        getContent()
+    }, [])
 
     const onUpdateTag = (updatedContent, newTag) => {
         let prevTag = updatedContent.tag
@@ -27,26 +33,19 @@ function SavedScreen({ navigation }) {
         if (prevTag != newTag) {
             setContent(updateContentTag(content, updatedContent.id, newTag))
             updateTag(updatedContent.id, newTag)
-                .then()
+                .then(() => getContent())
                 .catch(() => setContent(updateContentTag(content, updatedContent.id, prevTag)))
         }
     }
 
     return (
         <SafeAreaView style={styles.container}>
-            <Header name="Saved" leftIcon={<BackIcon navigation={navigation} color={colors.white} />} />
-            <SearchBar
-                onChange={value => setSearch(value)}
-                placeholder='Search...'
-            />
-            <ContentFilter onChange={(filter) => setFilter(filter)} />
+            <Header name={tag} leftIcon={<BackIcon navigation={navigation} />} />
             <View style={styles.contentContainer}>
                 <ContentGroup
                     type='save'
-                    noContentMessage='Your saved content shows up here'
                     content={content}
-                    onForward={content => navigation.navigate('Forward', { contentPreview: content, previousScreen: 'Saved' })}
-                    onTagPress={tag => navigation.navigate('Tag', { tag })}
+                    onForward={content => navigation.navigate('Forward', { contentPreview: content, previousScreen: 'Tag' })}
                     onUpdateTag={onUpdateTag}
                 />
                 {
@@ -65,15 +64,6 @@ function SavedScreen({ navigation }) {
             </View>
         </SafeAreaView>
     );
-}
-
-const getContent = (search, contentFilter) => {
-    let params = {
-        saved: true,
-        search: search,
-        ...contentFilter
-    }
-    return Network.GET(`/user-content/filter`, params)
 }
 
 const updateTag = (contentId, tag) => {
@@ -107,4 +97,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default SavedScreen
+export default ByTagScreen

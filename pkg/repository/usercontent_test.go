@@ -167,3 +167,100 @@ func TestUpdate(t *testing.T) {
 
 	testUtil.Assert.Equal(actual.Tag.String, "memes")
 }
+
+func TestFilterTags(t *testing.T) {
+	beforeEach(t)
+
+	userContentRepo.Insert(userContent)
+
+	updateBody := body.UserContentUpdateBody{
+		ID:  userContent.ID,
+		Tag: wrappers.NewNullStringFromString("memes"),
+	}
+
+	userContentRepo.Update(updateBody)
+	actual, _ := userContentRepo.FilterTags(
+		userID,
+		nil,
+	)
+
+	testUtil.Assert.Contains(actual, "memes")
+}
+
+func TestFilterTagsSearchPositive(t *testing.T) {
+	beforeEach(t)
+
+	userContentRepo.Insert(userContent)
+
+	updateBody := body.UserContentUpdateBody{
+		ID:  userContent.ID,
+		Tag: wrappers.NewNullStringFromString("memes"),
+	}
+
+	userContentRepo.Update(updateBody)
+
+	search := "mem"
+	actual, _ := userContentRepo.FilterTags(
+		userID,
+		&search,
+	)
+
+	testUtil.Assert.Contains(actual, "memes")
+}
+
+func TestFilterTagsSearchNegative(t *testing.T) {
+	beforeEach(t)
+
+	userContentRepo.Insert(userContent)
+
+	updateBody := body.UserContentUpdateBody{
+		ID:  userContent.ID,
+		Tag: wrappers.NewNullStringFromString("memes"),
+	}
+
+	userContentRepo.Update(updateBody)
+
+	search := "something"
+	actual, _ := userContentRepo.FilterTags(
+		userID,
+		&search,
+	)
+
+	t.Error(actual)
+
+	testUtil.Assert.Empty(actual)
+}
+
+func TestFilterTagsSearchEmpty(t *testing.T) {
+	beforeEach(t)
+
+	userContentRepo.Insert(userContent)
+
+	actual, _ := userContentRepo.FilterTags(
+		userID,
+		nil,
+	)
+
+	testUtil.Assert.Empty(actual)
+}
+
+func TestByTag(t *testing.T) {
+	beforeEach(t)
+
+	userContentRepo.Insert(userContent)
+
+	updateBody := body.UserContentUpdateBody{
+		ID:  userContent.ID,
+		Tag: wrappers.NewNullStringFromString("memes"),
+	}
+
+	userContentRepo.Update(updateBody)
+
+	actual, _ := userContentRepo.ByTag(
+		userID,
+		"memes",
+	)
+
+	testUtil.Assert.NotEmpty(actual)
+	testUtil.Assert.Equal(actual[0].ID, userContent.ID)
+}

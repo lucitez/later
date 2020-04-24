@@ -204,6 +204,82 @@ func (repository *UserContent) Filter(
 	return repository.scanRows(rows)
 }
 
+func (repository *UserContent) ByTag(
+	userID uuid.UUID,
+	tag string,
+) ([]model.UserContent, error) {
+	statement := selectUserContent + `
+	WHERE user_id = $1
+	AND tag = $2
+	AND deleted_at IS NULL;
+	`
+
+	rows, err := repository.DB.Query(statement, userID, tag)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return repository.scanRows(rows), nil
+}
+
+// FilterTags gets usercontent
+func (repository *UserContent) FilterTags(
+	userID uuid.UUID,
+	search *string,
+) ([]string, error) {
+	statement := `
+	SELECT DISTINCT tag
+	FROM user_content
+	WHERE user_id = $1
+	AND deleted_at IS NULL`
+
+	var fuzzySearch *string = nil
+
+	if search != nil {
+		statement += `
+		AND tag ILIKE $2`
+
+		fuzzySearch = search
+		*fuzzySearch = "%" + *fuzzySearch + "%"
+	}
+
+	statement += `
+	ORDER BY tag
+	LIMIT 10;
+	`
+
+	args := util.GenerateArguments(
+		userID,
+		fuzzySearch,
+	)
+
+	rows, err := repository.DB.Query(statement, args...)
+
+	if err != nil {
+		return nil, err
+	}
+
+	tags := []string{}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var tag string
+		rows.Scan(&tag)
+
+		if tag != "" {
+			tags = append(tags, tag)
+		}
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tags, nil
+}
+
 func (repository *UserContent) scanRows(rows *sql.Rows) []model.UserContent {
 	userContents := []model.UserContent{}
 

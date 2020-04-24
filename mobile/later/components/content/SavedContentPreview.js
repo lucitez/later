@@ -10,7 +10,6 @@ function SavedContentPreview(props) {
             <ContentPreview
                 linkActive={!optionsActive}
                 onDotPress={() => setOptionsActive(true)}
-                onTagPress={tag => props.navigation.navigate('Tag Screen', { tag: tag })}
                 {...props}
             />
             <ContentBottomSheet

@@ -35,6 +35,8 @@ func (server *UserContent) Prefix() string {
 func (server *UserContent) Routes(router *gin.RouterGroup) []gin.IRoutes {
 	return []gin.IRoutes{
 		router.GET("/filter", server.filter),
+		router.GET("/tags/filter", server.filterTags),
+		router.GET("/by-tag", server.byTag),
 
 		router.PUT("/save", server.save),
 		router.PUT("/delete", server.delete),
@@ -72,6 +74,57 @@ func (server *UserContent) filter(context *gin.Context) {
 			search,
 			*limit,
 		)
+
+		wireUserContent := server.Transfer.WireUserContentsFrom(userContent)
+
+		context.JSON(http.StatusOK, wireUserContent)
+	}
+}
+
+func (server *UserContent) filterTags(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
+	deser := NewDeser(
+		context,
+		QueryParameter{name: "search", kind: Str},
+	)
+
+	if qp, ok := deser.DeserQueryParams(); ok {
+		search := qp["search"].(*string)
+
+		tags, err := server.Service.FilterTags(
+			userID,
+			search,
+		)
+
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		context.JSON(http.StatusOK, tags)
+	}
+}
+
+func (server *UserContent) byTag(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
+	deser := NewDeser(
+		context,
+		QueryParameter{name: "tag", kind: Str},
+	)
+
+	if qp, ok := deser.DeserQueryParams(); ok {
+		tag := qp["tag"].(*string)
+
+		userContent, err := server.Service.ByTag(
+			userID,
+			*tag,
+		)
+
+		if err != nil {
+			context.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		}
 
 		wireUserContent := server.Transfer.WireUserContentsFrom(userContent)
 

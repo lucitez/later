@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
     },
     contentContainer: {
-        backgroundColor: colors.lightGray,
+        backgroundColor: colors.white,
         flexGrow: 1,
     }
 });

@@ -35,6 +35,7 @@ function Preview(props, content) {
                     content={content}
                     onForward={() => props.onForward(content)}
                     onUpdateTag={tag => props.onUpdateTag(content, tag)}
+                    onTagPress={tag => props.onTagPress(tag)}
                 />
             )
     }

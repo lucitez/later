@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import BottomSheet from './BottomSheet'
-import SavedContentBottomSheet from './SavedContentBottomSheet'
+import SaveContentBottomSheet from './SaveContentBottomSheet'
 import EditTagBottomSheet from './EditTagBottomSheet'
 import BottomSheetContainer from './BottomSheetContainer'
 import { Button, ButtonGroup } from '../common';
@@ -64,7 +64,7 @@ function ContentBottomSheet(props) {
                 </BottomSheetContainer>
 
             </BottomSheet>
-            <SavedContentBottomSheet
+            <SaveContentBottomSheet
                 active={saveActive}
                 onHide={() => setSaveActive(false)}
                 {...props}

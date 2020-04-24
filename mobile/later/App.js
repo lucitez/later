@@ -8,6 +8,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createStackNavigator } from '@react-navigation/stack'
 import { Icon } from './components/common'
 import {
+  ByTagScreen,
   ContentScreen,
   SavedScreen,
   SharePreviewScreen,
@@ -42,6 +43,7 @@ function CreateContentStack() {
     <ContentStack.Navigator initialRouteName='Home' headerMode='none'>
       <ContentStack.Screen name='Home' component={ContentScreen} />
       <ContentStack.Screen name='Saved' component={SavedScreen} />
+      <ContentStack.Screen name='Tag' component={ByTagScreen} />
       <ContentStack.Screen name='Forward' component={SendShareScreen} />
     </ContentStack.Navigator>
   )

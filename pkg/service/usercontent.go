@@ -58,6 +58,30 @@ func (service *UserContent) Filter(
 	)
 }
 
+// FilterTags ...
+func (service *UserContent) FilterTags(
+	userID uuid.UUID,
+	search *string,
+) ([]string, error) {
+
+	return service.Repository.FilterTags(
+		userID,
+		search,
+	)
+}
+
+// ByTag ...
+func (service *UserContent) ByTag(
+	userID uuid.UUID,
+	tag string,
+) ([]model.UserContent, error) {
+
+	return service.Repository.ByTag(
+		userID,
+		tag,
+	)
+}
+
 // Save a piece of user content, providing an optional tag
 func (service *UserContent) Save(
 	id uuid.UUID,

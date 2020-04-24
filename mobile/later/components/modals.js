@@ -2,7 +2,7 @@ import BottomSheet from './modals/BottomSheet';
 import BottomSheetContainer from './modals/BottomSheetContainer';
 import ContentBottomSheet from './modals/ContentBottomSheet';
 import EditTagBottomSheet from './modals/EditTagBottomSheet';
-import SavedContentBottomSheet from './modals/SavedContentBottomSheet';
+import SavedContentBottomSheet from './modals/SaveContentBottomSheet';
 
 export { BottomSheet }
 export { BottomSheetContainer }

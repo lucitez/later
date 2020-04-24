@@ -49,7 +49,6 @@ function request(options) {
             })
             .catch((error) => {
                 console.log(`Millis elapsed: ${Date.now() - currTime}`)
-                console.log(error.config)
                 if (error.response) {
                     // The request was made and the server responded with a status code
                     // that falls out of the range of 2xx
@@ -82,14 +81,18 @@ const objToSnakeCase = (obj) => {
     return snakeCaseParams
 }
 
-const objToCamelCase = (obj) => {
-    let camelCaseParams = {}
+const objToCamelCase = (data) => {
+    if (typeof data == 'object') {
+        let camelCaseParams = {}
 
-    for (let [key, value] of Object.entries(obj)) {
-        camelCaseParams[_.camelCase(key)] = value
+        for (let [key, value] of Object.entries(data)) {
+            camelCaseParams[_.camelCase(key)] = value
+        }
+
+        return camelCaseParams
     }
 
-    return camelCaseParams
+    return data
 }
 
 // THIS IS BRITTLE AF

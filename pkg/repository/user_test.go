@@ -18,7 +18,6 @@ var userRepo repository.User
 var user = model.NewUserFromSignUp(
 	"test_username",
 	"name",
-	wrappers.NewNullStringFromString("name"),
 	wrappers.NewNullStringFromString("test_email"),
 	"1111111111",
 	"pass",

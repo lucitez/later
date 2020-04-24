@@ -6,8 +6,8 @@
 
 # GET http://localhost:8000/user-content/filter?saved=true&user_id=2ef129c3-1301-4959-9710-df31688e88d4&search=Trum
 
-GET http://localhost:8000/content/preview
-    ?id=2cc0f186-e52f-455d-8d2f-c02048f49bb6
+# GET http://localhost:8000/content/preview
+#     ?id=2cc0f186-e52f-455d-8d2f-c02048f49bb6
 
 # GET http://localhost:8000/content/preview
 #     ?url=/content/preview?url=https://www.nytimes.com/2020/04/13/world/coronavirus-news-world-international-global.html?referringSource=articleShare
@@ -24,3 +24,6 @@ GET http://localhost:8000/content/preview
 # {
 #     "id": "2c77324a-411f-432e-b62e-e7398735363d"
 # }
+
+GET http://localhost:8000/user-content/tags/filter
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODc3NTY4MTAsImlhdCI6MTU4Nzc1NTkxMCwidXNlclNlc3Npb25faWQiOiIzMDI2MjFkYi1mY2NhLTQyNTktYWUxZS1mYzY1Y2QwMzU2YWIifQ.Pwdvy0IGxKVr0g_JVkVAXvSodMn8wdXvE9M3yh91r_c

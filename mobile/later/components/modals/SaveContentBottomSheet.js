@@ -5,14 +5,10 @@ import BottomSheet from './BottomSheet'
 import BottomSheetContainer from './BottomSheetContainer';
 import { Button, SearchBar } from '../common';
 import { colors } from '../../assets/colors';
+import Network from '../../util/Network';
 
 function SavedContentBottomSheet(props) {
     const [tagValue, setTagValue] = useState('')
-    const [tags, setTags] = useState([])
-
-    useEffect(() => {
-        setTags(tagValue == '' ? [] : [tagValue])
-    }, [tagValue])
 
     return (
         <BottomSheet
@@ -25,17 +21,13 @@ function SavedContentBottomSheet(props) {
                     <SearchBar
                         placeholder='Add Tag...'
                         iconName='tag'
+                        val
                         onChange={value => setTagValue(value)}
                         onCancel={() => props.onHide()}
+                        autocomplete={true}
+                        autocompleteFunc={filterTags}
                     />
                 </View>
-                <ScrollView style={styles.tagsContainer} keyboardShouldPersistTaps='handled'>
-                    {tags.map((tag, index) => (
-                        <TouchableOpacity key={index} style={styles.tagContainer}>
-                            <Text style={styles.tag}>{tag}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
                 <View style={styles.saveButtonContainer}>
                     <Button theme='primary' name='Save' size='medium' onPress={() => {
                         Keyboard.dismiss()
@@ -48,9 +40,15 @@ function SavedContentBottomSheet(props) {
     )
 }
 
+const filterTags = search => {
+    params = { search }
+    return Network.GET('/user-content/tags/filter', params)
+}
+
 const styles = StyleSheet.create({
     addTagContainer: {
         margin: 10,
+        flexGrow: 1,
     },
     saveButtonContainer: {
         paddingLeft: 15,

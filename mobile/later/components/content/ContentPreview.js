@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { Icon, Link, Tag } from '../common';
 import { contentTypes, colors } from '../../assets/colors';
 
-function ContentPreview({ onDotPress, content, linkActive }) {
+function ContentPreview({ onDotPress, onTagPress, content, linkActive }) {
     return (
         <View style={styles.contentContainer}>
             <View style={styles.imageContainer}>

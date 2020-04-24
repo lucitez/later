@@ -35,7 +35,6 @@ func TestForUserWithSearch(t *testing.T) {
 		"test",
 		"test",
 		wrappers.NewNullStringFromString("first"),
-		wrappers.NewNullStringFromString("last"),
 		"2222222222",
 		"pass",
 	)

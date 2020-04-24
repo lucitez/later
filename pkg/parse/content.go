@@ -92,6 +92,8 @@ func (parser *Content) contentMetadataDefault(metadata *contentMetadata, url str
 		return
 	}
 
+	defer resp.Body.Close()
+
 	if resp.StatusCode != 200 {
 		parser.valid = false
 		parser.message = "Failed to retrieve URL content"

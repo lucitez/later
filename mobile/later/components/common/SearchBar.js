@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View, Keyboard, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Keyboard, TouchableOpacity, ScrollView } from 'react-native';
 import { colors } from '../../assets/colors';
 import Icon from './Icon';
 
 function SearchBar(props) {
     const [search, setSearch] = useState(props.startingValue ? props.startingValue : '')
     const [isKeyboardShowing, setKeyboardShowing] = useState(false)
+    const [autocompleteOptions, setAutocompleteOptions] = useState([])
 
     const _keyboardWillShow = () => setKeyboardShowing(true)
     const _keyboardWillHide = () => setKeyboardShowing(false)
@@ -21,6 +22,11 @@ function SearchBar(props) {
 
     useEffect(() => {
         props.onChange(search)
+        if (props.autocomplete) {
+            props.autocompleteFunc(search)
+                .then(options => setAutocompleteOptions(options))
+                .catch(err => console.error(err))
+        }
     }, [search])
 
     useEffect(() => {
@@ -57,26 +63,44 @@ function SearchBar(props) {
         }
     }
 
+    const _autocompleteContent = () => {
+        if (props.autocomplete) {
+            return (
+                <ScrollView style={styles.autocompleteContainer} keyboardShouldPersistTaps='handled'>
+                    {autocompleteOptions.map((option, index) => (
+                        <TouchableOpacity key={index} style={styles.optionContainer} onPress={() => setSearch(option)}>
+                            <Text style={styles.option}>{option}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            )
+        }
+    }
+
     return (
-        <View style={styles.container}>
-            <View style={styles.searchBarContainer} >
-                <View style={styles.searchIconContainer} >
-                    <Icon type={props.iconName ? props.iconName : 'search'} size={20} color={colors.darkGray} />
+        <View>
+            <View style={styles.container}>
+                <View style={styles.searchBarContainer} >
+                    <View style={styles.searchIconContainer} >
+                        <Icon type={props.iconName ? props.iconName : 'search'} size={20} color={colors.darkGray} />
+                    </View>
+                    <View style={styles.inputContainer} >
+                        <TextInput
+                            autoFocus={props.autoFocus}
+                            autoCorrect={false}
+                            returnKeyType={props.returnKeyType}
+                            placeholder={props.placeholder ? props.placeholder : 'Search...'}
+                            onChangeText={text => setSearch(text)}
+                            value={search}
+                        />
+                    </View>
+                    {_clearButton()}
                 </View>
-                <View style={styles.inputContainer} >
-                    <TextInput
-                        autoFocus={props.autoFocus}
-                        autoCorrect={false}
-                        returnKeyType={props.returnKeyType}
-                        placeholder={props.placeholder ? props.placeholder : 'Search...'}
-                        onChangeText={text => setSearch(text)}
-                        value={search}
-                    />
-                </View>
-                {_clearButton()}
+                {_cancelButton()}
             </View>
-            {_cancelButton()}
+            {_autocompleteContent()}
         </View>
+
     );
 }
 
@@ -123,6 +147,21 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     cancel: {
+        color: colors.white,
+        fontSize: 16,
+    },
+    autocompleteContainer: {
+        flexGrow: 1,
+        marginLeft: 15,
+        marginRight: 15,
+    },
+    optionContainer: {
+        padding: 5,
+        borderTopWidth: 0.5,
+        borderBottomWidth: 0.5,
+        borderColor: colors.white,
+    },
+    option: {
         color: colors.white,
         fontSize: 16,
     }
