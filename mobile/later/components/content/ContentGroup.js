@@ -11,7 +11,7 @@ function ContentGroup(props) {
                 props.content.map((contentObj, index) => (
                     <View key={index}>
                         {Preview(props, contentObj)}
-                        {index < props.content.length - 1 ? <Divider key={props.index} /> : null}
+                        {index < props.content.length - 1 ? <Divider /> : null}
                     </View>
                 ))
             }

@@ -39,7 +39,7 @@ function UserScreen({ navigation, route }) {
             [
                 {
                     text: 'Cancel',
-                    onPress: () => console.log("confirmed"),
+                    onPress: () => null,
                     style: 'cancel'
                 },
                 {

@@ -1,55 +1,60 @@
+
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, ScrollView, TouchableOpacity, Text, Keyboard } from 'react-native'
-import { Button, SearchBar } from '../common';
-import BottomSheetContainer from './BottomSheetContainer';
+import { StyleSheet, View, Keyboard } from 'react-native'
 import BottomSheet from './BottomSheet'
+import { Button, SearchBar } from '../common';
 import { colors } from '../../assets/colors';
+import Network from '../../util/Network';
 
-function EditTagBottomSheet(props) {
-    const [tagValue, setTagValue] = useState(props.content.tag)
-    const [tags, setTags] = useState([])
+function EditTagBottomSheet({ value, isVisible, onSubmit, onHide }) {
+    const [tagValue, setTagValue] = useState(value)
+    const [visible, setVisible] = useState(isVisible)
 
-    useEffect(() => {
-        setTags(tagValue == '' ? [] : [tagValue])
-    }, [tagValue])
+    useEffect(() => { setVisible(isVisible) }, [isVisible])
 
     return (
         <BottomSheet
-            visible={props.active}
-            onHide={() => props.onHide()}
+            visible={visible}
+            onHide={() => onHide()}
             avoidKeyboard={true}
         >
-            <BottomSheetContainer height='40%'>
+            <View style={styles.contentContainer}>
                 <View style={styles.addTagContainer}>
                     <SearchBar
-                        startingValue={props.content.tag}
+                        placeholder='Add Tag...'
                         iconName='tag'
+                        value={value}
                         onChange={value => setTagValue(value)}
-                        onCancel={() => props.onHide()}
+                        onCancel={() => onHide()}
+                        autocompleteFunc={filterTags}
                     />
                 </View>
-                <ScrollView style={styles.tagsContainer}>
-                    {tags.map((tag, index) => (
-                        <TouchableOpacity key={index} style={styles.tagContainer}>
-                            <Text style={styles.tag}>{tag}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
                 <View style={styles.saveButtonContainer}>
-                    <Button theme='primary' name='Update Tag' size='medium' onPress={() => {
+                    <Button theme='primary' name='Submit' size='medium' onPress={() => {
                         Keyboard.dismiss()
-                        props.onHide()
-                        props.onUpdateTag(tagValue)
+                        onHide()
+                        onSubmit(tagValue)
                     }} />
                 </View>
-            </BottomSheetContainer>
+            </View>
         </BottomSheet>
     )
 }
 
+const filterTags = search => {
+    params = { search }
+    return Network.GET('/user-content/tags/filter', params)
+}
+
 const styles = StyleSheet.create({
+    contentContainer: {
+        height: '40%',
+        backgroundColor: colors.primary,
+        paddingBottom: 10
+    },
     addTagContainer: {
         margin: 10,
+        flexGrow: 1,
     },
     saveButtonContainer: {
         paddingLeft: 15,

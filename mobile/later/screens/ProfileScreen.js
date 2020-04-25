@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux';
 import { StyleSheet, View, AsyncStorage } from 'react-native';
 import Network from '../util/Network';
 import { colors } from '../assets/colors';
-import { Button, ButtonGroup, TabBar, Icon } from '../components/common';
-import { BottomSheet, BottomSheetContainer } from '../components/modals';
+import { Button, TabBar, Icon } from '../components/common';
+import { ButtonBottomSheet } from '../components/modals';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import ConversationScreen from './ConversationsScreen';
 import NotificationsScreen from './NotificationsScreen';
@@ -67,23 +67,19 @@ function ProfileScreen({ navigation, route }) {
                     <ProfileTab.Screen name='Notifications' component={NotificationsScreen} />
                 </ProfileTab.Navigator>
             </View>
-            <BottomSheet
-                visible={editVisible}
+            <ButtonBottomSheet
+                isVisible={editVisible}
                 onHide={() => setEditVisible(false)}
             >
-                <BottomSheetContainer>
-                    <ButtonGroup theme='primary'>
-                        <Button theme='primary' name='Edit Profile' size='medium' onPress={() => {
-                            setEditVisible(false)
-                            navigation.navigate('Edit', { user: user })
-                        }} />
-                        <Button theme='light' name='Log Out' size='medium' onPress={() => {
-                            onSignOut()
-                            setEditVisible(false)
-                        }} />
-                    </ButtonGroup>
-                </BottomSheetContainer>
-            </BottomSheet>
+                <Button theme='primary' name='Edit Profile' size='medium' onPress={() => {
+                    setEditVisible(false)
+                    navigation.navigate('Edit', { user: user })
+                }} />
+                <Button theme='light' name='Log Out' size='medium' onPress={() => {
+                    onSignOut()
+                    setEditVisible(false)
+                }} />
+            </ButtonBottomSheet>
         </View >
     )
 }

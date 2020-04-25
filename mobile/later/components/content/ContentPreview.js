@@ -19,7 +19,7 @@ function ContentPreview({ onDotPress, onTagPress, content, linkActive }) {
                             </View>
                         </Link>
                     </View>
-                    <TouchableOpacity onPress={() => onDotPress()}>
+                    <TouchableOpacity onPress={() => onDotPress(content)} style={{ paddingLeft: 5, paddingRight: 5 }}>
                         <Icon type='dots' size={20} color={colors.black} />
                     </TouchableOpacity>
                 </View>

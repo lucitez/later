@@ -2,14 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
-import { Header, SearchBar, Icon, BackIcon } from '../components/common';
-import { ContentFilter, ContentGroup } from '../components/content';
+import { Header, SearchBar, Button, BackIcon } from '../components/common';
+import { ContentFilter, ContentGroup2 } from '../components/content';
+import { ButtonBottomSheet, EditTagBottomSheet } from '../components/modals';
 
 function SavedScreen({ navigation }) {
     const [content, setContent] = useState([])
     const [search, setSearch] = useState('')
     const [filter, setFilter] = useState({})
     const [loading, setLoading] = useState(true)
+
+    const [bottomSheetVisible, setBottomSheetVisible] = useState(false)
+    const [editTagBottomSheetVisible, setEditTagBottomSheetVisible] = useState(false)
+    const [selectedContent, setSelectedContent] = useState(null)
 
     useEffect(() => {
         setLoading(true)
@@ -21,14 +26,14 @@ function SavedScreen({ navigation }) {
             .catch(error => console.error(error))
     }, [filter, search])
 
-    const onUpdateTag = (updatedContent, newTag) => {
-        let prevTag = updatedContent.tag
+    const onUpdateTag = newTag => {
+        let prevContent = selectedContent
 
-        if (prevTag != newTag) {
-            setContent(updateContentTag(content, updatedContent.id, newTag))
-            updateTag(updatedContent.id, newTag)
+        if (prevContent.tag != newTag) {
+            setContent(updateContentTag(content, prevContent.id, newTag))
+            updateTag(prevContent.id, newTag)
                 .then()
-                .catch(() => setContent(updateContentTag(content, updatedContent.id, prevTag)))
+                .catch(() => setContent(updateContentTag(content, prevContent.id, prevTag)))
         }
     }
 
@@ -41,28 +46,50 @@ function SavedScreen({ navigation }) {
             />
             <ContentFilter onChange={(filter) => setFilter(filter)} />
             <View style={styles.contentContainer}>
-                <ContentGroup
+                <ContentGroup2
                     type='save'
-                    noContentMessage='Your saved content shows up here'
-                    content={content}
-                    onForward={content => navigation.navigate('Forward', { contentPreview: content, previousScreen: 'Saved' })}
+                    contents={content}
+                    linkActive={!bottomSheetVisible && !editTagBottomSheetVisible}
+                    onDotPress={content => {
+                        setSelectedContent(content)
+                        setContentBottomSheetVisible(true)
+                    }}
                     onTagPress={tag => navigation.navigate('Tag', { tag })}
-                    onUpdateTag={onUpdateTag}
                 />
-                {
-                    loading ?
-                        <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
-                            <Text>Loading...</Text>
-                        </View>
-                        :
-                        content.length == 0 && Object.length == 0 ?
-                            <View style={{ width: '100%', alignItems: 'center', paddingTop: 10 }}>
-                                <Text>Your saved content shows up here</Text>
-                            </View>
-                            :
-                            null
-                }
             </View>
+            <ButtonBottomSheet isVisible={bottomSheetVisible} onHide={() => setBottomSheetVisible(false)}>
+                <Button
+                    theme='primary'
+                    name='Forward'
+                    size='medium'
+                    onPress={() => {
+                        setBottomSheetVisible(false)
+                        navigation.navigate('Forward', { contentPreview: content, previousScreen: 'Home' })
+                    }}
+                />
+                <Button
+                    theme='primary'
+                    name='Edit Tag'
+                    size='medium'
+                    onPress={() => {
+                        setBottomSheetVisible(false)
+                        setTimeout(() => { setEditTagBottomSheetVisible(true) }, 400)
+                    }}
+                />
+                <Button
+                    theme='light'
+                    name='Cancel'
+                    size='medium'
+                    onPress={() => setBottomSheetVisible(false)}
+                />
+            </ButtonBottomSheet>
+
+            <EditTagBottomSheet
+                isVisible={editTagBottomSheetVisible}
+                onSubmit={onUpdateTag}
+                onHide={() => setSaveContentBottomSheetVisible(false)}
+            />
+
         </SafeAreaView>
     );
 }
@@ -94,12 +121,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.primary,
-    },
-    searchContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 10
     },
     contentContainer: {
         flexGrow: 1,

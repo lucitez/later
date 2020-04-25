@@ -4,7 +4,7 @@ import { colors } from '../../assets/colors';
 import Icon from './Icon';
 
 function SearchBar(props) {
-    const [search, setSearch] = useState(props.startingValue ? props.startingValue : '')
+    const [search, setSearch] = useState(props.value ? props.value : '')
     const [isKeyboardShowing, setKeyboardShowing] = useState(false)
     const [autocompleteOptions, setAutocompleteOptions] = useState([])
 
@@ -22,7 +22,7 @@ function SearchBar(props) {
 
     useEffect(() => {
         props.onChange(search)
-        if (props.autocomplete) {
+        if (props.autocompleteFunc) {
             props.autocompleteFunc(search)
                 .then(options => setAutocompleteOptions(options))
                 .catch(err => console.error(err))
@@ -64,7 +64,7 @@ function SearchBar(props) {
     }
 
     const _autocompleteContent = () => {
-        if (props.autocomplete) {
+        if (props.autocompleteFunc) {
             return (
                 <ScrollView style={styles.autocompleteContainer} keyboardShouldPersistTaps='handled'>
                     {autocompleteOptions.map((option, index) => (
