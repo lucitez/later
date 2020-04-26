@@ -22,6 +22,7 @@ func main() {
 	shareServer := InitializeShare(db)
 	userContentServer := InitializeUserContent(db)
 	userServer := InitializeUser(db)
+	chatServer := InitializeChat(db)
 
 	server := InitializeServer(db)
 
@@ -34,6 +35,7 @@ func main() {
 			&shareServer,
 			&userContentServer,
 			&userServer,
+			&chatServer,
 		},
 		[]later.RouteGroup{
 			&authServer,

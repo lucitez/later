@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
 
 	"github.com/google/uuid"
@@ -78,6 +79,23 @@ func NewNullTime(tim *time.Time) NullTime {
 type NullUUID struct {
 	ID    uuid.UUID
 	Valid bool
+}
+
+// Scan implements the Scanner interface.
+func (nu *NullUUID) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	nu.Valid = true
+	return nu.ID.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (nu NullUUID) Value() (driver.Value, error) {
+	if !nu.Valid {
+		return nil, nil
+	}
+	return nu.ID.Value()
 }
 
 // NewNullUUIDFromUUID constructor for NullTime

@@ -48,6 +48,8 @@ func TestMain(m *testing.M) {
 	testUtil = util.RepositoryTestUtil{DB: db}
 	userRepo = repository.NewUser(db)
 	userContentRepo = repository.NewUserContent(db)
+	chatRepo = repository.NewChat(db)
+	messageRepo = repository.NewMessage(db)
 
 	os.Exit(m.Run())
 }

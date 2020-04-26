@@ -1,6 +1,7 @@
 package util
 
 import (
+	"database/sql"
 	"later/pkg/util/stringutil"
 	"reflect"
 	"strconv"
@@ -22,6 +23,33 @@ func GenerateArguments(arguments ...interface{}) []interface{} {
 	}
 
 	return args
+}
+
+func ScanRowsInto(rows *sql.Rows, i interface{}) error {
+	elem := reflect.ValueOf(i).Elem()
+
+	dest := make([]interface{}, elem.NumField())
+
+	for i := 0; i < elem.NumField(); i++ {
+		valueField := elem.Field(i)
+		dest[i] = valueField.Addr().Interface()
+	}
+
+	return rows.Scan(dest...)
+}
+
+// ScanRowInto scans the db row into the struct passed in by reference
+func ScanRowInto(row *sql.Row, i interface{}) error {
+	elem := reflect.ValueOf(i).Elem()
+
+	dest := make([]interface{}, elem.NumField())
+
+	for i := 0; i < elem.NumField(); i++ {
+		valueField := elem.Field(i)
+		dest[i] = valueField.Addr().Interface()
+	}
+
+	return row.Scan(dest...)
 }
 
 // GenerateInsertStatement creates a generic select statement maintaining struct field order
@@ -47,6 +75,18 @@ func GenerateInsertStatement(i interface{}, tableName string) string {
 	statement += ");"
 
 	return statement
+}
+
+// GenerateInsertArguments accepts a pointer to a struct and returns its field values as a []interface{}
+func GenerateInsertArguments(i interface{}) []interface{} {
+	elem := reflect.ValueOf(i).Elem()
+	args := []interface{}{}
+
+	for i := 0; i < elem.NumField(); i++ {
+		args = append(args, elem.Field(i).Interface())
+	}
+
+	return args
 }
 
 // GenerateSelectStatement creates a generic select statement maintaining struct field order

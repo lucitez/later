@@ -1,0 +1,2 @@
+POST http://localhost:8000/chats/for-user
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODc5NDAzMDUsImlhdCI6MTU4NzkzOTQwNSwidXNlclNlc3Npb25faWQiOiIyN2IyYjQ1YS0zZTU1LTQ1NmUtYjE3OC1hYWI2NmI4ZmQ2ZjYifQ.XcVtQQ1wWrvLkLFYvOQLmEEl6oG1F7g614nYCsfP8Og

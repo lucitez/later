@@ -132,3 +132,18 @@ func InitializeServer(db *sql.DB) later.Server {
 	)
 	return later.Server{}
 }
+
+func InitializeChat(db *sql.DB) server.Chat {
+	wire.Build(
+		service.NewUser,
+		repository.NewUser,
+		service.NewChat,
+		service.NewMessage,
+		repository.NewChat,
+		repository.NewMessage,
+		server.NewChat,
+		transfer.NewChat,
+	)
+
+	return server.Chat{}
+}

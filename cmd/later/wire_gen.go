@@ -116,3 +116,15 @@ func InitializeServer(db *sql.DB) later.Server {
 	laterServer := later.NewServer(authService)
 	return laterServer
 }
+
+func InitializeChat(db *sql.DB) server.Chat {
+	chat := repository.NewChat(db)
+	serviceChat := service.NewChat(chat)
+	user := repository.NewUser(db)
+	serviceUser := service.NewUser(user)
+	message := repository.NewMessage(db)
+	serviceMessage := service.NewMessage(message)
+	transferChat := transfer.NewChat(serviceUser, serviceMessage)
+	serverChat := server.NewChat(serviceChat, transferChat)
+	return serverChat
+}
