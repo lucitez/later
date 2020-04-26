@@ -19,9 +19,9 @@ type WireUserContent struct {
 	Tag            wrappers.NullString `json:"tag"`
 	Domain         string              `json:"domain"`
 	SentBy         uuid.UUID           `json:"sent_by"`
-	SentByUsername wrappers.NullString `json:"sent_by_username"`
+	SentByUsername string              `json:"sent_by_username"`
 	URL            string              `json:"url"`
 
-	CreatedAt  time.Time         `json:"created_at"`
-	SavedAt wrappers.NullTime `json:"saved_at"`
+	CreatedAt time.Time         `json:"created_at"`
+	SavedAt   wrappers.NullTime `json:"saved_at"`
 }

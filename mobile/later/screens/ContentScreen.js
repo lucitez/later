@@ -7,7 +7,7 @@ import { ContentGroup2 } from '../components/content';
 import { ButtonBottomSheet, EditTagBottomSheet } from '../components/modals';
 
 function ContentScreen({ navigation }) {
-    const [content, setContents] = useState([])
+    const [content, setContent] = useState([])
     const [offset, setOffset] = useState(0)
     const [loading, setLoading] = useState(true)
     const [contentBottomSheetVisible, setContentBottomSheetVisible] = useState(false)
@@ -18,7 +18,7 @@ function ContentScreen({ navigation }) {
         setLoading(true)
         getContent()
             .then(content => {
-                setContents(content)
+                setContent(content)
                 setLoading(false)
             })
             .catch(error => console.error(error))
@@ -26,7 +26,7 @@ function ContentScreen({ navigation }) {
 
     const onSave = (tag) => {
         saveContent(selectedContent, tag)
-            .then(setContents(content.filter(c => c.id != selectedContent.id)))
+            .then(setContent(content.filter(c => c.id != selectedContent.id)))
             .catch(error => Alert.alert(error))
     }
 

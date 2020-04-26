@@ -81,7 +81,7 @@ func TestFilter(t *testing.T) {
 	userContentRepo.Insert(userContent)
 	contentRepo.Insert(content)
 
-	actual := userContentRepo.Filter(
+	actual, _ := userContentRepo.Filter(
 		userContent.UserID,
 		nil,
 		&contentType,
@@ -100,7 +100,7 @@ func TestFilterSaved(t *testing.T) {
 	userContentRepo.Insert(userContent)
 	contentRepo.Insert(content)
 
-	actual := userContentRepo.Filter(
+	actual, _ := userContentRepo.Filter(
 		userContent.UserID,
 		nil,
 		&contentType,
@@ -113,7 +113,7 @@ func TestFilterSaved(t *testing.T) {
 
 	userContentRepo.Save(userContent.ID, wrappers.NewNullStringFromString("memes"))
 
-	actual = userContentRepo.Filter(
+	actual, _ = userContentRepo.Filter(
 		userContent.UserID,
 		nil,
 		&contentType,
@@ -140,7 +140,7 @@ func TestFilterSearchTag(t *testing.T) {
 
 	search := "memes"
 
-	actual := userContentRepo.Filter(
+	actual, _ := userContentRepo.Filter(
 		userContent.UserID,
 		nil,
 		nil,

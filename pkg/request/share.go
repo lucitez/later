@@ -54,9 +54,3 @@ func (requestBody *ShareForwardRequestBody) ToShareCreateBodies(senderUserID uui
 
 	return bodies
 }
-
-// ShareCreateByPhoneNumberRequestBody Binding from json
-type ShareCreateByPhoneNumberRequestBody struct {
-	PhoneNumber string `form:"phone_number" json:"phone_number" binding:"required"`
-	URL         string `form:"url" json:"url" binding:"required"`
-}

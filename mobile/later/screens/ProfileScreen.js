@@ -20,7 +20,6 @@ const clearRefreshToken = async () => {
     } catch (e) {
         console.error(e)
     }
-
 }
 
 function ProfileScreen({ navigation, route }) {

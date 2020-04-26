@@ -1,9 +1,11 @@
 package parse
 
 import (
-	"errors"
+	"log"
 	"net/http"
 	"regexp"
+
+	"github.com/google/uuid"
 
 	"golang.org/x/net/html"
 
@@ -11,29 +13,30 @@ import (
 	"later/pkg/util/wrappers"
 )
 
-type contentMetadata struct {
+type ContentMetadata struct {
+	url         string
 	title       *string
 	description *string
 	imageURL    *string
+	contentType *string
+}
+
+func (c *ContentMetadata) ToContent(userID uuid.UUID) model.Content {
+	return model.NewContent(
+		wrappers.NewNullString(c.title),
+		wrappers.NewNullString(c.description),
+		wrappers.NewNullString(c.imageURL),
+		wrappers.NewNullString(c.contentType),
+		c.url,
+		DomainFromURL(c.url),
+		userID,
+	)
 }
 
 type headerContent struct {
 	title       *string
 	description *string
 	imageURL    *string
-}
-
-// Content handles parsing html at a url to extract content data
-type Content struct {
-	valid   bool
-	message string
-}
-
-// NewContent for wire generation
-func NewContent() Content {
-	return Content{
-		valid: true,
-	}
 }
 
 // DomainFromURL extracts the domain from the url
@@ -45,67 +48,38 @@ func DomainFromURL(url string) string {
 	return urlDomain
 }
 
-// Err was there an error that occured while parsing
-func (parser *Content) Err() error {
-	if parser.valid {
-		return nil
+// ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
+// return a content preview, not a content model obj
+func ContentFromURL(url string) ContentMetadata {
+	var contentMetadata = ContentMetadata{
+		url: url,
 	}
 
-	return errors.New(parser.message)
-}
-
-// ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
-func (parser *Content) ContentFromURL(url string, domain *model.Domain) model.Content {
-	parser.message = ""
-	parser.valid = true
-	var contentType *string
-	var contentMetadata contentMetadata
-
-	// TODO just pass a pointer in as an argument
 	switch {
 	default:
-		parser.contentMetadataDefault(&contentMetadata, url)
+		contentMetadataDefault(&contentMetadata, url)
 	}
 
-	if domain != nil {
-		contentType = &domain.ContentType
-	}
-
-	newContent := model.NewContent(
-		wrappers.NewNullString(contentMetadata.title),
-		wrappers.NewNullString(contentMetadata.description),
-		wrappers.NewNullString(contentMetadata.imageURL),
-		wrappers.NewNullString(contentType),
-		url,
-		DomainFromURL(url),
-	)
-
-	return newContent
+	return contentMetadata
 }
 
-func (parser *Content) contentMetadataDefault(metadata *contentMetadata, url string) {
+func contentMetadataDefault(metadata *ContentMetadata, url string) {
 	resp, err := http.Get(url)
 
 	if err != nil {
-		parser.valid = false
-		parser.message = err.Error()
-		return
+		log.Printf("Error retrieving URL content. Error: %v", err)
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		parser.valid = false
-		parser.message = "Failed to retrieve URL content"
-		return
+		log.Printf("Failed to retrieve URL content, response status %d", resp.StatusCode)
 	}
 
 	doc, err := html.Parse(resp.Body)
 
 	if err != nil {
-		parser.valid = false
-		parser.message = "Failed to parse URL content"
-		return
+		log.Printf("Failed to parse URL content. Error: %v", err)
 	}
 
 	head := findHead(doc)

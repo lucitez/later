@@ -3,15 +3,14 @@ package response
 import (
 	"time"
 
-	"later/pkg/util/wrappers"
-
 	"github.com/google/uuid"
 )
 
+// WireFriendRequest
 type WireFriendRequest struct {
-	ID        uuid.UUID           `json:"id"`
-	UserID    uuid.UUID           `json:"user_id"`
-	Name      wrappers.NullString `json:"name"`
-	Username  wrappers.NullString `json:"username"`
-	CreatedAt time.Time           `json:"created_at"`
+	ID        uuid.UUID `json:"id"`
+	UserID    uuid.UUID `json:"user_id"`
+	Name      string    `json:"name"`
+	Username  string    `json:"username"`
+	CreatedAt time.Time `json:"created_at"`
 }

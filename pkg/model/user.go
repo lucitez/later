@@ -14,8 +14,8 @@ import (
 // User object
 type User struct {
 	ID          uuid.UUID           `json:"id"`
-	Name        wrappers.NullString `json:"name"`
-	Username    wrappers.NullString `json:"username"`
+	Name        string              `json:"name"`
+	Username    string              `json:"username"`
 	Email       wrappers.NullString `json:"email"`
 	PhoneNumber string              `json:"phone_number"`
 	Password    string              `json:"password"`
@@ -30,7 +30,7 @@ type User struct {
 // TODO validate email, phone number
 func NewUserFromSignUp(
 	username string,
-	Name string,
+	name string,
 	email wrappers.NullString,
 	phoneNumber string,
 	password string,
@@ -42,8 +42,8 @@ func NewUserFromSignUp(
 
 	return User{
 		ID:          newUUID,
-		Username:    wrappers.NewNullStringFromString(username),
-		Name:        wrappers.NewNullStringFromString(Name),
+		Username:    username,
+		Name:        name,
 		Email:       email,
 		PhoneNumber: phoneNumber,
 		Password:    password,
@@ -51,29 +51,6 @@ func NewUserFromSignUp(
 		SignedUpAt: wrappers.NewNullTime(&now),
 		CreatedAt:  now,
 		UpdatedAt:  now,
-	}
-}
-
-// NewUserFromShare constructor for creating a new user
-// TODO validate email, phone number
-func NewUserFromShare(
-	username wrappers.NullString,
-	email wrappers.NullString,
-	phoneNumber string,
-) User {
-
-	newUUID, _ := uuid.NewRandom()
-
-	now := time.Now()
-
-	return User{
-		ID:          newUUID,
-		Username:    username,
-		Email:       email,
-		PhoneNumber: phoneNumber,
-
-		CreatedAt: now,
-		UpdatedAt: now,
 	}
 }
 

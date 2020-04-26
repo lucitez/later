@@ -25,10 +25,7 @@ func NewShare(
 }
 
 // Create creates a share and usercontent
-// Should probably do the notification stuff here
-// TODO Two Goroutines:
-// Update _body.Content.shares_ total by getting count(shares distinct on user_id with this content_id)
-// Send Push notification if user has signed up <-- maybe move this to usercontent
+// TODO Send Push notification if user has signed up <-- maybe move this to usercontent
 func (manager *Share) Create(body body.ShareCreateBody) (*model.Share, error) {
 	share := model.NewShare(
 		body.Content.ID,

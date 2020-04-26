@@ -9,7 +9,6 @@ import (
 	"database/sql"
 	"later"
 	"later/pkg/auth"
-	"later/pkg/parse"
 	"later/pkg/repository"
 	"later/pkg/server"
 	"later/pkg/service"
@@ -22,8 +21,7 @@ func InitializeContent(db *sql.DB) server.Content {
 	domain := repository.NewDomain(db)
 	serviceDomain := service.NewDomain(domain)
 	content := repository.NewContent(db)
-	parseContent := parse.NewContent()
-	serviceContent := service.NewContent(serviceDomain, content, parseContent)
+	serviceContent := service.NewContent(serviceDomain, content)
 	serverContent := server.NewContent(serviceContent)
 	return serverContent
 }
@@ -65,11 +63,10 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	domain := repository.NewDomain(db)
 	serviceDomain := service.NewDomain(domain)
 	content := repository.NewContent(db)
-	parseContent := parse.NewContent()
-	serviceContent := service.NewContent(serviceDomain, content, parseContent)
+	serviceContent := service.NewContent(serviceDomain, content)
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
-	shareServer := server.NewShareServer(serviceShare, serviceContent, serviceUser, parseContent)
+	shareServer := server.NewShareServer(serviceShare, serviceContent, serviceUser)
 	return shareServer
 }
 
@@ -79,8 +76,7 @@ func InitializeUserContent(db *sql.DB) server.UserContent {
 	domain := repository.NewDomain(db)
 	serviceDomain := service.NewDomain(domain)
 	content := repository.NewContent(db)
-	parseContent := parse.NewContent()
-	serviceContent := service.NewContent(serviceDomain, content, parseContent)
+	serviceContent := service.NewContent(serviceDomain, content)
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
 	transferUserContent := transfer.NewUserContent(serviceContent, serviceUser)
@@ -95,7 +91,11 @@ func InitializeUser(db *sql.DB) server.User {
 	friend := repository.NewFriend(db)
 	serviceFriend := service.NewFriend(serviceUser, friend)
 	serviceFriendRequest := service.NewFriendRequest(friendRequest, serviceFriend, serviceUser)
-	transferUser := transfer.NewUser(serviceFriendRequest, serviceFriend)
+	domain := repository.NewDomain(db)
+	serviceDomain := service.NewDomain(domain)
+	content := repository.NewContent(db)
+	serviceContent := service.NewContent(serviceDomain, content)
+	transferUser := transfer.NewUser(serviceFriendRequest, serviceFriend, serviceContent)
 	serverUser := server.NewUser(serviceUser, transferUser)
 	return serverUser
 }

@@ -20,6 +20,7 @@ type Content struct {
 	URL         string              `json:"url"`
 	Domain      string              `json:"domain"`
 	Shares      int                 `json:"shares"`
+	CreatedBy   uuid.UUID           `json:"created_by"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -33,6 +34,7 @@ func NewContent(
 	contentType wrappers.NullString,
 	url string,
 	domain string,
+	createdBy uuid.UUID,
 ) Content {
 	id, _ := uuid.NewRandom()
 
@@ -47,6 +49,7 @@ func NewContent(
 		URL:         url,
 		Domain:      domain,
 		Shares:      0,
+		CreatedBy:   createdBy,
 		CreatedAt:   now,
 		UpdatedAt:   now,
 	}
@@ -65,6 +68,7 @@ func (content *Content) ScanRows(rows *sql.Rows) {
 		&content.URL,
 		&content.Domain,
 		&content.Shares,
+		&content.CreatedBy,
 		&content.CreatedAt,
 		&content.UpdatedAt,
 	)
@@ -75,7 +79,7 @@ func (content *Content) ScanRows(rows *sql.Rows) {
 }
 
 // ScanRow ...
-func (content *Content) ScanRow(row *sql.Row) *Content {
+func (content *Content) ScanRow(row *sql.Row) (*Content, error) {
 	err := row.Scan(
 		&content.ID,
 		&content.Title,
@@ -85,16 +89,17 @@ func (content *Content) ScanRow(row *sql.Row) *Content {
 		&content.URL,
 		&content.Domain,
 		&content.Shares,
+		&content.CreatedBy,
 		&content.CreatedAt,
 		&content.UpdatedAt,
 	)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil
+			return nil, nil
 		}
-		panic(err)
+		return nil, err
 	}
 
-	return content
+	return content, nil
 }

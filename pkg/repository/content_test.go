@@ -16,12 +16,14 @@ var content = model.NewContent(
 	wrappers.NewNullStringFromString("watch"),
 	"youtube.com",
 	"youtube",
+	userID,
 )
 
 func TestContentInsertAndByID(t *testing.T) {
 	beforeEach(t)
 	contentRepo.Insert(content)
-	actual := contentRepo.ByID(content.ID)
+
+	actual, _ := contentRepo.ByID(content.ID)
 
 	testUtil.Assert.Equal(*actual, content)
 }
@@ -32,4 +34,22 @@ func TestAll(t *testing.T) {
 	actual := contentRepo.All(1)
 
 	testUtil.Assert.Contains(actual, content)
+}
+
+func TestTasteByUserID(t *testing.T) {
+	beforeEach(t)
+
+	contentRepo.Insert(content)
+	contentRepo.IncrementShareCount(content.ID, 1)
+	actual, _ := contentRepo.TasteByUserID(content.CreatedBy)
+
+	testUtil.Assert.Equal(actual, 1)
+}
+
+func TestTasteByUserIDNoShares(t *testing.T) {
+	beforeEach(t)
+
+	actual, _ := contentRepo.TasteByUserID(content.CreatedBy)
+
+	testUtil.Assert.Equal(actual, 0)
 }

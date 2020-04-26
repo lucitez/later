@@ -66,7 +66,7 @@ func (server *UserContent) filter(context *gin.Context) {
 		search := qp["search"].(*string)
 		limit := qp["limit"].(*int)
 
-		userContent := server.Service.Filter(
+		userContent, dbErr := server.Service.Filter(
 			userID,
 			tag,
 			contentType,
@@ -75,7 +75,17 @@ func (server *UserContent) filter(context *gin.Context) {
 			*limit,
 		)
 
-		wireUserContent := server.Transfer.WireUserContentsFrom(userContent)
+		if dbErr != nil {
+			context.JSON(http.StatusInternalServerError, dbErr.Error())
+			return
+		}
+
+		wireUserContent, err := server.Transfer.WireUserContentsFrom(userContent)
+
+		if err != nil {
+			context.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		context.JSON(http.StatusOK, wireUserContent)
 	}
@@ -126,7 +136,12 @@ func (server *UserContent) byTag(context *gin.Context) {
 			context.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		}
 
-		wireUserContent := server.Transfer.WireUserContentsFrom(userContent)
+		wireUserContent, err := server.Transfer.WireUserContentsFrom(userContent)
+
+		if err != nil {
+			context.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		context.JSON(http.StatusOK, wireUserContent)
 	}

@@ -4,7 +4,6 @@ import (
 	"later/pkg/model"
 	"later/pkg/repository"
 	"later/pkg/service/body"
-	"later/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )
@@ -17,21 +16,6 @@ type User struct {
 // NewUser ...
 func NewUser(repository repository.User) User {
 	return User{repository}
-}
-
-// NewUserFromPhoneNumber inserts a new user using just phone number
-func (manager *User) NewUserFromPhoneNumber(phoneNumber string) (*model.User, error) {
-	user := model.NewUserFromShare(
-		wrappers.NewNullString(nil), // username
-		wrappers.NewNullString(nil), // email
-		phoneNumber,
-	)
-
-	if err := manager.Repository.Insert(user); err != nil {
-		return nil, err
-	}
-
-	return &user, nil
 }
 
 // SignUp ...

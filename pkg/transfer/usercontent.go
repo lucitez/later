@@ -22,18 +22,25 @@ func NewUserContent(
 }
 
 // WireUserContentsFrom tranfers DB model UserContent to DTO WireUserContent
-func (transfer *UserContent) WireUserContentsFrom(userContent []model.UserContent) []response.WireUserContent {
-	wireUserContents := make([]response.WireUserContent, len(userContent))
+func (transfer *UserContent) WireUserContentsFrom(userContent []model.UserContent) (wire []response.WireUserContent, err error) {
+	wire = make([]response.WireUserContent, len(userContent))
+
+	var content *model.Content
 
 	for i, userContent := range userContent {
-		content := transfer.ContentService.ByID(userContent.ContentID)
+		content, err = transfer.ContentService.ByID(userContent.ContentID)
+
+		if err != nil {
+			return
+		}
+
 		user := transfer.UserService.ByID(userContent.SentByUserID)
 		if content != nil && user != nil {
-			wireUserContents[i] = wireUserContent(userContent, *content, *user)
+			wire[i] = wireUserContent(userContent, *content, *user)
 		}
 	}
 
-	return wireUserContents
+	return
 }
 
 func wireUserContent(userContent model.UserContent, content model.Content, user model.User) response.WireUserContent {

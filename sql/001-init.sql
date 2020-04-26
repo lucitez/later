@@ -13,11 +13,11 @@ $update_updated_at$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS users
 (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-    username text,
-    name text,
+    username text NOT NULL,
+    name text NOT NULL,
     email text,
-    phone_number text,
-    password text,
+    phone_number text NOT NULL,
+    password text NOT NULL,
 
     created_at timestamptz NOT NULL default now(),
     signed_up_at timestamptz,
@@ -56,10 +56,13 @@ CREATE TABLE IF NOT EXISTS content (
     url TEXT NOT NULL,
     domain TEXT NOT NULL,
     shares int NOT NULL DEFAULT 0 CHECK (shares >= 0),
+    created_by uuid NOT NULL, -- used to calculate user's taste
 
     created_at timestamp with time zone NOT NULL default now(),
     updated_at timestamp with time zone NOT NULL default now()
 );
+
+CREATE INDEX idx_content_on_created_by ON content(created_by);
 
 CREATE TRIGGER update_content BEFORE UPDATE ON content
     FOR EACH ROW EXECUTE FUNCTION update_updated_at();

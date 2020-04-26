@@ -1,18 +1,17 @@
 package server
 
 import (
-	"later/pkg/parse"
 	"later/pkg/request"
 	"later/pkg/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // Content ...
 type Content struct {
 	Service service.Content
-	Parse   parse.Content
 }
 
 // NewContent for wire generation
@@ -37,6 +36,8 @@ func (server *Content) Routes(router *gin.RouterGroup) []gin.IRoutes {
 }
 
 func (server *Content) create(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
 	var body request.ContentCreateRequestBody
 
 	if err := context.ShouldBindJSON(&body); err != nil {
@@ -44,7 +45,7 @@ func (server *Content) create(context *gin.Context) {
 		return
 	}
 
-	content, err := server.Service.CreateFromURL(body.URL)
+	content, err := server.Service.CreateFromURL(body.URL, userID)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
@@ -63,12 +64,7 @@ func (server *Content) preview(context *gin.Context) {
 	if qp, ok := deser.DeserQueryParams(); ok {
 		domainName := qp["url"].(*string)
 
-		content, err := server.Service.GetContentPreview(*domainName)
-
-		if err != nil {
-			context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
+		content := server.Service.GetContentPreview(*domainName)
 
 		context.JSON(http.StatusOK, content)
 	}

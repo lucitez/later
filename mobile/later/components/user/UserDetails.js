@@ -10,7 +10,7 @@ function UserDetails({ user }) {
                     <Image style={styles.thumb} source={{ uri: 'https://www.washingtonpost.com/resizer/uwlkeOwC_3JqSUXeH8ZP81cHx3I=/arc-anglerfish-washpost-prod-washpost/public/HB4AT3D3IMI6TMPTWIZ74WAR54.jpg' }} />
                 </View>
                 <View style={styles.tasteContainer}>
-                    <Text style={styles.taste}>28 taste</Text>
+                    <Text style={styles.taste}>{user.taste} taste</Text>
                 </View>
             </View>
             <View style={styles.infoContainer}>

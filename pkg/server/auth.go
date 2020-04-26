@@ -63,7 +63,7 @@ func (server *Auth) login(c *gin.Context) {
 	}
 
 	if accessToken, refreshToken, err := server.startUserSession(user.ID); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Unable to start UserSession", "message": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 	} else {
 		c.JSON(http.StatusOK, gin.H{
 			"access_token":  accessToken,

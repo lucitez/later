@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"later"
 	"later/pkg/auth"
-	"later/pkg/parse"
 	"later/pkg/server"
 	"later/pkg/service"
 	"later/pkg/transfer"
@@ -19,7 +18,6 @@ import (
 func InitializeContent(db *sql.DB) server.Content {
 	wire.Build(
 		server.NewContent,
-		parse.NewContent,
 		service.NewContent,
 		service.NewDomain,
 		repository.NewContent,
@@ -76,7 +74,6 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 		repository.NewShare,
 		repository.NewUserContent,
 		repository.NewUser,
-		parse.NewContent,
 	)
 	return server.ShareServer{}
 }
@@ -88,7 +85,6 @@ func InitializeUserContent(db *sql.DB) server.UserContent {
 		service.NewContent,
 		service.NewDomain,
 		service.NewUser,
-		parse.NewContent,
 		repository.NewUserContent,
 		repository.NewContent,
 		repository.NewDomain,
@@ -104,9 +100,13 @@ func InitializeUser(db *sql.DB) server.User {
 		service.NewUser,
 		service.NewFriendRequest,
 		service.NewFriend,
+		service.NewContent,
+		service.NewDomain,
 		repository.NewUser,
 		repository.NewFriendRequest,
 		repository.NewFriend,
+		repository.NewContent,
+		repository.NewDomain,
 		transfer.NewUser,
 	)
 	return server.User{}

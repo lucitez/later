@@ -12,15 +12,18 @@ import (
 type User struct {
 	FriendRequestService service.FriendRequest
 	FriendService        service.Friend
+	ContentService       service.Content
 }
 
 func NewUser(
 	friendRequestService service.FriendRequest,
 	friendService service.Friend,
+	contentService service.Content,
 ) User {
 	return User{
 		friendRequestService,
 		friendService,
+		contentService,
 	}
 }
 
@@ -35,6 +38,8 @@ func (transfer *User) WireUsersFrom(users []model.User) []response.WireUser {
 }
 
 func (transfer *User) WireUserFromUser(user model.User) response.WireUser {
+	taste := transfer.ContentService.TasteByUserID(user.ID)
+
 	return response.WireUser{
 		ID:          user.ID,
 		Name:        user.Name,
@@ -42,6 +47,7 @@ func (transfer *User) WireUserFromUser(user model.User) response.WireUser {
 		Email:       user.Email,
 		PhoneNumber: user.PhoneNumber,
 		CreatedAt:   user.CreatedAt,
+		Taste:       taste,
 	}
 }
 
@@ -69,11 +75,14 @@ func wireAddFriendUser(user model.User, existingPendingRequest bool) response.Wi
 }
 
 func (transfer *User) WireUserProfileFrom(requestUserID uuid.UUID, user model.User) response.WireUserProfile {
+	taste := transfer.ContentService.TasteByUserID(user.ID)
+
 	wireUser := response.WireUserProfile{
 		ID:           user.ID,
 		Name:         user.Name,
 		Username:     user.Username,
 		FriendStatus: wrappers.NewNullString(nil),
+		Taste:        taste,
 	}
 
 	if existingFriend := transfer.FriendService.ByUserIDAndFriendUserID(requestUserID, user.ID); existingFriend != nil {

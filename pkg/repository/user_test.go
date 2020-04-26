@@ -213,5 +213,5 @@ func TestUpdateUser(t *testing.T) {
 
 	actual := userRepo.ByID(user.ID)
 
-	testUtil.Assert.Equal(actual.Name.String, "glump")
+	testUtil.Assert.Equal(actual.Name, "glump")
 }

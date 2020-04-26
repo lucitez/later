@@ -138,7 +138,7 @@ func (repository *UserContent) Filter(
 	saved bool,
 	search *string,
 	limit int,
-) []model.UserContent {
+) ([]model.UserContent, error) {
 	statement := selectUserContent
 
 	statement += `
@@ -198,10 +198,10 @@ func (repository *UserContent) Filter(
 	rows, err := repository.DB.Query(statement, args...)
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return repository.scanRows(rows)
+	return repository.scanRows(rows), nil
 }
 
 func (repository *UserContent) ByTag(

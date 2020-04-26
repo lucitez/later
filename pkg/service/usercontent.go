@@ -46,7 +46,7 @@ func (service *UserContent) Filter(
 	saved bool,
 	search *string,
 	limit int,
-) []model.UserContent {
+) ([]model.UserContent, error) {
 
 	return service.Repository.Filter(
 		userID,

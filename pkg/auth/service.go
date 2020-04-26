@@ -76,7 +76,7 @@ func (s *Service) CheckConflicts(
 	switch {
 	case existingUser.PhoneNumber == phoneNumber:
 		return errors.New("Phone Number is already in use")
-	case existingUser.Username.String == username:
+	case existingUser.Username == username:
 		return errors.New("Username is already in use")
 	default:
 		return errors.New("Conflict")
