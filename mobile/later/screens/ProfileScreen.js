@@ -6,7 +6,7 @@ import { colors } from '../assets/colors';
 import { Button, TabBar, Icon } from '../components/common';
 import { ButtonBottomSheet } from '../components/modals';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import ConversationScreen from './ConversationsScreen';
+import ChatsScreen from './ChatsScreen';
 import NotificationsScreen from './NotificationsScreen';
 import { UserDetails } from '../components/user';
 import { AuthContext } from '../context'
@@ -62,7 +62,7 @@ function ProfileScreen({ navigation, route }) {
             </View>
             <View style={styles.tabContainer}>
                 <ProfileTab.Navigator initialRouteName='Conversations' tabBar={props => <TabBar {...props} />}>
-                    <ProfileTab.Screen name='Conversations' component={ConversationScreen} />
+                    <ProfileTab.Screen name='Conversations' component={ChatsScreen} />
                     <ProfileTab.Screen name='Notifications' component={NotificationsScreen} />
                 </ProfileTab.Navigator>
             </View>

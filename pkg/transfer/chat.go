@@ -5,6 +5,7 @@ import (
 	"later/pkg/model"
 	"later/pkg/response"
 	"later/pkg/service"
+	"later/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )
@@ -34,17 +35,18 @@ func (c *Chat) WireChatsFrom(chats []model.Chat, userID uuid.UUID) []response.Wi
 	return wireChats
 }
 
-func (c *Chat) WireChatFromChat(chat model.Chat, userID uuid.UUID) response.WireChat {
-	var display string
-	var activity string
+func (c *Chat) WireChatFromChat(chat model.Chat, userID uuid.UUID) (wireChat response.WireChat) {
+	wireChat.ChatID = chat.ID
 	var activityMessage = "sent a message"
 
 	if conversationWith := getChatWithUserID(chat, userID); conversationWith != nil {
 		if user := c.UserService.ByID(*conversationWith); user != nil {
-			display = user.Username
+			wireChat.OtherUserID = wrappers.NewNullUUIDFromUUID(user.ID)
+			wireChat.OtherUserName = wrappers.NewNullStringFromString(user.Name)
+			wireChat.OtherUserUsername = wrappers.NewNullStringFromString(user.Username)
 		}
 	} else {
-		display = "GROUP NAME"
+		wireChat.GroupName = wrappers.NewNullStringFromString("GROUP NAME")
 	}
 
 	if messages, err := c.MessageService.ByChatID(chat.ID, 1, 0); err == nil && len(messages) > 0 {
@@ -54,18 +56,14 @@ func (c *Chat) WireChatFromChat(chat model.Chat, userID uuid.UUID) response.Wire
 		}
 
 		if lastMessage.SentBy == userID {
-			activity = fmt.Sprintf("You %s", activityMessage)
+			wireChat.Activity = fmt.Sprintf("You %s", activityMessage)
 		}
 		if user := c.UserService.ByID(messages[0].SentBy); user != nil {
-			activity = fmt.Sprintf("%s %s", user.Username, activityMessage)
+			wireChat.Activity = fmt.Sprintf("%s %s", user.Username, activityMessage)
 		}
 	}
 
-	return response.WireChat{
-		ChatID:   chat.ID,
-		Display:  display,
-		Activity: activity,
-	}
+	return
 }
 
 func getChatWithUserID(chat model.Chat, userID uuid.UUID) *uuid.UUID {

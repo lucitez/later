@@ -59,7 +59,11 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	share := repository.NewShare(db)
 	userContent := repository.NewUserContent(db)
 	serviceUserContent := service.NewUserContent(userContent)
-	serviceShare := service.NewShare(share, serviceUserContent)
+	message := repository.NewMessage(db)
+	chat := repository.NewChat(db)
+	serviceChat := service.NewChat(chat)
+	serviceMessage := service.NewMessage(message, serviceChat)
+	serviceShare := service.NewShare(share, serviceUserContent, serviceMessage)
 	domain := repository.NewDomain(db)
 	serviceDomain := service.NewDomain(domain)
 	content := repository.NewContent(db)
@@ -123,8 +127,17 @@ func InitializeChat(db *sql.DB) server.Chat {
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
 	message := repository.NewMessage(db)
-	serviceMessage := service.NewMessage(message)
+	serviceMessage := service.NewMessage(message, serviceChat)
 	transferChat := transfer.NewChat(serviceUser, serviceMessage)
 	serverChat := server.NewChat(serviceChat, transferChat)
 	return serverChat
+}
+
+func InitializeMessage(db *sql.DB) server.Message {
+	message := repository.NewMessage(db)
+	chat := repository.NewChat(db)
+	serviceChat := service.NewChat(chat)
+	serviceMessage := service.NewMessage(message, serviceChat)
+	serverMessage := server.NewMessage(serviceMessage)
+	return serverMessage
 }

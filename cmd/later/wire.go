@@ -69,11 +69,15 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 		service.NewShare,
 		service.NewUserContent,
 		service.NewUser,
+		service.NewChat,
+		service.NewMessage,
 		repository.NewContent,
 		repository.NewDomain,
 		repository.NewShare,
 		repository.NewUserContent,
 		repository.NewUser,
+		repository.NewChat,
+		repository.NewMessage,
 	)
 	return server.ShareServer{}
 }
@@ -146,4 +150,16 @@ func InitializeChat(db *sql.DB) server.Chat {
 	)
 
 	return server.Chat{}
+}
+
+func InitializeMessage(db *sql.DB) server.Message {
+	wire.Build(
+		server.NewMessage,
+		service.NewChat,
+		service.NewMessage,
+		repository.NewChat,
+		repository.NewMessage,
+	)
+
+	return server.Message{}
 }

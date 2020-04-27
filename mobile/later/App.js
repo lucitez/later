@@ -17,7 +17,8 @@ import {
   ProfileScreen,
   EditProfileScreen,
   UserScreen,
-  SplashScreen
+  SplashScreen,
+  ChatDisplayScreen
 } from './screens/index'
 import {
   SignupScreen,
@@ -72,6 +73,7 @@ function CreateProfileStack() {
     <ProfileStack.Navigator initialRouteName='Profile' headerMode='none'>
       <ProfileStack.Screen name='Profile' component={ProfileScreen} />
       <ProfileStack.Screen name='Edit' component={EditProfileScreen} />
+      <ProfileStack.Screen name='Chat' component={ChatDisplayScreen} />
     </ProfileStack.Navigator>
   )
 }

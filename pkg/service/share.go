@@ -8,8 +8,8 @@ import (
 
 // Share ...
 type Share struct {
-	Content     Content
 	UserContent UserContent
+	Message     Message
 	Repository  repository.Share
 }
 
@@ -17,10 +17,12 @@ type Share struct {
 func NewShare(
 	repository repository.Share,
 	userContent UserContent,
+	message Message,
 ) Share {
 	return Share{
 		UserContent: userContent,
 		Repository:  repository,
+		Message:     message,
 	}
 }
 
@@ -37,9 +39,8 @@ func (manager *Share) Create(body body.ShareCreateBody) (*model.Share, error) {
 		return nil, err
 	}
 
-	if _, err := manager.UserContent.Create(body.ToUserContentCreateBody(share.ID)); err != nil {
-		return nil, err
-	}
+	go manager.UserContent.Create(body.ToUserContentCreateBody(share.ID))
+	go manager.Message.CreateFromShare(share)
 
 	return &share, nil
 }

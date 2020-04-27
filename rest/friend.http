@@ -1,7 +1,7 @@
 POST http://localhost:8000/friend-requests/send
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODc5NDc5OTMsImlhdCI6MTU4Nzk0NzA5MywidXNlclNlc3Npb25faWQiOiI5MzlmYzY3Zi1mOGUwLTRjYzUtYWI0ZS02ODU2YmYwZWJjZTMifQ.Z55X_YiExNVr7kEpvmQQgJOkv3-Ap0kjBvdq1IN_SII
 
 {
-    "sender_user_id": "221d0161-e9fa-4614-81a8-357f3ec66a06",
     "recipient_user_id": "77fcce77-82cc-40ad-820f-0c13810db41a"
 }
 

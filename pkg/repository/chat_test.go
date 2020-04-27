@@ -31,3 +31,16 @@ func TestChatsByUserID(t *testing.T) {
 
 	testUtil.Assert.Contains(actual, chat)
 }
+
+func TestChatByUserIDs(t *testing.T) {
+	beforeEach(t)
+
+	chatRepo.Insert(chat)
+	actual, err := chatRepo.ByUserIDs(userID, userID2)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	testUtil.Assert.Equal(*actual, chat)
+}

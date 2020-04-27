@@ -56,6 +56,7 @@ function LoginScreen({ navigation }) {
             leftIcon={<BackIcon navigation={navigation} color={colors.primary} />}
         >
             <PlainText
+                inputProps={{ autoCorrect: false }}
                 name='identifier'
                 title='Email, Username, or Phone Number'
                 value={formData.identifier}

@@ -1,6 +1,7 @@
 import ByTagScreen from './ByTagScreen'
 import ContentScreen from './ContentScreen'
-import ConversationsScreen from './ConversationsScreen'
+import ChatsScreen from './ChatsScreen'
+import ChatDisplayScreen from './ChatDisplayScreen'
 import DiscoverScreen from './DiscoverScreen'
 import EditProfileScreen from './EditProfileScreen'
 import FriendScreen from './FriendScreen'
@@ -14,7 +15,8 @@ import UserScreen from './UserScreen'
 
 export { ByTagScreen }
 export { ContentScreen }
-export { ConversationsScreen }
+export { ChatsScreen }
+export { ChatDisplayScreen }
 export { DiscoverScreen }
 export { EditProfileScreen }
 export { FriendScreen }

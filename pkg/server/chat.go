@@ -33,7 +33,7 @@ func (server *Chat) Prefix() string {
 // Routes defines the routes for chat API
 func (server *Chat) Routes(router *gin.RouterGroup) []gin.IRoutes {
 	return []gin.IRoutes{
-		router.POST("/for-user", server.forUser),
+		router.GET("/for-user", server.forUser),
 	}
 }
 

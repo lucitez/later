@@ -4,7 +4,6 @@ import { Divider } from '../common';
 import UserPreview from './UserPreview'
 import FriendPreview from './FriendPreview'
 import ShareWithFriendPreview from './ShareWithFriendPreview'
-import ConversationPreview from './ConversationPreview'
 
 function UserGroup(props) {
     return (
@@ -27,8 +26,6 @@ function Preview(props, user) {
             return <UserPreview user={user} onPress={() => props.onPress(user.id)} />
         case 'friend':
             return <FriendPreview user={user} />
-        case 'convo':
-            return <ConversationPreview user={user} />
         case 'share':
             return (
                 <TouchableHighlight onPress={() => props.onSelectToggle(user)}>

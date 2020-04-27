@@ -35,9 +35,12 @@ func NewNullString(str *string) NullString {
 
 // NewNullStringFromString constructor for NullTime
 func NewNullStringFromString(str string) NullString {
-	return NullString{sql.NullString{
-		String: str,
-		Valid:  true}}
+	return NullString{
+		sql.NullString{
+			String: str,
+			Valid:  true,
+		},
+	}
 }
 
 func (nullStr *NullString) ToPointer() *string {

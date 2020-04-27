@@ -93,7 +93,7 @@ const getUserProfile = userId => {
         profileUserId: userId
     }
 
-    Network.GET("/users/profile-by-id", params)
+    return Network.GET("/users/profile-by-user-id", params)
 }
 
 const sendFriendRequest = friendUserId => {

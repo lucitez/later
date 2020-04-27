@@ -65,6 +65,29 @@ func (repository *Chat) ByUserID(userID uuid.UUID) ([]model.Chat, error) {
 	return repository.scanRows(rows)
 }
 
+func (repository *Chat) ByUserIDs(user1ID uuid.UUID, user2ID uuid.UUID) (*model.Chat, error) {
+	var chat model.Chat
+
+	statement := chatSelectStatement + `
+	WHERE (
+		(user1_id = $1 AND user2_id = $2)
+		OR
+		(user1_id = $2 AND user2_id = $1)
+	)
+	AND deleted_at IS NULL;
+	`
+
+	row := repository.DB.QueryRow(statement, user1ID, user2ID)
+
+	err := util.ScanRowInto(row, &chat)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	return &chat, err
+}
+
 func (repository *Chat) scanRows(rows *sql.Rows) ([]model.Chat, error) {
 	chats := []model.Chat{}
 

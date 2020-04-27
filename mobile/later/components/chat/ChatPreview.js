@@ -1,26 +1,26 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { colors } from '../../assets/colors';
 
-function FriendPreview(props) {
-    let user = props.user
-
+function ChatPreview({ chat }) {
+    console.log(chat)
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>
-                <View style={styles.thumb}></View>
+                <Image style={styles.thumb} source={{ uri: 'https://www.washingtonpost.com/resizer/uwlkeOwC_3JqSUXeH8ZP81cHx3I=/arc-anglerfish-washpost-prod-washpost/public/HB4AT3D3IMI6TMPTWIZ74WAR54.jpg' }} />
             </View>
             <View style={{ flexGrow: 1 }}>
                 <View style={styles.userInfoContainer}>
                     <View style={styles.nameContainer}>
-                        <Text style={styles.name}>{user.name}</Text>
+                        <Text style={styles.name}>{chat.otherUserName}</Text>
+
                     </View>
                     <View style={styles.usernameContainer}>
-                        <Text style={styles.username}>@{user.username}</Text>
+                        <Text style={styles.username}>@{chat.otherUserUsername}</Text>
                     </View>
                 </View>
                 <View style={styles.messageContainer}>
-                    <Text style={styles.message}>You shared a link</Text>
+                    <Text style={styles.message}>{chat.activity}</Text>
                 </View>
             </View>
         </View>
@@ -75,4 +75,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default FriendPreview
+export default ChatPreview
