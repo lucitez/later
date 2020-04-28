@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { Icon, Link, Tag } from '../common';
 import { contentTypes, colors } from '../../assets/colors';
 
 function ContentPreview({ onDotPress, onTagPress, content, linkActive }) {
+
+    const [imageAR, setImageAR] = useState(1)
+
+    useEffect(() => {
+        content.Imageurl && Image.getSize(imageUrl, (width, height) => setImageAR(width / height))
+    })
+
     return (
         <View style={styles.contentContainer}>
             <View style={styles.imageContainer}>

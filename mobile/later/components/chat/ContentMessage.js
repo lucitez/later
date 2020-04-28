@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, Image } from 'react-native'
 import { colors } from '../../assets/colors'
 
-export default ContentMessage = ({ title, imageUrl }) => {
+export default function ContentMessage({ title, imageUrl }) {
 
     const [imageAR, setImageAR] = useState(1)
 
@@ -31,12 +31,11 @@ export default ContentMessage = ({ title, imageUrl }) => {
 const styles = StyleSheet.create({
     container: {
         width: '60%',
+        margin: 5,
         marginTop: 10,
-        marginLeft: 5,
-        marginRight: 5,
     },
     detailsContainer: {
-        backgroundColor: colors.black,
+        backgroundColor: colors.darkGray,
         borderRadius: 10,
     },
     image: {
