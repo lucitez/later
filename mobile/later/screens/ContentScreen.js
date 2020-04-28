@@ -6,6 +6,7 @@ import { Header, Icon, Button } from '../components/common';
 import { ContentGroup2 } from '../components/content';
 import { ButtonBottomSheet, EditTagBottomSheet } from '../components/modals';
 
+// TODO use Flatlist, set up pagination and sterf
 function ContentScreen({ navigation }) {
     const [content, setContent] = useState([])
     const [offset, setOffset] = useState(0)
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
     },
     contentContainer: {
-        backgroundColor: colors.white,
+        backgroundColor: colors.lightGray,
         flexGrow: 1,
     }
 });

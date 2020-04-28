@@ -38,6 +38,7 @@ export default function ChatDisplayScreen({ navigation, route }) {
         updateMessages(messages => setMessages(messages))
     }, [])
 
+    // TODO update preemptively
     const sendMessage = (message, onSuccess) => {
         Network.POST('/messages/send', { chatId: chatDetails.chatId, message })
             .then((newMessage) => {

@@ -8,105 +8,132 @@ function ContentPreview({ onDotPress, onTagPress, content, linkActive }) {
     const [imageAR, setImageAR] = useState(1)
 
     useEffect(() => {
-        content.Imageurl && Image.getSize(imageUrl, (width, height) => setImageAR(width / height))
+        content.imageUrl && Image.getSize(content.imageUrl, (width, height) => setImageAR(width / height))
     })
 
     return (
-        <View style={styles.contentContainer}>
-            <View style={styles.imageContainer}>
-                <Image style={styles.thumb} source={content.imageUrl ? { uri: content.imageUrl } : {}} />
+        <View style={styles.container}>
+            <View style={styles.topContainer}>
+                <View style={styles.imageContainer}>
+                    <Image style={[styles.image, { aspectRatio: imageAR }]} source={content.imageUrl ? { uri: content.imageUrl } : {}} />
+                </View>
+                <View style={styles.rightContainer}>
+                    <View style={styles.actionContainer}>
+                        <View style={styles.contentTypeIconContainer}>
+                            {content.contentType ?
+                                <Icon type={content.contentType} size={25} color={contentTypes[content.contentType].color} /> :
+                                null
+                            }
+                        </View>
+                        <TouchableOpacity style={styles.tagContainer} onPress={() => onTagPress(content.tag)}>
+                            {content.tag && content.savedAt ? <Tag name={content.tag} /> : null}
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => onDotPress(content)} style={styles.dotsContainer}>
+                            <Icon type='dots' size={20} color={colors.black} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.sentByContainer}>
+                        <Image style={styles.sentByImage} source={{ uri: 'https://www.washingtonpost.com/resizer/uwlkeOwC_3JqSUXeH8ZP81cHx3I=/arc-anglerfish-washpost-prod-washpost/public/HB4AT3D3IMI6TMPTWIZ74WAR54.jpg' }} />
+                        <View style={styles.sentByUsernameContainer} >
+                            <Text style={styles.sentByUsername}>@{content.sentByUsername}</Text>
+                        </View>
+                    </View>
+                </View>
             </View>
-            <View style={styles.detailsContainer}>
-                <View style={styles.topDetailsContainer}>
-                    <View style={styles.titleAndDescriptionContainer}>
-                        <Link url={content.url} active={linkActive}>
-                            <View>
-                                <Text style={styles.title} numberOfLines={2}>{content.title}</Text>
-                                <Text style={styles.description} numberOfLines={1}>{content.description}</Text>
-                            </View>
-                        </Link>
+            <View style={styles.bottomContainer}>
+                <Link url={content.url} active={linkActive}>
+                    <View>
+                        <View style={styles.titleContainer}>
+                            <Text numberOfLines={1} style={styles.title}>{content.title}</Text>
+                        </View>
+                        <View style={styles.descriptionContainer}>
+                            <Text numberOfLines={2} style={styles.description}>{content.description}</Text>
+                        </View>
                     </View>
-                    <TouchableOpacity onPress={() => onDotPress(content)} style={{ paddingLeft: 5, paddingRight: 5 }}>
-                        <Icon type='dots' size={20} color={colors.black} />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.bottomDetailsContainer}>
-                    <View style={styles.usernameContianer}>
-                        {content.sentByUsername ? <Text>From @{content.sentByUsername}</Text> : null}
-                    </View>
-                    <View style={styles.contentTypeIconContainer}>
-                        {content.contentType ?
-                            <Icon type={content.contentType} size={25} color={contentTypes[content.contentType].color} /> :
-                            null
-                        }
-                    </View>
-                    <TouchableOpacity style={styles.tagContainer} onPress={() => onTagPress(content.tag)}>
-                        {content.tag && content.savedAt ? <Tag name={content.tag} /> : null}
-                    </TouchableOpacity>
-                </View>
+                </Link>
             </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    contentContainer: {
-        flexDirection: 'row',
-        height: 120,
+    container: {
+        height: 165,
         width: '100%',
-        marginTop: 5,
-        marginBottom: 5,
+        paddingTop: 5,
+        paddingBottom: 5,
+        backgroundColor: colors.white,
     },
-    imageContainer: {
-        width: 120,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 5,
-    },
-    detailsContainer: {
-        flexDirection: 'column',
-        flexGrow: 1,
-        flexBasis: 0,
-        padding: 5,
-    },
-    topDetailsContainer: {
+    topContainer: {
+        height: '69%',
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-    titleAndDescriptionContainer: {
-        flexGrow: 1,
-        flexBasis: 0,
+    imageContainer: {
+        padding: 5,
+        maxWidth: '50%',
     },
-    thumb: {
+    rightContainer: {
+        width: '50%',
+    },
+    actionContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        paddingTop: 10,
+    },
+    sentByContainer: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
+        flexDirection: 'row',
+        paddingBottom: 10,
+    },
+    sentByImage: {
+        borderRadius: 15,
+        height: 30,
+        width: 30,
+    },
+    sentByUsernameContainer: {
+        marginLeft: 5,
+        marginBottom: -2,
+    },
+    sentByUsername: {
+        fontWeight: '600'
+    },
+    image: {
         height: '100%',
-        width: '100%',
-        borderRadius: 5,
+        borderRadius: 10,
+    },
+    bottomContainer: {
+        height: '31%',
+        paddingLeft: 10,
+    },
+    descriptionContainer: {
+        overflow: 'hidden'
     },
     title: {
         fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: 18,
     },
     description: {
         fontSize: 12,
     },
-    bottomDetailsContainer: {
-        flexGrow: 1,
-        flexDirection: 'row',
-        alignItems: 'flex-end',
-        justifyContent: 'space-between',
-    },
-    usernameContianer: {
-        flex: 2,
-        alignItems: 'flex-start'
-    },
-    tagContainer: {
-        flex: 2,
-        alignItems: 'flex-end'
-    },
     contentTypeIconContainer: {
         flex: 1,
-        alignItems: 'center',
-        marginBottom: -3,
+        marginTop: -2,
+    },
+    tagContainer: {
+        flex: 1,
+        alignItems: 'flex-start'
+    },
+    dotsContainer: {
+        flex: 1,
+        marginTop: 2,
+        paddingLeft: 10,
+        paddingRight: 10,
+        alignItems: 'flex-end'
     },
 });
 
