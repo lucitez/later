@@ -2,7 +2,7 @@ import React from 'react'
 import PlainText from './PlainText'
 
 export default function Email(props) {
-    return <PlainText {...props} hasError={hasError(props.required)} />
+    return <PlainText {...props} hasError={value => hasError(props.required, value)} />
 }
 
 const hasError = (required, value) => {

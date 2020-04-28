@@ -5,6 +5,7 @@ import { Header, BackIcon } from '../components/common'
 import Network from '../util/Network'
 import { useSelector } from 'react-redux'
 import { MessageContainer, ChatInput } from '../components/chat'
+import { v4 as uuidv4 } from 'uuid';
 
 const LIMIT = 15
 
@@ -40,12 +41,26 @@ export default function ChatDisplayScreen({ navigation, route }) {
 
     // TODO update preemptively
     const sendMessage = (message, onSuccess) => {
+        let newId = uuidv4()
+        let tempMessage = {
+            id: newId,
+            chatId: chatDetails.chatId,
+            message: message,
+            sentBy: userId,
+            sentAt: Date.now()
+        }
+
+        setMessages([tempMessage, ...messages])
+
         Network.POST('/messages/send', { chatId: chatDetails.chatId, message })
-            .then((newMessage) => {
-                setMessages([newMessage, ...messages])
+            .then(newMessage => {
+                setMessages(messages.map(m => m.id == newId ? { ...m, id: newMessage.id } : m))
                 onSuccess()
             })
-            .catch(err => console.error(err))
+            .catch(err => {
+                console.log(err)
+                setMessages(messages.filter(m => m.id != newId))
+            })
     }
 
     return (

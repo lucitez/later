@@ -1,35 +1,74 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Alert, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Alert, SafeAreaView, FlatList } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { Header, Icon, Button } from '../components/common';
-import { ContentGroup2 } from '../components/content';
+import { ContentPreview } from '../components/content';
 import { ButtonBottomSheet, EditTagBottomSheet } from '../components/modals';
 
-// TODO use Flatlist, set up pagination and sterf
+const LIMIT = 20
+
 function ContentScreen({ navigation }) {
     const [content, setContent] = useState([])
+    const [refreshing, setRefreshing] = useState(false)
     const [offset, setOffset] = useState(0)
-    const [loading, setLoading] = useState(true)
+    const [limitReached, setLimitReached] = useState(false)
+
+    // For modal
+    const [selectedContent, setSelectedContent] = useState(null)
     const [contentBottomSheetVisible, setContentBottomSheetVisible] = useState(false)
     const [editTagBottomSheetVisible, setEditTagBottomSheetVisible] = useState(false)
-    const [selectedContent, setSelectedContent] = useState(null)
+
+    const updateContent = (contentUpdateFunc) => {
+        setRefreshing(true)
+        getContent(offset)
+            .then(content => {
+                if (content.length < LIMIT) {
+                    setLimitReached(true)
+                }
+                setOffset(offset + content.length)
+                contentUpdateFunc(content)
+                setRefreshing(false)
+            })
+            .catch(err => {
+                console.error(err)
+                setRefreshing(false)
+            })
+    }
+
 
     useEffect(() => {
-        setLoading(true)
-        getContent()
-            .then(content => {
-                setContent(content)
-                setLoading(false)
-            })
-            .catch(error => console.error(error))
-    }, [offset])
+        updateContent(content => setContent(content))
+    }, [])
+
+    const onEndReached = () => {
+        if (!limitReached) {
+            updateContent(nextPage => setContent(content.concat(nextPage)))
+        }
+    }
+
+    const onRefresh = () => {
+        setOffset(0)
+        setLimitReached(false)
+        updateContent(content => setContent(content))
+    }
 
     const onSave = (tag) => {
         saveContent(selectedContent, tag)
             .then(setContent(content.filter(c => c.id != selectedContent.id)))
             .catch(error => Alert.alert(error))
     }
+
+    const renderContent = ({ item }) => (
+        <ContentPreview
+            content={item}
+            linkActive={!contentBottomSheetVisible && !editTagBottomSheetVisible}
+            onDotPress={content => {
+                setSelectedContent(content)
+                setContentBottomSheetVisible(true)
+            }}
+        />
+    )
 
     return (
         <SafeAreaView style={styles.container}>
@@ -43,41 +82,25 @@ function ContentScreen({ navigation }) {
                 />}
             />
             <View style={styles.contentContainer}>
-                <ContentGroup2
-                    type='home'
-                    contents={content}
-                    linkActive={!contentBottomSheetVisible && !editTagBottomSheetVisible}
-                    onDotPress={content => {
-                        setSelectedContent(content)
-                        setContentBottomSheetVisible(true)
-                    }}
+                <FlatList
+                    data={content}
+                    onRefresh={onRefresh}
+                    refreshing={refreshing}
+                    onEndReached={onEndReached}
+                    onEndReachedThreshold={0.1}
+                    renderItem={renderContent}
                 />
             </View>
             <ButtonBottomSheet isVisible={contentBottomSheetVisible} onHide={() => setContentBottomSheetVisible(false)}>
-                <Button
-                    theme='primary'
-                    name='Forward'
-                    size='medium'
-                    onPress={() => {
-                        setContentBottomSheetVisible(false)
-                        navigation.navigate('Forward', { contentPreview: selectedContent, previousScreen: 'Home' })
-                    }}
-                />
-                <Button
-                    theme='primary'
-                    name='Save'
-                    size='medium'
-                    onPress={() => {
-                        setContentBottomSheetVisible(false)
-                        setTimeout(() => { setEditTagBottomSheetVisible(true) }, 400)
-                    }}
-                />
-                <Button
-                    theme='light'
-                    name='Cancel'
-                    size='medium'
-                    onPress={() => setContentBottomSheetVisible(false)}
-                />
+                <Button theme='primary' name='Forward' size='medium' onPress={() => {
+                    setContentBottomSheetVisible(false)
+                    navigation.navigate('Forward', { contentPreview: selectedContent, previousScreen: 'Home' })
+                }} />
+                <Button theme='primary' name='Save' size='medium' onPress={() => {
+                    setContentBottomSheetVisible(false)
+                    setTimeout(() => { setEditTagBottomSheetVisible(true) }, 400)
+                }} />
+                <Button theme='light' name='Cancel' size='medium' onPress={() => setContentBottomSheetVisible(false)} />
             </ButtonBottomSheet>
             <EditTagBottomSheet
                 isVisible={editTagBottomSheetVisible}
@@ -88,8 +111,9 @@ function ContentScreen({ navigation }) {
     );
 }
 
-const getContent = () => {
-    return Network.GET(`/user-content/filter`)
+const getContent = (offset) => {
+    let params = { limit: LIMIT, offset }
+    return Network.GET(`/user-content/filter`, params)
 }
 
 const saveContent = (content, tag) => {

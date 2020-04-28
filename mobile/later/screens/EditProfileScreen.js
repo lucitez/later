@@ -1,79 +1,80 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, Text } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, SafeAreaView, Keyboard } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { PlainText, Email, PhoneNumber } from '../components/forms';
 import { Header, Button, BackIcon } from '../components/common';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 function EditProfileScreen({ navigation, route }) {
     const user = route.params.user
 
     const [formData, setFormData] = useState({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phoneNumber: user.phoneNumber
+        id: { value: user.id, },
+        name: { value: user.name },
+        email: { value: user.email },
+        phoneNumber: { value: user.phoneNumber }
     })
 
     const [validationErrors, setValidationErrors] = useState({})
     const [error, setError] = useState(null)
     const [submitting, setSubmitting] = useState(false)
 
-    const onFormDataChange = (name, value, valid) => {
+    const onFormDataChange = (name, value, error) => {
         setFormData({
             ...formData,
-            [name]: value
-        })
-        setValidationErrors({
-            ...validationErrors,
-            [name]: valid
-        })
-    }
-
-    const validate = () => {
-        setError(null)
-        for (let [key, valid] of Object.entries(validationErrors)) {
-            if (!valid) {
-                setError(`Please provide a valid ${key}`)
-                return false
+            [name]: {
+                value: value,
+                error: error
             }
-        }
-        return true
+        })
     }
 
     const submitForm = () => {
-        if (validate()) {
-            Network.PUT("/users/update", formData)
-                .then(() => navigation.navigate('Profile', { newUserData: formData }))
-                .catch(err => setError(err))
-                .finally(() => setSubmitting(false))
-        } else {
-            setSubmitting(false)
+        setError(null)
+        setSubmitting(true)
+
+        let body = {}
+
+        for (let [key, field] of Object.entries(formData)) {
+            if (field.error) {
+                setError(field.error)
+                setSubmitting(false)
+                return
+            }
+            body[key] = field.value
         }
+
+        console.log(body)
+
+        Network.PUT("/users/update", body)
+            .then(() => {
+                navigation.navigate('Profile', { newUserData: body })
+            })
+            .catch(err => setError(err))
+            .finally(() => setSubmitting(false))
     }
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Header title='Edit Profile' leftIcon={<BackIcon navigation={navigation} />} />
-            <View style={styles.formContainer}>
-                <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContainer} keyboardShouldPersistTaps='handled' >
+            <ScrollView style={styles.scrollStyle} containerStyle={styles.contentContainer} keyboardShouldPersistTaps='handled'>
+                <View style={styles.formContainer}>
                     <View style={styles.nameFormContainer}>
-                        <View style={styles.nameFormContainer}>
-                            <PlainText
-                                theme='light'
-                                name='name'
-                                title='First Name'
-                                value={formData.name}
-                                onChange={onFormDataChange}
-                            />
-                        </View>
+                        <PlainText
+                            theme='light'
+                            name='name'
+                            title='First Name'
+                            value={formData.name.value}
+                            onChange={onFormDataChange}
+                        />
                     </View>
                     <View style={styles.emailFormContainer}>
                         <Email
                             theme='light'
                             name='email'
                             title='Email'
-                            value={formData.email}
+                            value={formData.email.value}
                             onChange={onFormDataChange}
                         />
                     </View>
@@ -82,7 +83,7 @@ function EditProfileScreen({ navigation, route }) {
                             theme='light'
                             name='phoneNumber'
                             title='Phone Number'
-                            value={formData.phoneNumber}
+                            value={formData.phoneNumber.value}
                             onChange={onFormDataChange}
                         />
                     </View>
@@ -98,9 +99,10 @@ function EditProfileScreen({ navigation, route }) {
                                 <Text style={styles.errorMessage}>{error}</Text>
                             </View>}
                     </View>
-                </ScrollView>
-            </View>
-        </View >
+                </View>
+            </ScrollView>
+
+        </SafeAreaView >
     )
 }
 
@@ -108,45 +110,41 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.primary,
+        justifyContent: 'flex-start',
+    },
+    scrollStyle: {
+        paddingTop: 40,
+        borderTopWidth: 1,
+        borderTopColor: colors.white,
+    },
+    contentContainer: {
+        flexGrow: 1,
         alignItems: 'center',
     },
     formContainer: {
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'flex-start'
-    },
-    scrollView: {
-        width: '80%',
-    },
-    scrollViewContainer: {
-        justifyContent: 'flex-start',
-        alignItems: 'flex-start',
-        paddingTop: 40,
+        minWidth: '100%',
+        maxWidth: '100%',
+        paddingLeft: '15%',
+        paddingRight: '15%',
         paddingBottom: 20,
-    },
-    usernameFormContainer: {
-        width: '50%',
+        alignItems: 'flex-start'
     },
     emailFormContainer: {
         minWidth: '75%',
     },
     nameFormContainer: {
-        flexDirection: 'row',
-        width: '100%',
-    },
-    nameFormContainer: {
-        flex: 1,
+        minWidth: '75%',
     },
     phoneFormContainer: {
-        width: '50%'
+        minWidth: '50%',
     },
     bottomContainer: {
-        width: '100%',
+        minWidth: '100%',
         alignItems: 'flex-end',
         marginTop: 25,
     },
     submitButtonContainer: {
-        width: '35%'
+        width: '40%'
     },
     errorMessageContainer: {
         paddingTop: 10
