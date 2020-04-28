@@ -45,7 +45,7 @@ function ByTagScreen({ navigation, route }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Header name={tag} leftIcon={<BackIcon navigation={navigation} color={colors.white} />} />
+            <Header title={tag} leftIcon={<BackIcon navigation={navigation} color={colors.white} />} />
             <View style={styles.contentContainer}>
                 <ContentGroup2
                     type='save'

@@ -16,6 +16,7 @@ func GenerateTokenFromUserSession(userSession model.UserSession) (signedAt strin
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: userSession.ExpiresAt.Unix(),
 			IssuedAt:  userSession.CreatedAt.Unix(),
+			Subject:   userSession.UserID.String(),
 		},
 	}
 

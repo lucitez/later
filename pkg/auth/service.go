@@ -17,7 +17,7 @@ type Service struct {
 
 type Token struct {
 	jwt.StandardClaims
-	UserSessionID uuid.UUID `json:"userSession_id"`
+	UserSessionID uuid.UUID `json:"user_session_id"`
 }
 
 func (t *Token) Valid() error {

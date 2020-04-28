@@ -157,8 +157,13 @@ func InitializeMessage(db *sql.DB) server.Message {
 		server.NewMessage,
 		service.NewChat,
 		service.NewMessage,
+		service.NewContent,
+		service.NewDomain,
 		repository.NewChat,
 		repository.NewMessage,
+		repository.NewContent,
+		repository.NewDomain,
+		transfer.NewMessage,
 	)
 
 	return server.Message{}

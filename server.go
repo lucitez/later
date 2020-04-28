@@ -83,6 +83,11 @@ func (s *Server) protectedAuth() gin.HandlerFunc {
 			return
 		}
 
+		if activeUserSession.UserID.String() != token.StandardClaims.Subject {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, "Session does not match user_id")
+			return
+		}
+
 		c.Set("user_id", activeUserSession.UserID)
 	}
 }

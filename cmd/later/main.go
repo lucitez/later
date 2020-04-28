@@ -23,6 +23,7 @@ func main() {
 	userContentServer := InitializeUserContent(db)
 	userServer := InitializeUser(db)
 	chatServer := InitializeChat(db)
+	messageServer := InitializeMessage(db)
 
 	server := InitializeServer(db)
 
@@ -36,6 +37,7 @@ func main() {
 			&userContentServer,
 			&userServer,
 			&chatServer,
+			&messageServer,
 		},
 		[]later.RouteGroup{
 			&authServer,

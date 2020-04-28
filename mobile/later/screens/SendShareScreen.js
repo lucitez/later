@@ -44,7 +44,7 @@ function SendShareScreen({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-            <Header name='Share' leftIcon={backIcon} />
+            <Header title='Share' leftIcon={backIcon} />
             <SearchBar
                 onChange={value => setSearch(value)}
                 iconName='friends'

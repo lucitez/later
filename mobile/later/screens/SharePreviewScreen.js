@@ -35,7 +35,7 @@ function SharePreviewScreen({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-            <Header name='Share' />
+            <Header title='Share' />
             <SearchBar
                 clear={sent}
                 onChange={value => setUrl(value)}

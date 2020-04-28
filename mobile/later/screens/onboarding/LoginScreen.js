@@ -10,6 +10,7 @@ import { colors } from '../../assets/colors'
 import { PlainText, Password } from '../../components/forms'
 import { authHeader } from '../../util/headers'
 import OnboardingFormWrapper from './OnboardingFormWrapper'
+import jwtDecode from 'jwt-decode'
 
 const setRefreshToken = async (token) => {
     await AsyncStorage.setItem('refresh_token', token)
@@ -38,16 +39,19 @@ function LoginScreen({ navigation }) {
         let token = new Buffer(`${formData.identifier}:${formData.password}`).toString('base64')
 
         Network.POST('/auth/login', {}, authHeader(token))
-            .then(newTokens => {
-                dispatch(actions.setTokens(newTokens))
-                setRefreshToken(newTokens.refreshToken)
-                signIn()
+            .then(tokens => {
+                try {
+                    let userId = jwtDecode(tokens.accessToken).sub
+                    dispatch(actions.setTokens(tokens))
+                    dispatch(actions.setUserId(userId))
+                    setRefreshToken(tokens.refreshToken)
+                    signIn()
+                }
+                catch (e) {
+                    console.error(e)
+                }
             })
             .catch(() => setError('Invalid username or password'))
-    }
-
-    const onSignUpPressed = () => {
-        navigation.navigate('Sign Up')
     }
 
     return (

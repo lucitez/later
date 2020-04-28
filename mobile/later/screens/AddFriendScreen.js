@@ -43,7 +43,7 @@ function AddFriendScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
-            <Header name="Add Friends" leftIcon={BackIcon(navigation)} />
+            <Header title="Add Friends" leftIcon={BackIcon(navigation)} />
             <SearchBar onChange={search => setSearch(search)} />
             {
                 users.length == 0 ?

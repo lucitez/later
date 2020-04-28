@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createStackNavigator } from '@react-navigation/stack'
 import { Icon } from './components/common'
+import jwtDecode from 'jwt-decode'
 import {
   ByTagScreen,
   ContentScreen,
@@ -99,9 +100,15 @@ function CreateApplicationTabs() {
   )
 }
 
-const updateTokens = async (newTokens) => {
-  store.dispatch(actions.setTokens(newTokens))
-  await AsyncStorage.setItem('refresh_token', newTokens.refreshToken)
+const updateTokens = async (tokens) => {
+  try {
+    let userId = jwtDecode(tokens.accessToken).sub
+    store.dispatch(actions.setTokens(tokens))
+    store.dispatch(actions.setUserId(userId))
+    await AsyncStorage.setItem('refresh_token', tokens.refreshToken)
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 const autoLogin = async () => {

@@ -54,7 +54,7 @@ function EditProfileScreen({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-            <Header name='Edit Profile' leftIcon={<BackIcon navigation={navigation} />} />
+            <Header title='Edit Profile' leftIcon={<BackIcon navigation={navigation} />} />
             <View style={styles.formContainer}>
                 <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContainer} keyboardShouldPersistTaps='handled' >
                     <View style={styles.nameFormContainer}>

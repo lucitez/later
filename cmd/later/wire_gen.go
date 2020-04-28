@@ -138,6 +138,11 @@ func InitializeMessage(db *sql.DB) server.Message {
 	chat := repository.NewChat(db)
 	serviceChat := service.NewChat(chat)
 	serviceMessage := service.NewMessage(message, serviceChat)
-	serverMessage := server.NewMessage(serviceMessage)
+	domain := repository.NewDomain(db)
+	serviceDomain := service.NewDomain(domain)
+	content := repository.NewContent(db)
+	serviceContent := service.NewContent(serviceDomain, content)
+	transferMessage := transfer.NewMessage(serviceContent)
+	serverMessage := server.NewMessage(serviceMessage, transferMessage)
 	return serverMessage
 }

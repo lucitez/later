@@ -86,6 +86,9 @@ const objToCamelCase = (data) => {
         let camelCaseParams = {}
 
         for (let [key, value] of Object.entries(data)) {
+            if (typeof value == 'object' && value) {
+                value = objToCamelCase(value)
+            }
             camelCaseParams[_.camelCase(key)] = value
         }
 

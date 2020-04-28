@@ -1,17 +1,18 @@
-POST http://localhost:8000/friend-requests/send
-Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODc5NDc5OTMsImlhdCI6MTU4Nzk0NzA5MywidXNlclNlc3Npb25faWQiOiI5MzlmYzY3Zi1mOGUwLTRjYzUtYWI0ZS02ODU2YmYwZWJjZTMifQ.Z55X_YiExNVr7kEpvmQQgJOkv3-Ap0kjBvdq1IN_SII
+# POST http://localhost:8000/friend-requests/send
+# Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODc5NDc5OTMsImlhdCI6MTU4Nzk0NzA5MywidXNlclNlc3Npb25faWQiOiI5MzlmYzY3Zi1mOGUwLTRjYzUtYWI0ZS02ODU2YmYwZWJjZTMifQ.Z55X_YiExNVr7kEpvmQQgJOkv3-Ap0kjBvdq1IN_SII
 
-{
-    "recipient_user_id": "77fcce77-82cc-40ad-820f-0c13810db41a"
-}
+# {
+#     "recipient_user_id": "77fcce77-82cc-40ad-820f-0c13810db41a"
+# }
 
 # GET http://localhost:8000/friend-requests/pending?user_id=d29e3ba3-d083-4238-96d7-63c20369f3da
 
-# PUT http://localhost:8000/friend-requests/accept
+PUT http://localhost:8000/friend-requests/accept
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODgwMTMxNzAsImlhdCI6MTU4ODAxMjI3MCwic3ViIjoiN2I4ODE1MjItM2E3Ni00OTI4LWFlZmEtM2FhNGM4MzkyNDQzIiwidXNlcl9zZXNzaW9uX2lkIjoiYTc5ZjRlOGMtN2FjZS00ZmMwLWE4MmMtMzEyNjU2ZGRlMzI4In0.AIrQNYcW32uFQ5ZehooxYXRSZLioBTO9tf9ORNrVC6M
 
-# {
-#     "id": "859b0c9b-7017-4798-bf0d-2f65f96ec113"
-# }
+{
+    "id": "9719267e-8f75-4991-ab0e-7d1be2f1ac11"
+}
 
 # GET http://localhost:8000/friends/for-user?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915
 

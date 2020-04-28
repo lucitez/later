@@ -28,6 +28,24 @@ func (c *Message) ByChatID(
 	return c.Repo.ByChatID(chatID, limit, offset)
 }
 
+func (c *Message) CreateFromMessage(
+	chatID uuid.UUID,
+	sentBy uuid.UUID,
+	message string,
+) (*model.Message, error) {
+	newMessage := model.NewMessage(
+		chatID,
+		sentBy,
+		message,
+	)
+
+	if err := c.Repo.Insert(newMessage); err != nil {
+		return nil, err
+	}
+
+	return &newMessage, nil
+}
+
 func (c *Message) CreateFromShare(
 	share model.Share,
 ) (*model.Message, error) {

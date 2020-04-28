@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 import { colors } from '../../assets/colors';
 
 function ChatPreview({ chat }) {
-    console.log(chat)
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>

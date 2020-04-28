@@ -1,7 +1,9 @@
 package server
 
 import (
+	"later/pkg/request"
 	"later/pkg/service"
+	"later/pkg/transfer"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,15 +12,18 @@ import (
 
 // Message ...
 type Message struct {
-	Service service.Message
+	Service  service.Message
+	Transfer transfer.Message
 }
 
 // NewMessage for wire generation
 func NewMessage(
 	service service.Message,
+	transfer transfer.Message,
 ) Message {
 	return Message{
-		Service: service,
+		Service:  service,
+		Transfer: transfer,
 	}
 }
 
@@ -30,6 +35,7 @@ func (server *Message) Prefix() string {
 func (server *Message) Routes(router *gin.RouterGroup) []gin.IRoutes {
 	return []gin.IRoutes{
 		router.GET("/by-chat-id", server.byChatID),
+		router.POST("/send", server.sendMessage),
 	}
 }
 
@@ -60,7 +66,32 @@ func (server *Message) byChatID(c *gin.Context) {
 			return
 		}
 
-		// TODO make wire messages
-		c.JSON(http.StatusOK, messages)
+		wireMessages := server.Transfer.WireMessagesFrom(messages)
+
+		c.JSON(http.StatusOK, wireMessages)
 	}
+}
+
+func (server *Message) sendMessage(c *gin.Context) {
+	userID := c.MustGet("user_id").(uuid.UUID)
+
+	var body request.MessageSendRequestBody
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	message, err := server.Service.CreateFromMessage(
+		body.ChatID,
+		userID,
+		body.Message,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, message)
 }

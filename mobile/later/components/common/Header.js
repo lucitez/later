@@ -3,17 +3,17 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors } from '../../assets/colors';
 
 
-function Header(props) {
+function Header({ leftIcon, titleComponent, title, rightIcon }) {
     return (
         <View style={styles.container}>
             <View style={styles.leftIconContainer}>
-                {props.leftIcon ? props.leftIcon : null}
+                {leftIcon ? leftIcon : null}
             </View>
             <View style={styles.headerTitleContainer}>
-                <Text style={styles.title}>{props.name.toUpperCase()}</Text>
+                {titleComponent ? titleComponent : <Text style={styles.title}>{title.toUpperCase()}</Text>}
             </View>
             <View style={styles.rightIconContainer}>
-                {props.rightIcon ? props.rightIcon : null}
+                {rightIcon ? rightIcon : null}
             </View>
         </View>
     );

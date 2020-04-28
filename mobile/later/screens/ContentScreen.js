@@ -33,7 +33,7 @@ function ContentScreen({ navigation }) {
     return (
         <SafeAreaView style={styles.container}>
             <Header
-                name="Later"
+                title="Later"
                 rightIcon={<Icon
                     type='save'
                     size={25}

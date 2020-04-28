@@ -39,7 +39,7 @@ function SavedScreen({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Header name="Saved" leftIcon={<BackIcon navigation={navigation} color={colors.white} />} />
+            <Header title="Saved" leftIcon={<BackIcon navigation={navigation} color={colors.white} />} />
             <SearchBar
                 onChange={value => setSearch(value)}
                 placeholder='Search...'
