@@ -39,9 +39,8 @@ export default function ChatDisplayScreen({ navigation, route }) {
         updateMessages(messages => setMessages(messages))
     }, [])
 
-    // TODO update preemptively
-    const sendMessage = (message, onSuccess) => {
-        let newId = uuidv4()
+    const sendMessage = (message) => {
+        let newId = Math.floor(Math.random() * 100).toString()
         let tempMessage = {
             id: newId,
             chatId: chatDetails.chatId,
@@ -54,11 +53,10 @@ export default function ChatDisplayScreen({ navigation, route }) {
 
         Network.POST('/messages/send', { chatId: chatDetails.chatId, message })
             .then(newMessage => {
-                setMessages(messages.map(m => m.id == newId ? { ...m, id: newMessage.id } : m))
-                onSuccess()
+                setMessages([newMessage, ...messages])
             })
             .catch(err => {
-                console.log(err)
+                console.error(err)
                 setMessages(messages.filter(m => m.id != newId))
             })
     }

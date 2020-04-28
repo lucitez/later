@@ -20,3 +20,11 @@ type ContentHistory struct {
 
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type ContentPreview struct {
+	URL         string              `json:"url"`
+	Title       wrappers.NullString `json:"title"`
+	Description wrappers.NullString `json:"description"`
+	ImageURL    wrappers.NullString `json:"image_url"`
+	ContentType wrappers.NullString `json:"content_type"`
+}

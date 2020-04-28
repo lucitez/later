@@ -8,7 +8,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const LIMIT = 20
 
-export default ChatsScreen = ({ navigation }) => {
+export default function ChatsScreen({ navigation }) {
     const [chats, setChats] = useState([])
     const [refreshing, setRefreshing] = useState(false)
     const [limitReached, setLimitReached] = useState(false)

@@ -8,7 +8,11 @@ function ContentPreview({ onDotPress, onTagPress, content, linkActive }) {
     const [imageAR, setImageAR] = useState(1)
 
     useEffect(() => {
-        content.imageUrl && Image.getSize(content.imageUrl, (width, height) => setImageAR(width / height))
+        content.imageUrl && Image.getSize(
+            content.imageUrl,
+            (width, height) => setImageAR(width / height),
+            failure => console.log(failure)
+        )
     })
 
     return (
@@ -33,10 +37,14 @@ function ContentPreview({ onDotPress, onTagPress, content, linkActive }) {
                         </TouchableOpacity>
                     </View>
                     <View style={styles.sentByContainer}>
-                        <Image style={styles.sentByImage} source={{ uri: 'https://www.washingtonpost.com/resizer/uwlkeOwC_3JqSUXeH8ZP81cHx3I=/arc-anglerfish-washpost-prod-washpost/public/HB4AT3D3IMI6TMPTWIZ74WAR54.jpg' }} />
-                        <View style={styles.sentByUsernameContainer} >
-                            <Text style={styles.sentByUsername}>@{content.sentByUsername}</Text>
-                        </View>
+                        {content.sentByUsername &&
+                            <>
+                                <Image style={styles.sentByImage} source={{ uri: 'https://www.washingtonpost.com/resizer/uwlkeOwC_3JqSUXeH8ZP81cHx3I=/arc-anglerfish-washpost-prod-washpost/public/HB4AT3D3IMI6TMPTWIZ74WAR54.jpg' }} />
+                                <View style={styles.sentByUsernameContainer} >
+                                    <Text style={styles.sentByUsername}>@{content.sentByUsername}</Text>
+                                </View>
+                            </>
+                        }
                     </View>
                 </View>
             </View>

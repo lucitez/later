@@ -14,9 +14,7 @@ export default function ChatInput({ onSend }) {
         setKeyboardShowing(true)
     }
 
-    const _keyboardWillHide = (e) => {
-        setKeyboardShowing(false)
-    }
+    const _keyboardWillHide = (e) => setKeyboardShowing(false)
 
     useEffect(() => {
         Keyboard.addListener("keyboardWillShow", _keyboardWillShow);
@@ -47,9 +45,8 @@ export default function ChatInput({ onSend }) {
             </View>
             <TouchableOpacity style={styles.sendContainer} onPress={() => {
                 if (chatInput != '') {
-                    onSend(chatInput, () => {
-                        setChatInput('')
-                    })
+                    onSend(chatInput)
+                    setChatInput('')
                 }
             }}>
                 <Text style={styles.send}>Send</Text>

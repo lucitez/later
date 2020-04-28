@@ -19,6 +19,7 @@ function UserDetailsPreview({ user }) {
 
 const styles = StyleSheet.create({
     container: {
+        height: 60,
         flexDirection: 'row',
         flex: 1,
         backgroundColor: colors.white

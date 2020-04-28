@@ -107,14 +107,13 @@ function SearchBar(props) {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.primary,
-        height: 50,
+        height: 55,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: "center",
-        padding: 5,
-        paddingLeft: 10,
-        paddingRight: 10
+        paddingTop: 5,
+        padding: 10,
     },
     searchBarContainer: {
         flexGrow: 1,

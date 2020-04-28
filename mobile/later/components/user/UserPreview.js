@@ -6,7 +6,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 function UserPreview({ user, onPress }) {
     return (
-        <TouchableOpacity style={styles.container} onPress={() => onPress()}>
+        <TouchableOpacity style={styles.container} onPress={() => onPress(user.id)}>
             <View style={styles.userDetailsContainer}>
                 <UserDetailsPreview user={user} />
             </View>

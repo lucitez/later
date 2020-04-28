@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Alert, SafeAreaView, FlatList } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
-import { Header, Icon, Button } from '../components/common';
+import { Header, Icon, Button, Divider } from '../components/common';
 import { ContentPreview } from '../components/content';
 import { ButtonBottomSheet, EditTagBottomSheet } from '../components/modals';
 
@@ -89,6 +89,7 @@ function ContentScreen({ navigation }) {
                     onEndReached={onEndReached}
                     onEndReachedThreshold={0.1}
                     renderItem={renderContent}
+                    ItemSeparatorComponent={Divider}
                 />
             </View>
             <ButtonBottomSheet isVisible={contentBottomSheetVisible} onHide={() => setContentBottomSheetVisible(false)}>

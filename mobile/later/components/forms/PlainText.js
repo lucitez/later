@@ -17,7 +17,7 @@ export default function PlainText(props) {
             return props.hasError(value)
         } else {
             if (props.required && value == '') {
-                return `${props.name} is required`
+                return `${props.title} is required`
             } else {
                 return null
             }
@@ -28,6 +28,7 @@ export default function PlainText(props) {
         <FormInputWrapper {...props}>
             <TextInput
                 {...props.inputProps}
+                autoCorrect={false}
                 autoCapitalize='none'
                 style={[styles.input, { color: color }]}
                 onChangeText={text => setValue(text)}

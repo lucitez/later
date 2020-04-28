@@ -62,10 +62,10 @@ func (server *Content) preview(context *gin.Context) {
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
-		domainName := qp["url"].(*string)
+		url := qp["url"].(*string)
 
-		content := server.Service.GetContentPreview(*domainName)
+		contentMetadata := server.Service.GetContentPreview(*url)
 
-		context.JSON(http.StatusOK, content)
+		context.JSON(http.StatusOK, contentMetadata.ToContentPreview())
 	}
 }

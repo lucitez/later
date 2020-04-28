@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, Text, SafeAreaView, Keyboard } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, SafeAreaView } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { PlainText, Email, PhoneNumber } from '../components/forms';
 import { Header, Button, BackIcon } from '../components/common';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 function EditProfileScreen({ navigation, route }) {
     const user = route.params.user
@@ -16,7 +15,6 @@ function EditProfileScreen({ navigation, route }) {
         phoneNumber: { value: user.phoneNumber }
     })
 
-    const [validationErrors, setValidationErrors] = useState({})
     const [error, setError] = useState(null)
     const [submitting, setSubmitting] = useState(false)
 
@@ -44,8 +42,6 @@ function EditProfileScreen({ navigation, route }) {
             }
             body[key] = field.value
         }
-
-        console.log(body)
 
         Network.PUT("/users/update", body)
             .then(() => {

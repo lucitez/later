@@ -1,23 +1,29 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { colors } from '../../assets/colors';
 
-function Button(props) {
+function Button({ theme, size, name, loading, onPress }) {
     return (
         <TouchableOpacity
             style={[
                 styles.buttonContainer,
-                buttonContainerStyleFromTheme(props.theme),
-                buttonContainerStyleFromSize(props.size)
+                buttonContainerStyleFromTheme(theme),
+                buttonContainerStyleFromSize(size)
             ]}
-            onPress={() => props.onPress()}
+            onPress={onPress}
+            disabled={loading}
         >
-            <Text style={[
-                buttonStyleFromTheme(props.theme),
-                buttonStyleFromSize(props.size)
-            ]}>
-                {props.name}
-            </Text>
+            {loading ?
+                <ActivityIndicator size='small' color={colors.white} />
+                :
+                <Text style={[
+                    buttonStyleFromTheme(theme),
+                    buttonStyleFromSize(size)
+                ]}>
+                    {name}
+                </Text>
+            }
+
         </TouchableOpacity>
     )
 

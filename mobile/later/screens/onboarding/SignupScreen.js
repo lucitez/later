@@ -23,6 +23,7 @@ function SignupScreen({ navigation }) {
         },
     })
 
+    const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState(null)
 
     const onFormDataChange = (name, value, error) => {
@@ -36,11 +37,13 @@ function SignupScreen({ navigation }) {
     }
 
     const signUp = () => {
+        setSubmitting(true)
         setError(null)
 
         for (let [_, field] of Object.entries(formData)) {
             if (field.error) {
                 setError(field.error)
+                setSubmitting(false)
                 return
             }
         }
@@ -51,6 +54,7 @@ function SignupScreen({ navigation }) {
         })
             .then(() => navigation.navigate('SMS', { formData }))
             .catch(err => setError(err))
+            .finally(() => setSubmitting(false))
 
     }
 
@@ -61,7 +65,6 @@ function SignupScreen({ navigation }) {
     return (
         <OnboardingFormWrapper
             title='Sign Up For Later'
-            leftIcon={<BackIcon navigation={navigation} color={colors.primary} />}
             rightIcon={
                 <View style={{ flexDirection: 'row' }}>
                     <Text>Have an account?</Text>
@@ -72,22 +75,25 @@ function SignupScreen({ navigation }) {
             }
         >
             <PlainText
+                required
                 name='name'
                 title='Name'
                 onChange={onFormDataChange}
             />
             <PlainText
-                inputProps={{ autoCorrect: false }}
+                required
                 name='username'
-                title="Username - this is permanent"
+                title="Username"
+                subtitle="this is permanent"
                 onChange={(name, value, error) => onFormDataChange(name, value, error)}
             />
             <PhoneNumber
+                required
                 name='phoneNumber'
                 title='Phone Number'
                 onChange={(name, value, error) => onFormDataChange(name, value, error)}
             />
-            <Button name='Next' size='medium' theme='primary' onPress={() => signUp()} />
+            <Button name='Next' size='medium' theme='primary' onPress={() => signUp()} loading={submitting} />
             {error &&
                 <View style={styles.errorMessageContainer}>
                     <Text style={styles.errorMessage}>{error}</Text>

@@ -4,7 +4,6 @@ import ChatsScreen from './ChatsScreen'
 import ChatDisplayScreen from './ChatDisplayScreen'
 import DiscoverScreen from './DiscoverScreen'
 import EditProfileScreen from './EditProfileScreen'
-import FriendScreen from './FriendScreen'
 import NotificationsScreen from './NotificationsScreen'
 import ProfileScreen from './ProfileScreen'
 import SavedScreen from './SavedScreen'
@@ -19,7 +18,6 @@ export { ChatsScreen }
 export { ChatDisplayScreen }
 export { DiscoverScreen }
 export { EditProfileScreen }
-export { FriendScreen }
 export { NotificationsScreen }
 export { ProfileScreen }
 export { SavedScreen }

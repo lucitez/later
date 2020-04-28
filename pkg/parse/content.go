@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"later/pkg/response"
 	"log"
 	"net/http"
 	"regexp"
@@ -31,6 +32,16 @@ func (c *ContentMetadata) ToContent(userID uuid.UUID) model.Content {
 		DomainFromURL(c.url),
 		userID,
 	)
+}
+
+func (c *ContentMetadata) ToContentPreview() response.ContentPreview {
+	return response.ContentPreview{
+		URL:         c.url,
+		Title:       wrappers.NewNullString(c.title),
+		Description: wrappers.NewNullString(c.description),
+		ImageURL:    wrappers.NewNullString(c.imageURL),
+		ContentType: wrappers.NewNullString(c.contentType),
+	}
 }
 
 type headerContent struct {
