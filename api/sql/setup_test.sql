@@ -1,4 +1,0 @@
-BEGIN;
-ALTER DATABASE later_test SET timezone TO 'UTC';
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO later_test;
-COMMIT;

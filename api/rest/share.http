@@ -1,7 +1,0 @@
-POST http://localhost:8000/shares/new
-Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODc5NjU5MjMsImlhdCI6MTU4Nzk2NTAyMywidXNlclNlc3Npb25faWQiOiJkY2VhMDdjMC00ODVlLTQ3ZTktYWU3NS1jMWQzMjk5OWVjZGQifQ.EPlWIS_AFHu2IExU9akjHbEDCYLbgbhPljkNxMc1oVY
-
-{
-    "recipient_user_ids": ["7233cf79-ab87-441e-af06-b777773121b0"],
-    "url": "https://hbr.org/2016/05/learn-to-love-networking"
-}
