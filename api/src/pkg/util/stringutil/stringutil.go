@@ -2,7 +2,7 @@ package stringutil
 
 import (
 	"database/sql"
-	"later/pkg/util/wrappers"
+	"github.com/lucitez/later/api/src/pkg/util/wrappers"
 	"math/rand"
 	"regexp"
 	"strconv"

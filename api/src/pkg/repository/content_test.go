@@ -1,9 +1,9 @@
 package repository_test
 
 import (
-	"later/pkg/model"
-	"later/pkg/repository"
-	"later/pkg/util/wrappers"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/repository"
+	"github.com/lucitez/later/api/src/pkg/util/wrappers"
 	"testing"
 )
 

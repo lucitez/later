@@ -1,11 +1,11 @@
 package server
 
 import (
-	"later/pkg/transfer"
+	"github.com/lucitez/later/api/src/pkg/transfer"
 	"net/http"
 
-	"later/pkg/request"
-	"later/pkg/service"
+	"github.com/lucitez/later/api/src/pkg/request"
+	"github.com/lucitez/later/api/src/pkg/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

@@ -2,7 +2,7 @@ package util
 
 import (
 	"database/sql"
-	"later/pkg/util/stringutil"
+	"github.com/lucitez/later/api/src/pkg/util/stringutil"
 	"reflect"
 	"strconv"
 	"strings"

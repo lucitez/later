@@ -7,11 +7,11 @@ import (
 
 	"github.com/google/uuid"
 
-	"later/pkg/model"
-	"later/pkg/service"
-	"later/pkg/service/body"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/service"
+	"github.com/lucitez/later/api/src/pkg/service/body"
 
-	"later/pkg/request"
+	"github.com/lucitez/later/api/src/pkg/request"
 
 	"github.com/gin-gonic/gin"
 )

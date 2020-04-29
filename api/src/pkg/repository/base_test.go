@@ -2,8 +2,8 @@ package repository_test
 
 import (
 	"fmt"
-	"later/pkg/repository"
-	"later/pkg/repository/util"
+	"github.com/lucitez/later/api/src/pkg/repository"
+	"github.com/lucitez/later/api/src/pkg/repository/util"
 	"os"
 	"testing"
 

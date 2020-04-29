@@ -1,10 +1,10 @@
 package transfer
 
 import (
-	"later/pkg/model"
-	"later/pkg/response"
-	"later/pkg/service"
-	"later/pkg/util/wrappers"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/response"
+	"github.com/lucitez/later/api/src/pkg/service"
+	"github.com/lucitez/later/api/src/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )

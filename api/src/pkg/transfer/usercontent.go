@@ -1,9 +1,9 @@
 package transfer
 
 import (
-	"later/pkg/model"
-	"later/pkg/response"
-	"later/pkg/service"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/response"
+	"github.com/lucitez/later/api/src/pkg/service"
 )
 
 type UserContent struct {

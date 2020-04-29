@@ -2,14 +2,14 @@ package repository
 
 import (
 	"database/sql"
-	"later/pkg/service/body"
+	"github.com/lucitez/later/api/src/pkg/service/body"
 	"log"
 	"strconv"
 
 	// Postgres driver
-	"later/pkg/model"
-	"later/pkg/repository/util"
-	"later/pkg/util/wrappers"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/repository/util"
+	"github.com/lucitez/later/api/src/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )

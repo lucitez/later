@@ -1,8 +1,8 @@
 package server
 
 import (
-	"later/pkg/service"
-	"later/pkg/transfer"
+	"github.com/lucitez/later/api/src/pkg/service"
+	"github.com/lucitez/later/api/src/pkg/transfer"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

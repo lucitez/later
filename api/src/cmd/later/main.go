@@ -1,46 +1,67 @@
 package main
 
 import (
-	"later"
-	"later/pkg/repository/util"
 	"log"
+	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/lucitez/later/api/src/pkg/server"
 )
 
 func main() {
 
-	db, err := util.InitDB()
+	// db, err := util.InitDB()
 
-	if err != nil {
-		log.Panic(err)
+	// if err != nil {
+	// 	log.Panic(err)
+	// }
+
+	// authServer := InitializeAuth(db)
+	// contentServer := InitializeContent(db)
+	// domainServer := InitializeDomain(db)
+	// friendServer := InitializeFriend(db)
+	// friendRequestServer := InitializeFriendRequest(db)
+	// shareServer := InitializeShare(db)
+	// userContentServer := InitializeUserContent(db)
+	// userServer := InitializeUser(db)
+	// chatServer := InitializeChat(db)
+	// messageServer := InitializeMessage(db)
+	testServer := server.NewTest()
+
+	// engine := InitializeServer(db)
+
+	router := gin.Default()
+
+	test := router.Group(testServer.Prefix())
+	{
+		testServer.Routes(test)
 	}
 
-	authServer := InitializeAuth(db)
-	contentServer := InitializeContent(db)
-	domainServer := InitializeDomain(db)
-	friendServer := InitializeFriend(db)
-	friendRequestServer := InitializeFriendRequest(db)
-	shareServer := InitializeShare(db)
-	userContentServer := InitializeUserContent(db)
-	userServer := InitializeUser(db)
-	chatServer := InitializeChat(db)
-	messageServer := InitializeMessage(db)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+		log.Printf("Defaulting to port %s", port)
+	}
+	log.Printf("Listening on port %s", port)
+	router.Run(":" + port)
 
-	server := InitializeServer(db)
-
-	server.Init(
-		[]later.RouteGroup{
-			&contentServer,
-			&domainServer,
-			&friendServer,
-			&friendRequestServer,
-			&shareServer,
-			&userContentServer,
-			&userServer,
-			&chatServer,
-			&messageServer,
-		},
-		[]later.RouteGroup{
-			&authServer,
-		},
-	)
+	// engine.Init(
+	// 	[]server.RouteGroup{
+	// 		// &contentServer,
+	// 		// &domainServer,
+	// 		// &friendServer,
+	// 		// &friendRequestServer,
+	// 		// &shareServer,
+	// 		// &userContentServer,
+	// 		// &userServer,
+	// 		// &chatServer,
+	// 		// &messageServer,
+	// 	},
+	// 	[]server.RouteGroup{
+	// 		// &authServer,
+	// 	},
+	// 	[]server.RouteGroup{
+	// 		&testServer,
+	// 	},
+	// )
 }

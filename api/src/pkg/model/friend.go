@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"later/pkg/response"
+	"github.com/lucitez/later/api/src/pkg/response"
 
-	"later/pkg/util/wrappers"
+	"github.com/lucitez/later/api/src/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )

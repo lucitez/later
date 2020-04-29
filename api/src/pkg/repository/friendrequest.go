@@ -9,8 +9,8 @@ import (
 	// pq driver
 	_ "github.com/lib/pq"
 
-	"later/pkg/model"
-	"later/pkg/repository/util"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/repository/util"
 )
 
 // FriendRequest ...

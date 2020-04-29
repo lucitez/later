@@ -1,7 +1,7 @@
 package response
 
 import (
-	"later/pkg/util/wrappers"
+	"github.com/lucitez/later/api/src/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )

@@ -2,8 +2,8 @@ package model
 
 import (
 	"database/sql"
-	"later/pkg/errs"
-	"later/pkg/util/wrappers"
+	"github.com/lucitez/later/api/src/pkg/errs"
+	"github.com/lucitez/later/api/src/pkg/util/wrappers"
 	"time"
 
 	"github.com/google/uuid"

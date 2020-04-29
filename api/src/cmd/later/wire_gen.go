@@ -7,12 +7,11 @@ package main
 
 import (
 	"database/sql"
-	"later"
-	"later/pkg/auth"
-	"later/pkg/repository"
-	"later/pkg/server"
-	"later/pkg/service"
-	"later/pkg/transfer"
+	"github.com/lucitez/later/api/src/pkg/auth"
+	"github.com/lucitez/later/api/src/pkg/repository"
+	"github.com/lucitez/later/api/src/pkg/server"
+	"github.com/lucitez/later/api/src/pkg/service"
+	"github.com/lucitez/later/api/src/pkg/transfer"
 )
 
 // Injectors from wire.go:
@@ -113,12 +112,12 @@ func InitializeAuth(db *sql.DB) server.Auth {
 	return serverAuth
 }
 
-func InitializeServer(db *sql.DB) later.Server {
+func InitializeServer(db *sql.DB) server.Server {
 	repositoryAuth := repository.NewAuth(db)
 	user := repository.NewUser(db)
 	authService := auth.NewService(repositoryAuth, user)
-	laterServer := later.NewServer(authService)
-	return laterServer
+	serverServer := server.NewServer(authService)
+	return serverServer
 }
 
 func InitializeChat(db *sql.DB) server.Chat {

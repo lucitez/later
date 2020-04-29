@@ -3,9 +3,9 @@ package server
 import (
 	"net/http"
 
-	"later/pkg/service"
+	"github.com/lucitez/later/api/src/pkg/service"
 
-	"later/pkg/request"
+	"github.com/lucitez/later/api/src/pkg/request"
 
 	"github.com/gin-gonic/gin"
 )

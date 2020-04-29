@@ -1,7 +1,7 @@
 package request
 
 import (
-	"later/pkg/service/body"
+	"github.com/lucitez/later/api/src/pkg/service/body"
 )
 
 // DomainCreateRequestBody Binding from json

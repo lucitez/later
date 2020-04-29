@@ -2,15 +2,15 @@ package repository
 
 import (
 	"database/sql"
-	"later/pkg/service/body"
+	"github.com/lucitez/later/api/src/pkg/service/body"
 	"log"
 	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 
-	"later/pkg/model"
-	"later/pkg/repository/util"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/repository/util"
 )
 
 /*

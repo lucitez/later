@@ -1,7 +1,7 @@
 package body
 
 import (
-	"later/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/model"
 )
 
 type DomainCreateBody struct {

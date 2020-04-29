@@ -1,4 +1,4 @@
-module later
+module github.com/lucitez/later/api/src
 
 go 1.13
 

@@ -1,10 +1,10 @@
 package server
 
 import (
-	"later/pkg/auth"
-	"later/pkg/request"
-	"later/pkg/service"
-	"later/pkg/util/stringutil"
+	"github.com/lucitez/later/api/src/pkg/auth"
+	"github.com/lucitez/later/api/src/pkg/request"
+	"github.com/lucitez/later/api/src/pkg/service"
+	"github.com/lucitez/later/api/src/pkg/util/stringutil"
 	"net/http"
 
 	"github.com/google/uuid"

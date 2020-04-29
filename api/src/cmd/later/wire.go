@@ -4,15 +4,13 @@ package main
 
 import (
 	"database/sql"
-	"later"
-	"later/pkg/auth"
-	"later/pkg/server"
-	"later/pkg/service"
-	"later/pkg/transfer"
-
-	"later/pkg/repository"
 
 	"github.com/google/wire"
+	"github.com/lucitez/later/api/src/pkg/auth"
+	"github.com/lucitez/later/api/src/pkg/repository"
+	"github.com/lucitez/later/api/src/pkg/server"
+	"github.com/lucitez/later/api/src/pkg/service"
+	"github.com/lucitez/later/api/src/pkg/transfer"
 )
 
 func InitializeContent(db *sql.DB) server.Content {
@@ -127,14 +125,14 @@ func InitializeAuth(db *sql.DB) server.Auth {
 	return server.Auth{}
 }
 
-func InitializeServer(db *sql.DB) later.Server {
+func InitializeServer(db *sql.DB) server.Server {
 	wire.Build(
-		later.NewServer,
+		server.NewServer,
 		auth.NewService,
 		repository.NewUser,
 		repository.NewAuth,
 	)
-	return later.Server{}
+	return server.Server{}
 }
 
 func InitializeChat(db *sql.DB) server.Chat {

@@ -1,7 +1,7 @@
 package parse
 
 import (
-	"later/pkg/response"
+	"github.com/lucitez/later/api/src/pkg/response"
 	"log"
 	"net/http"
 	"regexp"
@@ -10,8 +10,8 @@ import (
 
 	"golang.org/x/net/html"
 
-	"later/pkg/model"
-	"later/pkg/util/wrappers"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/util/wrappers"
 )
 
 type ContentMetadata struct {

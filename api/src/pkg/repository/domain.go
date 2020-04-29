@@ -2,10 +2,10 @@ package repository
 
 import (
 	"database/sql"
-	"later/pkg/repository/util"
+	"github.com/lucitez/later/api/src/pkg/repository/util"
 	"log"
 
-	"later/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/model"
 
 	// Postgres driver
 	_ "github.com/lib/pq"

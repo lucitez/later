@@ -1,16 +1,16 @@
 package repository_test
 
 import (
-	"later/pkg/service/body"
+	"github.com/lucitez/later/api/src/pkg/service/body"
 	"testing"
 
 	// Postgres driver
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 
-	"later/pkg/model"
-	"later/pkg/repository"
-	"later/pkg/util/wrappers"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/repository"
+	"github.com/lucitez/later/api/src/pkg/util/wrappers"
 )
 
 var userRepo repository.User

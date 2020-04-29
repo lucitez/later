@@ -1,9 +1,9 @@
 package service
 
 import (
-	"later/pkg/model"
-	"later/pkg/parse"
-	"later/pkg/repository"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/parse"
+	"github.com/lucitez/later/api/src/pkg/repository"
 	"log"
 
 	"github.com/google/uuid"

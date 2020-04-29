@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"later/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/model"
 	"strings"
 	"time"
 

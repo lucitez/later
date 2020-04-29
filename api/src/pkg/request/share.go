@@ -1,8 +1,8 @@
 package request
 
 import (
-	"later/pkg/model"
-	"later/pkg/service/body"
+	"github.com/lucitez/later/api/src/pkg/model"
+	"github.com/lucitez/later/api/src/pkg/service/body"
 
 	"github.com/google/uuid"
 )
