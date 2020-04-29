@@ -3,7 +3,7 @@ import _ from 'lodash';
 import store from '../store'
 
 const host = {
-    local: 'http://192.168.254.64:8000'
+    local: 'http://Lucass-MBP-2.home:8000'
 }
 
 const settings = {
