@@ -1,3 +1,0 @@
-POST http://localhost:8000/auth/login
-Client-Id: 315aac7e-467f-4acd-b325-71c86f491f54
-Authorization: Basic boat:pass

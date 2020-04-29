@@ -1,3 +1,9 @@
-api/sql/query.sql
-*cover.out
+# Mac OS
 .DS_Store
+
+*.exe
+*.test
+*.out
+
+api/sql/query.sql
+

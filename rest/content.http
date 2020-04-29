@@ -1,0 +1,30 @@
+# POST http://localhost:8000/content/create
+
+# {
+#     "url": "https://soundcloud.com/itskforest/stwo-kmh-lovin-u"
+# }
+
+# GET http://localhost:8000/user-content/filter?saved=true&user_id=2ef129c3-1301-4959-9710-df31688e88d4&search=Trum
+
+# GET http://localhost:8000/content/preview
+#     ?id=2cc0f186-e52f-455d-8d2f-c02048f49bb6
+
+GET http://localhost:8000/content/preview
+    ?url=https://www.nytimes.com/2020/04/16/business/economy/coronavirus-economy.html?referringSource=articleShare
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODgxMTIwNzgsImlhdCI6MTU4ODExMTE3OCwic3ViIjoiN2I4ODE1MjItM2E3Ni00OTI4LWFlZmEtM2FhNGM4MzkyNDQzIiwidXNlcl9zZXNzaW9uX2lkIjoiMjEwZmI1MmMtZTZlNy00YjhjLTg2MjMtYjAxNDAyZWViYjU1In0.kZlnbbIP_zruCzWVi8RASuNhwoluxIEhLPeACrlczLM
+
+# PUT http://localhost:8000/user-content/save
+
+# {
+#     "id": "3f3f9f14-6634-4a4f-b460-1aa938932acd",
+#     "tag": "footy"
+# }
+
+# PUT http://localhost:8000/user-content/delete
+
+# {
+#     "id": "2c77324a-411f-432e-b62e-e7398735363d"
+# }
+
+# GET http://localhost:8000/user-content/tags/filter
+# Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODc3NTY4MTAsImlhdCI6MTU4Nzc1NTkxMCwidXNlclNlc3Npb25faWQiOiIzMDI2MjFkYi1mY2NhLTQyNTktYWUxZS1mYzY1Y2QwMzU2YWIifQ.Pwdvy0IGxKVr0g_JVkVAXvSodMn8wdXvE9M3yh91r_c
