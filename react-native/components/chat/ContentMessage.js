@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, Image } from 'react-native'
 import { colors } from '../../assets/colors'
 
-export default function ContentMessage({ title, imageUrl }) {
+export default function ContentMessage({ title, imageUrl, fromMe }) {
 
     const [imageAR, setImageAR] = useState(1)
 
@@ -12,7 +12,7 @@ export default function ContentMessage({ title, imageUrl }) {
 
     return (
         <View style={styles.container}>
-            <View style={styles.detailsContainer}>
+            <View style={[styles.detailsContainer, { backgroundColor: fromMe ? colors.blue : colors.darkGray }]}>
                 {imageUrl &&
                     <Image
                         style={[styles.image, { aspectRatio: imageAR }]}

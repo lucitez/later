@@ -82,6 +82,7 @@ function SignupScreen({ navigation }) {
             />
             <PlainText
                 required
+                pattern='/[a-z0-9]{5,20}'
                 name='username'
                 title="Username"
                 subtitle="this is permanent"

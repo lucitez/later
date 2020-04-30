@@ -12,12 +12,12 @@ export const colors = {
 
 export const contentTypes = {
     watch: {
-        color: 'purple'
+        color: colors.purple
     },
     read: {
-        color: 'green'
+        color: colors.green
     },
     listen: {
-        color: 'blue'
+        color: colors.blue
     }
 }

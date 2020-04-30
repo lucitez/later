@@ -25,7 +25,7 @@ export default function MessageContainer({ message, userId }) {
             { marginBottom: slideUpAnim }
         ]} >
             {!fromMe && <UserProfile />}
-            {message.message ? <Message message={message.message} /> : <ContentMessage {...message.content} />}
+            {message.message ? <Message message={message.message} fromMe={fromMe} /> : <ContentMessage {...message.content} fromMe={fromMe} />}
             {fromMe && <UserProfile />}
         </Animated.View>
     )

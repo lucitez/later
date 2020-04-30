@@ -2,9 +2,9 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { colors } from '../../assets/colors'
 
-export default function Message({ message }) {
+export default function Message({ message, fromMe }) {
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: fromMe ? colors.blue : colors.darkGray }]}>
             <Text style={styles.message}>{message}</Text>
         </View>
     )
@@ -13,7 +13,6 @@ export default function Message({ message }) {
 const styles = StyleSheet.create({
     container: {
         maxWidth: '60%',
-        backgroundColor: colors.darkGray,
         margin: 5,
         marginTop: 10,
         padding: 10,

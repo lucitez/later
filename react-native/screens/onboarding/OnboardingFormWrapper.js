@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Text, SafeAreaView } from 'react-native'
-import { Icon, BackIcon } from '../../components/common'
+import { Icon } from '../../components/common'
 import { colors } from '../../assets/colors'
 import { ScrollView } from 'react-native-gesture-handler'
 

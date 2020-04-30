@@ -43,7 +43,7 @@ export default function ChatInput({ onSend }) {
                     onChangeText={text => setChatInput(text)}
                 />
             </View>
-            <TouchableOpacity style={styles.sendContainer} onPress={() => {
+            <TouchableOpacity containerStyle={styles.sendContainer} onPress={() => {
                 if (chatInput != '') {
                     onSend(chatInput)
                     setChatInput('')
@@ -64,10 +64,9 @@ const styles = StyleSheet.create({
         paddingBottom: 5,
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignItems: 'center',
     },
     inputContainer: {
-        flexGrow: 1,
+        width: '85%',
         borderRadius: 20,
         padding: 10,
         paddingTop: 5,
@@ -80,12 +79,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     sendContainer: {
-        flexGrow: 1,
+        width: '15%',
         padding: 5,
-        paddingLeft: 10,
-        paddingRight: 0,
-        marginBottom: 3,
+        marginBottom: 5,
         justifyContent: 'flex-end',
+        alignItems: 'center',
     },
     send: {
         color: colors.primary,
