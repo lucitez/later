@@ -32,6 +32,7 @@ import Network from './util/Network'
 import * as actions from './actions'
 import { AuthContext } from './context'
 import { authHeader } from './util/headers'
+import env from './environment'
 
 const ApplicationStack = createStackNavigator()
 const ApplicationTabs = createBottomTabNavigator()
@@ -101,6 +102,7 @@ function CreateApplicationTabs() {
 }
 
 const updateTokens = async (tokens) => {
+  console.log('UPDATING TOKENS', tokens)
   try {
     let userId = jwtDecode(tokens.accessToken).sub
     store.dispatch(actions.setTokens(tokens))
@@ -134,6 +136,7 @@ function App() {
       await autoLogin()
         .then(setIsSignedIn(true))
         .catch(err => {
+          console.log(err)
           setIsSignedIn(false)
         })
       setIsLoading(false)

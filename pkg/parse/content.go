@@ -1,10 +1,11 @@
 package parse
 
 import (
-	"github.com/lucitez/later/pkg/response"
 	"log"
 	"net/http"
-	"regexp"
+	"net/url"
+
+	"github.com/lucitez/later/pkg/response"
 
 	"github.com/google/uuid"
 
@@ -23,13 +24,19 @@ type ContentMetadata struct {
 }
 
 func (c *ContentMetadata) ToContent(userID uuid.UUID) model.Content {
+	domain, err := DomainFromURL(c.url)
+
+	if err != nil {
+		log.Printf("[WARN] Could not parse domain from url %s\n", err.Error())
+	}
+
 	return model.NewContent(
 		wrappers.NewNullString(c.title),
 		wrappers.NewNullString(c.description),
 		wrappers.NewNullString(c.imageURL),
 		wrappers.NewNullString(c.contentType),
 		c.url,
-		DomainFromURL(c.url),
+		domain,
 		userID,
 	)
 }
@@ -51,12 +58,13 @@ type headerContent struct {
 }
 
 // DomainFromURL extracts the domain from the url
-func DomainFromURL(url string) string {
-	domainRegex := regexp.MustCompile(`.*[\./]([^\.]+)\.(com|co|org)`)
-	matches := domainRegex.FindStringSubmatch(url)
-	urlDomain := string(matches[1])
+func DomainFromURL(urlStr string) (string, error) {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return "", err
+	}
 
-	return urlDomain
+	return u.Hostname(), nil
 }
 
 // ContentFromURL scrapes the data found at the url's address to find elements to populate Content with

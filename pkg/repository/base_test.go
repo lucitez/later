@@ -4,6 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/joho/godotenv"
+
 	"github.com/lucitez/later/pkg/inits"
 	"github.com/lucitez/later/pkg/repository"
 	"github.com/lucitez/later/pkg/repository/util"
@@ -31,7 +33,7 @@ var userID, _ = uuid.NewRandom()
 var userID2, _ = uuid.NewRandom()
 
 func TestMain(m *testing.M) {
-
+	godotenv.Load("../../.env.local")
 	db := inits.TestDB()
 
 	defer testUtil.DB.Close()

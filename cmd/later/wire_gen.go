@@ -7,6 +7,7 @@ package main
 
 import (
 	"database/sql"
+
 	"github.com/lucitez/later/pkg/auth"
 	"github.com/lucitez/later/pkg/repository"
 	"github.com/lucitez/later/pkg/server"

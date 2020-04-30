@@ -1,18 +1,10 @@
 import axios from 'axios';
 import _ from 'lodash';
 import store from '../store'
-
-const host = {
-    local: 'http://Lucass-MBP-2.home:8000'
-}
-
-const settings = {
-    clientId: '315aac7e-467f-4acd-b325-71c86f491f54',
-    host: host
-}
+import env from '../environment'
 
 const client = axios.create({
-    baseURL: host.local,
+    baseURL: env.apiUrl,
     timeout: 10000
 })
 
@@ -24,7 +16,7 @@ const addAuthHeaders = (url, headers) => {
     if (url.startsWith("/auth")) {
         return {
             ...headers,
-            'Client-ID': settings.clientId
+            'Client-ID': env.clientId
         }
     } else {
         let accessToken = store.getState().auth.tokens.accessToken
