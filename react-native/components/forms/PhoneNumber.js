@@ -53,7 +53,7 @@ const toDisplayValue = (rawText) => {
 
 const hasError = (required, value) => {
     if (required && value == '') {
-        return 'phone number is required'
+        return 'Phone Number is required'
     }
 
     const pattern = /^[\d]{10}$/

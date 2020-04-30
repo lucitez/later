@@ -7,7 +7,6 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createStackNavigator } from '@react-navigation/stack'
 import { Icon } from './components/common'
-import jwtDecode from 'jwt-decode'
 import {
   ByTagScreen,
   ContentScreen,
@@ -28,11 +27,9 @@ import {
   CreatePasswordScreen,
 } from './screens/onboarding/index'
 import { colors } from './assets/colors'
-import Network from './util/Network'
 import * as actions from './actions'
 import { AuthContext } from './context'
-import { authHeader } from './util/headers'
-import env from './environment'
+import { refreshTokens } from './util/auth'
 
 const ApplicationStack = createStackNavigator()
 const ApplicationTabs = createBottomTabNavigator()
@@ -101,45 +98,29 @@ function CreateApplicationTabs() {
   )
 }
 
-const updateTokens = async (tokens) => {
-  console.log('UPDATING TOKENS', tokens)
-  try {
-    let userId = jwtDecode(tokens.accessToken).sub
-    store.dispatch(actions.setTokens(tokens))
-    store.dispatch(actions.setUserId(userId))
-    await AsyncStorage.setItem('refresh_token', tokens.refreshToken)
-  } catch (e) {
-    console.error(e)
-  }
-}
-
-const autoLogin = async () => {
-  let refreshToken = await AsyncStorage.getItem('refresh_token')
-
-  if (refreshToken) {
-    let refreshAuthHeader = authHeader(refreshToken)
-    let newTokens = await Network.POST('/auth/refresh', {}, refreshAuthHeader)
-
-    updateTokens(newTokens)
-    return
-  }
-
-  throw new Error("No refresh token")
-}
-
 function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSignedIn, setIsSignedIn] = useState(false)
 
   useEffect(() => {
     const init = async () => {
-      await autoLogin()
-        .then(setIsSignedIn(true))
-        .catch(err => {
-          console.log(err)
-          setIsSignedIn(false)
-        })
-      setIsLoading(false)
+      let refreshToken = await AsyncStorage.getItem('refresh_token')
+
+      if (refreshToken) {
+        await store.dispatch(actions.setTokens({ accessToken: null, refreshToken }))
+        refreshTokens()
+          .then(() => {
+            setIsSignedIn(true)
+            setIsLoading(false)
+          })
+          .catch(err => {
+            console.log(err)
+            setIsLoading(false)
+
+          })
+      } else {
+        setIsLoading(false)
+      }
     }
 
     init()

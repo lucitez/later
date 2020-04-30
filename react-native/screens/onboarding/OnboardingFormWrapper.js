@@ -1,38 +1,40 @@
 import React from 'react'
-import { StyleSheet, View, Text, SafeAreaView } from 'react-native'
+import { StyleSheet, View, Text, SafeAreaView, KeyboardAvoidingView } from 'react-native'
 import { Icon } from '../../components/common'
 import { colors } from '../../assets/colors'
 import { ScrollView } from 'react-native-gesture-handler'
 
 function OnboardingFormWrapper({ leftIcon, rightIcon, title, description, children }) {
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps='handled'>
-                <View style={styles.header}>
-                    <View style={styles.leftIconContainer}>
-                        {leftIcon}
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.lightGray }}>
+            <KeyboardAvoidingView behavior='padding' style={{ flex: 1 }}>
+                <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps='handled'>
+                    <View style={styles.header}>
+                        <View style={styles.leftIconContainer}>
+                            {leftIcon}
+                        </View>
+                        <View style={styles.rightIconContainer}>
+                            {rightIcon}
+                        </View>
                     </View>
-                    <View style={styles.rightIconContainer}>
-                        {rightIcon}
+                    <View style={styles.details}>
+                        <View style={styles.logoContainer}>
+                            <Icon type='share' size={50} color={colors.primary} />
+                        </View>
+                        <View style={styles.titleContainer}>
+                            <Text style={styles.title}>{title}</Text>
+                        </View>
+                        {description && <View style={styles.descriptionContainer}>
+                            <Text style={styles.description}>{description}</Text>
+                        </View>}
                     </View>
-                </View>
-                <View style={styles.details}>
-                    <View style={styles.logoContainer}>
-                        <Icon type='share' size={50} color={colors.primary} />
+                    <View style={styles.formContainer}>
+                        <View style={styles.formContentsContainer}>
+                            {children}
+                        </View>
                     </View>
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.title}>{title}</Text>
-                    </View>
-                    {description && <View style={styles.descriptionContainer}>
-                        <Text style={styles.description}>{description}</Text>
-                    </View>}
-                </View>
-                <View style={styles.formContainer}>
-                    <View style={styles.formContentsContainer}>
-                        {children}
-                    </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     )
 }

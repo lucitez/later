@@ -1,24 +1,14 @@
 import React, { useState, useContext } from 'react'
-import { useDispatch } from 'react-redux'
-import { Buffer } from 'buffer'
-import { StyleSheet, View, Text, AsyncStorage } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
 import { Button, BackIcon } from '../../components/common'
-import Network from '../../util/Network'
-import * as actions from '../../actions'
 import { AuthContext } from '../../context'
 import { colors } from '../../assets/colors'
 import { PlainText, Password } from '../../components/forms'
-import { authHeader } from '../../util/headers'
 import OnboardingFormWrapper from './OnboardingFormWrapper'
-import jwtDecode from 'jwt-decode'
-
-const setRefreshToken = async (token) => {
-    await AsyncStorage.setItem('refresh_token', token)
-}
+import { logIn } from '../../util/auth'
 
 function LoginScreen({ navigation }) {
     const { signIn } = useContext(AuthContext)
-    const dispatch = useDispatch()
 
     const [formData, setFormData] = useState({
         identifier: '',
@@ -34,24 +24,14 @@ function LoginScreen({ navigation }) {
         })
     }
 
-    const login = () => {
+    const submit = () => {
         setError(null)
-        let token = new Buffer(`${formData.identifier}:${formData.password}`).toString('base64')
-
-        Network.POST('/auth/login', {}, authHeader(token))
-            .then(tokens => {
-                try {
-                    let userId = jwtDecode(tokens.accessToken).sub
-                    dispatch(actions.setTokens(tokens))
-                    dispatch(actions.setUserId(userId))
-                    setRefreshToken(tokens.refreshToken)
-                    signIn()
-                }
-                catch (e) {
-                    console.error(e)
-                }
+        logIn(formData)
+            .then(() => signIn())
+            .catch(err => {
+                console.log(err)
+                setError('Invalid username or password')
             })
-            .catch(() => setError('Invalid username or password'))
     }
 
     return (
@@ -71,7 +51,7 @@ function LoginScreen({ navigation }) {
                 value={formData.password}
                 onChange={onFormDataChange}
             />
-            <Button name='Submit' size='medium' theme='primary' onPress={() => login()} />
+            <Button name='Submit' size='medium' theme='primary' onPress={() => submit()} />
             {error &&
                 <View style={styles.errorMessageContainer}>
                     <Text style={styles.errorMessage}>{error}</Text>

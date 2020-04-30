@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
-import { Button, BackIcon } from '../../components/common'
+import { Button } from '../../components/common'
 import { colors } from '../../assets/colors'
 import { PlainText, PhoneNumber } from '../../components/forms'
 import OnboardingFormWrapper from './OnboardingFormWrapper'
@@ -52,9 +52,14 @@ function SignupScreen({ navigation }) {
             phoneNumber: formData.phoneNumber.value,
             username: formData.username.value
         })
-            .then(() => navigation.navigate('SMS', { formData }))
-            .catch(err => setError(err))
-            .finally(() => setSubmitting(false))
+            .then(() => {
+                setSubmitting(false)
+                navigation.navigate('SMS', { formData })
+            })
+            .catch(err => {
+                setError(err)
+                setSubmitting(false)
+            })
 
     }
 
@@ -64,7 +69,8 @@ function SignupScreen({ navigation }) {
 
     return (
         <OnboardingFormWrapper
-            title='Sign Up For Later'
+            title='Welcome to Later!'
+            description='create an account below'
             rightIcon={
                 <View style={{ flexDirection: 'row' }}>
                     <Text>Have an account?</Text>

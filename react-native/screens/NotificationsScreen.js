@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { FriendRequest } from '../components/user';
@@ -7,11 +7,20 @@ import { Divider } from '../components/common';
 
 function NotificationsScreen() {
     const [friendRequests, setFriendRequests] = useState([])
+    const [refreshing, setRefreshing] = useState(false)
+
+    const loadFriendRequests = () => {
+        setRefreshing(true)
+        Network.GET('/friend-requests/pending')
+            .then(fr => {
+                setFriendRequests(fr)
+                setRefreshing(false)
+            })
+            .catch(err => setRefreshing(false))
+    }
 
     useEffect(() => {
-        getFriendRequests()
-            .then(friendRequests => setFriendRequests(friendRequests))
-            .catch(err => console.error(err))
+        loadFriendRequests()
     }, [])
 
     const onAction = (friendRequest, action) => {
@@ -25,27 +34,28 @@ function NotificationsScreen() {
             })
     }
 
+    const renderFriendRequest = ({ item }) => {
+        <FriendRequest
+            request={item}
+            onAction={action => onAction(item, action)}
+        />
+    }
+
     return (
         <View style={styles.container}>
-            {friendRequests.map((friendRequest, index) =>
-                <View key={index}>
-                    <FriendRequest
-                        request={friendRequest}
-                        onAction={action => onAction(friendRequest, action)}
-                    />
-                    {index < friendRequests.length - 1 && <Divider />}
-                </View>
-            )}
+            <FlatList
+                data={friendRequests}
+                renderItem={renderFriendRequest}
+                onRefresh={loadFriendRequests}
+                refreshing={refreshing}
+                ItemSeparatorComponent={<Divider />}
+            />
         </View>
     );
 }
 
 const updateFriendRequests = (requests, requestId, status) => {
     return requests.map(request => requestId == request.id ? { ...request, ['status']: status } : request)
-}
-
-const getFriendRequests = () => {
-    return Network.GET('/friend-requests/pending')
 }
 
 const respondToFriendRequest = (id, action) => {

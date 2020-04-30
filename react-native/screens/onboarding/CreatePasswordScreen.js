@@ -1,23 +1,14 @@
 import React, { useState, useContext } from 'react'
-import { useDispatch } from 'react-redux'
-import { Buffer } from 'buffer'
-import { StyleSheet, View, Text, AsyncStorage } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
 import OnboardingFormWrapper from './OnboardingFormWrapper'
 import { Password } from '../../components/forms'
 import { Button, BackIcon } from '../../components/common';
-import Network from '../../util/Network';
-import { authHeader } from '../../util/headers'
 import { AuthContext } from '../../context'
 import { colors } from '../../assets/colors';
-import * as actions from '../../actions'
-
-const setRefreshToken = async (token) => {
-    await AsyncStorage.setItem('refresh_token', token)
-}
+import { signUp } from '../../util/auth'
 
 export default function CreatePasswordScreen({ navigation, route }) {
     const { signIn } = useContext(AuthContext)
-    const dispatch = useDispatch()
 
     const [formData, setFormData] = useState(route.params.formData)
     const [error, setError] = useState(null)
@@ -30,13 +21,12 @@ export default function CreatePasswordScreen({ navigation, route }) {
             return
         }
 
-        signUp(formData)
-            .then(newTokens => {
-                dispatch(actions.setTokens(newTokens))
-                setRefreshToken(newTokens.refreshToken)
-                signIn()
+        signUp(Object.fromEntries(Object.entries(formData).map(([field, data]) => [field, data.value])))
+            .then(() => signIn())
+            .catch(err => {
+                console.log(err)
+                setError(err)
             })
-            .catch(err => console.error(err))
     }
 
     const onFormDataChange = (name, value, error) => {
@@ -67,17 +57,6 @@ export default function CreatePasswordScreen({ navigation, route }) {
                 </View>}
         </OnboardingFormWrapper>
     )
-}
-
-const signUp = formData => {
-    let token = new Buffer(`${formData.phoneNumber.value}:${formData.password.value}`).toString('base64')
-    let header = authHeader(token)
-    let body = {
-        name: formData.name.value,
-        username: formData.username.value
-    }
-
-    return Network.POST('/auth/sign-up', body, header)
 }
 
 const styles = StyleSheet.create({

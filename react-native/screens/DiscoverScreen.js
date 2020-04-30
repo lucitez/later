@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import { StyleSheet, View, SafeAreaView, TouchableOpacity } from 'react-native'
 import { colors } from '../assets/colors'
 import { SearchBar, Divider } from '../components/common'
@@ -9,6 +10,8 @@ import { FlatList } from 'react-native-gesture-handler'
 const LIMIT = 20
 
 function DiscoverScreen({ navigation }) {
+    let userId = useSelector(state => state.auth.userId)
+
     const [users, setUsers] = useState([])
     const [search, setSearch] = useState('')
     const [offset, setOffset] = useState(0)
@@ -23,7 +26,7 @@ function DiscoverScreen({ navigation }) {
                     setLimitReached(true)
                 }
                 setOffset(offset + users.length)
-                setFunc(users)
+                setFunc(users.filter(user => user.id != userId))
                 setRefreshing(false)
             })
             .catch(err => {
