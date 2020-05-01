@@ -1,1 +1,0 @@
-export const authHeader = token => ({ Authorization: `Basic ${token}` })
