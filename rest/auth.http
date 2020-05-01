@@ -1,3 +1,9 @@
-POST http://localhost:8000/auth/login
-Client-Id: 315aac7e-467f-4acd-b325-71c86f491f54
-Authorization: Basic boat:pass
+# POST http://localhost:8000/auth/login
+# Client-Id: 315aac7e-467f-4acd-b325-71c86f491f54
+# Authorization: Basic boat:pass
+
+
+
+POST https://later-api.appspot.com/auth/login
+Client-Id: bc42c734-992a-463a-9602-36218ce03152
+Authorization: Basic lucashmoney:343!Mcrdd

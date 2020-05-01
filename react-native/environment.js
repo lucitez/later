@@ -4,7 +4,6 @@ import { CLIENT_ID } from 'react-native-dotenv'
 const ENV = {
     dev: {
         apiUrl: 'http://192.168.254.64:8080',
-        // apiUrl: 'https://later-api.appspot.com',
         clientId: CLIENT_ID,
     },
     staging: {

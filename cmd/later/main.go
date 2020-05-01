@@ -1,8 +1,9 @@
 package main
 
 import (
-	"flag"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/lucitez/later/pkg/inits"
@@ -11,21 +12,21 @@ import (
 
 func main() {
 
-	var env string
 	var err error
-	flag.StringVar(&env, "env", "prod", "specify environment")
 
-	flag.Parse()
+	env := os.Getenv("NODE_ENV")
+
+	fmt.Printf("ENVIRONMENT FROM NODE_ENV: %s", env)
 
 	switch env {
-	case "local":
-		err = godotenv.Load(".env.local")
-	case "stage":
-		err = godotenv.Load(".env.stage")
+	case "production":
+		err = godotenv.Load(".env.prod")
+	default:
+		err = godotenv.Load(".env.prod")
 	}
 
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatalf("Error loading .env file, %v", err)
 	}
 
 	db := inits.DB()
