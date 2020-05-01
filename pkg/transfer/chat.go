@@ -2,6 +2,7 @@ package transfer
 
 import (
 	"fmt"
+
 	"github.com/lucitez/later/pkg/model"
 	"github.com/lucitez/later/pkg/response"
 	"github.com/lucitez/later/pkg/service"
@@ -11,17 +12,20 @@ import (
 )
 
 type Chat struct {
-	UserService    service.User
-	MessageService service.Message
+	UserService        service.User
+	MessageService     service.Message
+	UserMessageService service.UserMessage
 }
 
 func NewChat(
 	userService service.User,
 	messageService service.Message,
+	userMessageService service.UserMessage,
 ) Chat {
 	return Chat{
 		userService,
 		messageService,
+		userMessageService,
 	}
 }
 
@@ -46,7 +50,7 @@ func (c *Chat) WireChatFromChat(chat model.Chat, userID uuid.UUID) (wireChat res
 			wireChat.OtherUserUsername = wrappers.NewNullStringFromString(user.Username)
 		}
 	} else {
-		wireChat.GroupName = wrappers.NewNullStringFromString("GROUP NAME")
+		wireChat.GroupName = wrappers.NewNullStringFromString("PUT GROUP NAME HERE")
 	}
 
 	if messages, err := c.MessageService.ByChatID(chat.ID, 1, 0); err == nil && len(messages) > 0 {
@@ -61,6 +65,9 @@ func (c *Chat) WireChatFromChat(chat model.Chat, userID uuid.UUID) (wireChat res
 			wireChat.Activity = fmt.Sprintf("%s %s", user.Username, activityMessage)
 		}
 	}
+
+	wireChat.LastMessageSentAt = chat.LastMessageSentAt
+	wireChat.HasUnread = c.UserMessageService.UnreadByChatAndUser(chat.ID, userID)
 
 	return
 }

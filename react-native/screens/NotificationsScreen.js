@@ -34,12 +34,12 @@ function NotificationsScreen() {
             })
     }
 
-    const renderFriendRequest = ({ item }) => {
+    const renderFriendRequest = ({ item }) => (
         <FriendRequest
             request={item}
             onAction={action => onAction(item, action)}
         />
-    }
+    )
 
     return (
         <View style={styles.container}>

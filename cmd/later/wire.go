@@ -69,6 +69,7 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 		service.NewUser,
 		service.NewChat,
 		service.NewMessage,
+		service.NewUserMessage,
 		repository.NewContent,
 		repository.NewDomain,
 		repository.NewShare,
@@ -76,6 +77,7 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 		repository.NewUser,
 		repository.NewChat,
 		repository.NewMessage,
+		repository.NewUserMessage,
 	)
 	return server.ShareServer{}
 }
@@ -141,8 +143,10 @@ func InitializeChat(db *sql.DB) server.Chat {
 		repository.NewUser,
 		service.NewChat,
 		service.NewMessage,
+		service.NewUserMessage,
 		repository.NewChat,
 		repository.NewMessage,
+		repository.NewUserMessage,
 		server.NewChat,
 		transfer.NewChat,
 	)
@@ -157,10 +161,12 @@ func InitializeMessage(db *sql.DB) server.Message {
 		service.NewMessage,
 		service.NewContent,
 		service.NewDomain,
+		service.NewUserMessage,
 		repository.NewChat,
 		repository.NewMessage,
 		repository.NewContent,
 		repository.NewDomain,
+		repository.NewUserMessage,
 		transfer.NewMessage,
 	)
 

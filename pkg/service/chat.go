@@ -17,6 +17,10 @@ func NewChat(
 	return Chat{repo}
 }
 
+func (c *Chat) ByID(id uuid.UUID) (*model.Chat, error) {
+	return c.Repo.ByID(id)
+}
+
 func (c *Chat) ForUser(userID uuid.UUID) ([]model.Chat, error) {
 	return c.Repo.ByUserID(userID)
 }

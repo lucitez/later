@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/lucitez/later/pkg/util/wrappers"
 	"time"
+
+	"github.com/lucitez/later/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )
@@ -14,8 +15,9 @@ type Chat struct {
 	User1ID wrappers.NullUUID
 	User2ID wrappers.NullUUID
 
-	CreatedAt time.Time
-	DeletedAt wrappers.NullTime
+	CreatedAt         time.Time
+	LastMessageSentAt wrappers.NullTime
+	DeletedAt         wrappers.NullTime
 }
 
 func NewGroupChat(

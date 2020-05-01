@@ -14,7 +14,7 @@ const setSessionTimeout = (duration) => {
     clearTimeout(sessionTimeout);
     sessionTimeout = setTimeout(
         refreshTokens,
-        duration - SESSION_TIMEOUT_THRESHOLD
+        (duration - SESSION_TIMEOUT_THRESHOLD) * 1000 - Date.now()
     );
 };
 

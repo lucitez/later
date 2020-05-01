@@ -10,10 +10,12 @@ import { signUp } from '../../util/auth'
 export default function CreatePasswordScreen({ navigation, route }) {
     const { signIn } = useContext(AuthContext)
 
+    const [submitting, setSubmitting] = useState(false)
     const [formData, setFormData] = useState(route.params.formData)
     const [error, setError] = useState(null)
 
     const onSubmit = () => {
+        setSubmitting(true)
         setError(null)
 
         if (formData.password.error) {
@@ -22,10 +24,14 @@ export default function CreatePasswordScreen({ navigation, route }) {
         }
 
         signUp(Object.fromEntries(Object.entries(formData).map(([field, data]) => [field, data.value])))
-            .then(() => signIn())
+            .then(() => {
+                setSubmitting(false)
+                signIn()
+            })
             .catch(err => {
                 console.log(err)
                 setError(err)
+                setSubmitting(false)
             })
     }
 
@@ -50,10 +56,14 @@ export default function CreatePasswordScreen({ navigation, route }) {
                 title='Password'
                 onChange={onFormDataChange}
             />
-            <Button name='Submit' theme='primary' size='medium' onPress={onSubmit} />
+            <Button name='Submit' theme='primary' size='medium' onPress={onSubmit} loading={submitting} />
             {error &&
                 <View style={styles.errorMessageContainer}>
                     <Text style={styles.errorMessage}>{error}</Text>
+                </View>}
+            {submitting &&
+                <View style={styles.errorMessageContainer}>
+                    <Text style={styles.contextMessage}>Creating your account</Text>
                 </View>}
         </OnboardingFormWrapper>
     )
@@ -70,6 +80,10 @@ const styles = StyleSheet.create({
     errorMessage: {
         color: 'red',
         fontWeight: '300',
-    }
+    },
+    contextMessage: {
+        color: colors.black,
+        fontWeight: '300',
+    },
 })
 

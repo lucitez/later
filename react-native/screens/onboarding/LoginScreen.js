@@ -10,6 +10,7 @@ import { logIn } from '../../util/auth'
 function LoginScreen({ navigation }) {
     const { signIn } = useContext(AuthContext)
 
+    const [submitting, setSubmitting] = useState(false)
     const [formData, setFormData] = useState({
         identifier: '',
         password: ''
@@ -25,11 +26,16 @@ function LoginScreen({ navigation }) {
     }
 
     const submit = () => {
+        setSubmitting(true)
         setError(null)
         logIn(formData)
-            .then(() => signIn())
+            .then(() => {
+                setSubmitting(false)
+                signIn()
+            })
             .catch(err => {
                 console.log(err)
+                setSubmitting(false)
                 setError('Invalid username or password')
             })
     }
@@ -55,6 +61,10 @@ function LoginScreen({ navigation }) {
             {error &&
                 <View style={styles.errorMessageContainer}>
                     <Text style={styles.errorMessage}>{error}</Text>
+                </View>}
+            {submitting &&
+                <View style={styles.errorMessageContainer}>
+                    <Text style={styles.contextMessage}>Logging you in...</Text>
                 </View>}
         </OnboardingFormWrapper>
     )
@@ -91,7 +101,11 @@ const styles = StyleSheet.create({
     errorMessage: {
         color: 'red',
         fontWeight: '300',
-    }
+    },
+    contextMessage: {
+        color: colors.black,
+        fontWeight: '300',
+    },
 })
 
 export default LoginScreen

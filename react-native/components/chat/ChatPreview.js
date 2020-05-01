@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { colors } from '../../assets/colors';
+import { timeSince } from '../../util/time';
 
 function ChatPreview({ chat }) {
     return (
@@ -11,16 +12,23 @@ function ChatPreview({ chat }) {
             <View style={{ flexGrow: 1 }}>
                 <View style={styles.userInfoContainer}>
                     <View style={styles.nameContainer}>
-                        <Text style={styles.name}>{chat.otherUserName}</Text>
-
+                        <Text style={[styles.name, chat.hasUnread && { fontWeight: 'bold' }]}>{chat.otherUserName}</Text>
                     </View>
                     <View style={styles.usernameContainer}>
-                        <Text style={styles.username}>@{chat.otherUserUsername}</Text>
+                        <Text style={[styles.username, chat.hasUnread && { fontWeight: '500' }]}>@{chat.otherUserUsername}</Text>
                     </View>
                 </View>
                 <View style={styles.messageContainer}>
-                    <Text style={styles.message}>{chat.activity}</Text>
+                    <Text style={styles.message}>{chat.activity}{chat.lastMessageSentAt && ` - ${timeSince(Date.parse(chat.lastMessageSentAt))}`}</Text>
                 </View>
+            </View>
+            {chat.hasUnread &&
+                <View style={styles.hasUnreadContainer}>
+                    <View style={styles.hasUnread} />
+                </View>
+            }
+            <View>
+                <Text>{chat.hasUnread}</Text>
             </View>
         </View>
     );
@@ -29,13 +37,15 @@ function ChatPreview({ chat }) {
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        height: 60,
+        alignItems: 'center',
+        height: 70,
         width: '100%',
         backgroundColor: colors.white
     },
     imageContainer: {
-        width: 60,
-        padding: 5,
+        aspectRatio: 1,
+        height: '70%',
+        marginLeft: 5,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -71,6 +81,17 @@ const styles = StyleSheet.create({
     message: {
         opacity: 0.75,
         fontStyle: 'italic'
+    },
+    hasUnreadContainer: {
+        height: '100%',
+        justifyContent: 'center',
+        padding: 15,
+    },
+    hasUnread: {
+        height: 7.5,
+        width: 7.5,
+        borderRadius: 5,
+        backgroundColor: colors.primary
     }
 });
 

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+
 	"github.com/lucitez/later/pkg/model"
 	"github.com/lucitez/later/pkg/repository/util"
 
@@ -53,7 +54,8 @@ func (repository *Chat) ByID(id uuid.UUID) (*model.Chat, error) {
 func (repository *Chat) ByUserID(userID uuid.UUID) ([]model.Chat, error) {
 	statement := chatSelectStatement + `
 	WHERE (user1_id = $1 OR user2_id = $1)
-	AND deleted_at IS NULL;
+	AND deleted_at IS NULL
+	ORDER BY last_message_sent_at DESC NULLS LAST;
 	`
 
 	rows, err := repository.DB.Query(statement, userID)

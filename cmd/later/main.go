@@ -14,15 +14,15 @@ func main() {
 
 	var err error
 
-	env := os.Getenv("NODE_ENV")
+	env := os.Getenv("ENV_NAME")
 
-	fmt.Printf("ENVIRONMENT FROM NODE_ENV: %s", env)
+	fmt.Printf("ENV_NAME: %s", env)
 
 	switch env {
-	case "production":
+	case "prod":
 		err = godotenv.Load(".env.prod")
 	default:
-		err = godotenv.Load(".env.prod")
+		err = godotenv.Load(".env.local")
 	}
 
 	if err != nil {

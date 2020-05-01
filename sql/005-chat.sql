@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE chats (
     id uuid PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     group_id uuid,
@@ -66,3 +68,5 @@ CREATE TABLE user_messages (
 CREATE INDEX idx_user_messages_on_user_id
 ON user_messages(user_id)
 WHERE deleted_at IS NULL;
+
+COMMIT;

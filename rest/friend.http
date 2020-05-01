@@ -5,13 +5,14 @@
 #     "recipient_user_id": "77fcce77-82cc-40ad-820f-0c13810db41a"
 # }
 
-# GET http://localhost:8000/friend-requests/pending?user_id=d29e3ba3-d083-4238-96d7-63c20369f3da
+# GET https://later-api.appspot.com/friend-requests/pending
+# Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODgzNTI4NTAsImlhdCI6MTU4ODM1MTk1MCwic3ViIjoiZjQ3NDgxZmUtMjQ3NC00OTBjLTlhOTctYjkzZDI3YzA3M2RiIiwidXNlcl9zZXNzaW9uX2lkIjoiMmI0NmJjZDItNzYzYy00NmE2LWIxNTgtOWRjNjljYzI3OWYyIn0.OVUsz8rMonfvSPX-iOHZ3dMzJ2GcjwGwKmZkpZaHPkU
 
-PUT http://localhost:8000/friend-requests/accept
-Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODgxMTMyOTksImlhdCI6MTU4ODExMjM5OSwic3ViIjoiN2I4ODE1MjItM2E3Ni00OTI4LWFlZmEtM2FhNGM4MzkyNDQzIiwidXNlcl9zZXNzaW9uX2lkIjoiZTgxODdmYmMtNTAyMi00MzBmLTg0ODgtMTJjZjU5Njc0Nzc2In0.lFURt2DHm-3xdlLJX2zWAOfOfTIOeuF3K0q3-ccHeic
+PUT https://later-api.appspot.com/friend-requests/accept
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODgzNTI4NTAsImlhdCI6MTU4ODM1MTk1MCwic3ViIjoiZjQ3NDgxZmUtMjQ3NC00OTBjLTlhOTctYjkzZDI3YzA3M2RiIiwidXNlcl9zZXNzaW9uX2lkIjoiMmI0NmJjZDItNzYzYy00NmE2LWIxNTgtOWRjNjljYzI3OWYyIn0.OVUsz8rMonfvSPX-iOHZ3dMzJ2GcjwGwKmZkpZaHPkU
 
 {
-    "id": "63eaaf4a-ebc6-430e-99c7-07244916514f"
+    "id": "eb484595-45ef-46ff-a1dd-277a3526b782"
 }
 
 # GET http://localhost:8000/friends/for-user?user_id=b6e05c09-0f62-4757-95f5-ea855adc4915

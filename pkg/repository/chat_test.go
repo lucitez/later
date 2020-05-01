@@ -1,9 +1,12 @@
 package repository_test
 
 import (
+	"testing"
+
+	"github.com/google/uuid"
+
 	"github.com/lucitez/later/pkg/model"
 	"github.com/lucitez/later/pkg/repository"
-	"testing"
 )
 
 var chatRepo repository.Chat
@@ -30,6 +33,32 @@ func TestChatsByUserID(t *testing.T) {
 	actual, _ := chatRepo.ByUserID(userID)
 
 	testUtil.Assert.Contains(actual, chat)
+}
+
+func TestChatsByUserIDOrdering(t *testing.T) {
+	beforeEach(t)
+	id, _ := uuid.NewRandom()
+
+	chat2 := model.NewUserChat(
+		userID,
+		id,
+	)
+
+	chatRepo.Insert(chat)
+	chatRepo.Insert(chat2)
+
+	message2 := model.NewMessage(
+		chat2.ID,
+		userID,
+		"hi",
+	)
+
+	messageRepo.Insert(message2)
+
+	actual, _ := chatRepo.ByUserID(userID)
+
+	testUtil.Assert.Equal(actual[0].ID, chat2.ID)
+	testUtil.Assert.NotNil(actual[0].LastMessageSentAt)
 }
 
 func TestChatByUserIDs(t *testing.T) {

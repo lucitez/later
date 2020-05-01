@@ -7,7 +7,6 @@ package main
 
 import (
 	"database/sql"
-
 	"github.com/lucitez/later/pkg/auth"
 	"github.com/lucitez/later/pkg/repository"
 	"github.com/lucitez/later/pkg/server"
@@ -62,7 +61,9 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	message := repository.NewMessage(db)
 	chat := repository.NewChat(db)
 	serviceChat := service.NewChat(chat)
-	serviceMessage := service.NewMessage(message, serviceChat)
+	userMessage := repository.NewUserMessage(db)
+	serviceUserMessage := service.NewUserMessage(userMessage, serviceChat)
+	serviceMessage := service.NewMessage(message, serviceChat, serviceUserMessage)
 	serviceShare := service.NewShare(share, serviceUserContent, serviceMessage)
 	domain := repository.NewDomain(db)
 	serviceDomain := service.NewDomain(domain)
@@ -127,8 +128,10 @@ func InitializeChat(db *sql.DB) server.Chat {
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
 	message := repository.NewMessage(db)
-	serviceMessage := service.NewMessage(message, serviceChat)
-	transferChat := transfer.NewChat(serviceUser, serviceMessage)
+	userMessage := repository.NewUserMessage(db)
+	serviceUserMessage := service.NewUserMessage(userMessage, serviceChat)
+	serviceMessage := service.NewMessage(message, serviceChat, serviceUserMessage)
+	transferChat := transfer.NewChat(serviceUser, serviceMessage, serviceUserMessage)
 	serverChat := server.NewChat(serviceChat, transferChat)
 	return serverChat
 }
@@ -137,12 +140,14 @@ func InitializeMessage(db *sql.DB) server.Message {
 	message := repository.NewMessage(db)
 	chat := repository.NewChat(db)
 	serviceChat := service.NewChat(chat)
-	serviceMessage := service.NewMessage(message, serviceChat)
+	userMessage := repository.NewUserMessage(db)
+	serviceUserMessage := service.NewUserMessage(userMessage, serviceChat)
+	serviceMessage := service.NewMessage(message, serviceChat, serviceUserMessage)
 	domain := repository.NewDomain(db)
 	serviceDomain := service.NewDomain(domain)
 	content := repository.NewContent(db)
 	serviceContent := service.NewContent(serviceDomain, content)
 	transferMessage := transfer.NewMessage(serviceContent)
-	serverMessage := server.NewMessage(serviceMessage, transferMessage)
+	serverMessage := server.NewMessage(serviceMessage, serviceUserMessage, transferMessage)
 	return serverMessage
 }

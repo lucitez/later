@@ -8,7 +8,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const LIMIT = 20
 
-export default function ChatsScreen({ navigation }) {
+export default function ChatsScreen({ navigation, route }) {
     const [chats, setChats] = useState([])
     const [refreshing, setRefreshing] = useState(false)
     const [limitReached, setLimitReached] = useState(false)
@@ -45,6 +45,15 @@ export default function ChatsScreen({ navigation }) {
         }
     }
 
+    const renderChat = (chat, navigation) => (
+        <TouchableOpacity onPress={() => {
+            setChats(chats.map(c => c.id == chat.id ? { ...c, hasUnread: false } : c))
+            navigation.navigate('Chat', { chatDetails: chat })
+        }}>
+            <ChatPreview chat={chat} />
+        </TouchableOpacity>
+    )
+
     return (
         <View style={styles.container}>
             <FlatList
@@ -60,13 +69,7 @@ export default function ChatsScreen({ navigation }) {
     );
 }
 
-const renderChat = (item, navigation) => {
-    return (
-        <TouchableOpacity onPress={() => navigation.navigate('Chat', { chatDetails: item })}>
-            <ChatPreview chat={item} />
-        </TouchableOpacity>
-    )
-}
+
 
 const getChats = (offset) => {
     let params = {

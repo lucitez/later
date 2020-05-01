@@ -1,10 +1,11 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/lucitez/later/pkg/request"
 	"github.com/lucitez/later/pkg/service"
 	"github.com/lucitez/later/pkg/transfer"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -12,18 +13,21 @@ import (
 
 // Message ...
 type Message struct {
-	Service  service.Message
-	Transfer transfer.Message
+	Service            service.Message
+	UserMessageService service.UserMessage
+	Transfer           transfer.Message
 }
 
 // NewMessage for wire generation
 func NewMessage(
 	service service.Message,
+	userMessage service.UserMessage,
 	transfer transfer.Message,
 ) Message {
 	return Message{
-		Service:  service,
-		Transfer: transfer,
+		Service:            service,
+		UserMessageService: userMessage,
+		Transfer:           transfer,
 	}
 }
 
@@ -40,6 +44,8 @@ func (server *Message) Routes(router *gin.RouterGroup) []gin.IRoutes {
 }
 
 func (server *Message) byChatID(c *gin.Context) {
+	userID := c.MustGet("user_id").(uuid.UUID)
+
 	defaultLimit := "20"
 	defaultOffset := "0"
 
@@ -65,6 +71,8 @@ func (server *Message) byChatID(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
+
+		go server.UserMessageService.MarkReadByChatAndUser(*chatID, userID)
 
 		wireMessages := server.Transfer.WireMessagesFrom(messages)
 

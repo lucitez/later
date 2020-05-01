@@ -100,10 +100,14 @@ function SignupScreen({ navigation }) {
                 title='Phone Number'
                 onChange={(name, value, error) => onFormDataChange(name, value, error)}
             />
-            <Button name='Next' size='medium' theme='primary' onPress={() => signUp()} loading={submitting} />
+            <Button name='Next' size='medium' theme='primary' onPress={() => signUp()} loading={submitting} loadingMessage='Checking existing accounts' />
             {error &&
                 <View style={styles.errorMessageContainer}>
                     <Text style={styles.errorMessage}>{error}</Text>
+                </View>}
+            {submitting &&
+                <View style={styles.errorMessageContainer}>
+                    <Text style={styles.contextMessage}>Checking existing accounts</Text>
                 </View>}
 
         </OnboardingFormWrapper >
@@ -124,7 +128,11 @@ const styles = StyleSheet.create({
     errorMessage: {
         color: 'red',
         fontWeight: '300',
-    }
+    },
+    contextMessage: {
+        color: colors.black,
+        fontWeight: '300',
+    },
 })
 
 export default SignupScreen

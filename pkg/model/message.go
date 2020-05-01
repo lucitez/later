@@ -1,8 +1,9 @@
 package model
 
 import (
-	"github.com/lucitez/later/pkg/util/wrappers"
 	"time"
+
+	"github.com/lucitez/later/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )

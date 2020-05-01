@@ -13,4 +13,6 @@ type WireChat struct {
 	OtherUserName     wrappers.NullString
 	GroupName         wrappers.NullString
 	Activity          string
+	LastMessageSentAt wrappers.NullTime
+	HasUnread         bool
 }

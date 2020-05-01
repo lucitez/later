@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+
 	"github.com/lucitez/later/pkg/model"
 	"github.com/lucitez/later/pkg/repository"
 
@@ -9,15 +10,17 @@ import (
 )
 
 type Message struct {
-	Repo repository.Message
-	Chat Chat
+	Repo        repository.Message
+	Chat        Chat
+	UserMessage UserMessage
 }
 
 func NewMessage(
 	repo repository.Message,
 	chat Chat,
+	userMessage UserMessage,
 ) Message {
-	return Message{repo, chat}
+	return Message{repo, chat, userMessage}
 }
 
 func (c *Message) ByChatID(
@@ -28,6 +31,7 @@ func (c *Message) ByChatID(
 	return c.Repo.ByChatID(chatID, limit, offset)
 }
 
+// TODO update pubsub
 func (c *Message) CreateFromMessage(
 	chatID uuid.UUID,
 	sentBy uuid.UUID,
@@ -42,6 +46,8 @@ func (c *Message) CreateFromMessage(
 	if err := c.Repo.Insert(newMessage); err != nil {
 		return nil, err
 	}
+
+	go c.UserMessage.CreateByMessage(newMessage)
 
 	return &newMessage, nil
 }
@@ -64,6 +70,8 @@ func (c *Message) CreateFromShare(
 		if err := c.Repo.Insert(message); err != nil {
 			return nil, err
 		}
+
+		go c.UserMessage.CreateByMessage(message)
 
 		return &message, nil
 	}
