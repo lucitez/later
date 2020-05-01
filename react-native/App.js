@@ -99,6 +99,8 @@ function CreateApplicationTabs() {
 }
 
 function App() {
+  console.log('change')
+
   const [isLoading, setIsLoading] = useState(true)
   const [isSignedIn, setIsSignedIn] = useState(false)
 
