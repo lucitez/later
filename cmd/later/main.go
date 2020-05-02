@@ -33,7 +33,7 @@ func main() {
 
 	authServer := InitializeAuth(db)
 	contentServer := InitializeContent(db)
-	domainServer := InitializeDomain(db)
+	hostnameServer := InitializeHostname(db)
 	friendServer := InitializeFriend(db)
 	friendRequestServer := InitializeFriendRequest(db)
 	shareServer := InitializeShare(db)
@@ -48,7 +48,7 @@ func main() {
 	engine.Init(
 		[]server.RouteGroup{
 			&contentServer,
-			&domainServer,
+			&hostnameServer,
 			&friendServer,
 			&friendRequestServer,
 			&shareServer,

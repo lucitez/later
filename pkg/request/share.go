@@ -3,6 +3,7 @@ package request
 import (
 	"github.com/lucitez/later/pkg/model"
 	"github.com/lucitez/later/pkg/service/body"
+	"github.com/lucitez/later/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )
@@ -10,8 +11,9 @@ import (
 // ShareCreateRequestBody Binding from json
 // TODO experiment with null recipient user ids
 type ShareCreateRequestBody struct {
-	RecipientUserIDs []uuid.UUID `form:"recipient_user_ids" json:"recipient_user_ids"`
-	URL              string      `form:"url" json:"url" binding:"required"`
+	RecipientUserIDs []uuid.UUID         `form:"recipient_user_ids" json:"recipient_user_ids"`
+	URL              string              `form:"url" json:"url" binding:"required"`
+	ContentType      wrappers.NullString `json:"content_type"`
 }
 
 // ToShareCreateBodies converts this request body to a list of share create bodies

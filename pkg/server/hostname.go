@@ -10,68 +10,68 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// NewDomain for wire gen
-func NewDomain(
-	service service.Domain,
-) Domain {
-	return Domain{
+// NewHostname for wire gen
+func NewHostname(
+	service service.Hostname,
+) Hostname {
+	return Hostname{
 		service,
 	}
 }
 
-// Domain exposes endpoints for domain related REST requests
-type Domain struct {
-	Service service.Domain
+// Hostname exposes endpoints for hostname related REST requests
+type Hostname struct {
+	Service service.Hostname
 }
 
-func (s *Domain) Prefix() string {
-	return "/domains"
+func (s *Hostname) Prefix() string {
+	return "/hostnames"
 }
 
 // Routes defines the routes for content API
-func (s *Domain) Routes(router *gin.RouterGroup) []gin.IRoutes {
+func (s *Hostname) Routes(router *gin.RouterGroup) []gin.IRoutes {
 	return []gin.IRoutes{
 		router.POST("/create", s.create),
 
-		router.GET("/by-domain", s.byDomain),
+		router.GET("/by-hostname", s.byHostname),
 		router.GET("/all", s.all),
 	}
 }
 
-func (s *Domain) create(context *gin.Context) {
-	var body request.DomainCreateRequestBody
+func (s *Hostname) create(context *gin.Context) {
+	var body request.HostnameCreateRequestBody
 
 	if err := context.ShouldBindJSON(&body); err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	domain, err := s.Service.Create(body.ToDomainCreateBody())
+	hostname, err := s.Service.Create(body.ToHostnameCreateBody())
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	context.JSON(http.StatusOK, domain)
+	context.JSON(http.StatusOK, hostname)
 }
 
-func (s *Domain) byDomain(context *gin.Context) {
+func (s *Hostname) byHostname(context *gin.Context) {
 	deser := NewDeser(
 		context,
-		QueryParameter{name: "domain", kind: Str, required: true},
+		QueryParameter{name: "hostname", kind: Str, required: true},
 	)
 
 	if qp, ok := deser.DeserQueryParams(); ok {
-		domainName := qp["domain"].(*string)
+		hn := qp["hostname"].(*string)
 
-		domain := s.Service.ByDomain(*domainName)
+		hostname := s.Service.ByHostname(*hn)
 
-		context.JSON(http.StatusOK, domain)
+		context.JSON(http.StatusOK, hostname)
 	}
 }
 
-func (s *Domain) all(context *gin.Context) {
+func (s *Hostname) all(context *gin.Context) {
 	defaultLimit := "100"
 
 	deser := NewDeser(

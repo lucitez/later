@@ -1,42 +1,47 @@
 package service
 
 import (
+	"log"
+
 	"github.com/lucitez/later/pkg/model"
 	"github.com/lucitez/later/pkg/parse"
 	"github.com/lucitez/later/pkg/repository"
-	"log"
+	"github.com/lucitez/later/pkg/util/wrappers"
 
 	"github.com/google/uuid"
 )
 
 // Content ...
 type Content struct {
-	DomainService Domain
-	Repository    repository.Content
+	HostnameService Hostname
+	Repository      repository.Content
 }
 
 // NewContent for wire generation
 func NewContent(
-	domainService Domain,
+	hostnameService Hostname,
 	repo repository.Content,
 ) Content {
 	return Content{
-		domainService,
+		hostnameService,
 		repo,
 	}
 }
 
 // GetContentPreview ...
-func (service *Content) GetContentPreview(url string) parse.ContentMetadata {
-	contentMetadata := parse.ContentFromURL(url)
-
-	return contentMetadata
+func (service *Content) GetContentPreview(url string) (*parse.ContentMetadata, error) {
+	return parse.ContentFromURL(url)
 }
 
 // CreateFromURL calls parse and creates content from parse results
-func (service *Content) CreateFromURL(url string, userID uuid.UUID) (*model.Content, error) {
-	contentMetadata := parse.ContentFromURL(url)
-	content := contentMetadata.ToContent(userID)
+func (service *Content) CreateFromURL(url string, userID uuid.UUID, contentType wrappers.NullString) (*model.Content, error) {
+	contentMetadata, err := parse.ContentFromURL(url)
+
+	if err != nil {
+		return nil, err
+	}
+
+	content := contentMetadata.ToContent(userID, contentType)
 
 	if err := service.Repository.Insert(content); err != nil {
 		return nil, err

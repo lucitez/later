@@ -89,7 +89,7 @@ func (server *ShareServer) new(context *gin.Context) {
 		return
 	}
 
-	content, err := server.Content.CreateFromURL(body.URL, userID)
+	content, err := server.Content.CreateFromURL(body.URL, userID, body.ContentType)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err.Error())

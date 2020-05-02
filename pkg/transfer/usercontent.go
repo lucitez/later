@@ -52,7 +52,7 @@ func wireUserContent(userContent model.UserContent, content model.Content, user 
 		ImageURL:       content.ImageURL,
 		ContentType:    content.ContentType,
 		Tag:            userContent.Tag,
-		Domain:         content.Domain,
+		Hostname:         content.Hostname,
 		URL:            content.URL,
 		SentBy:         userContent.SentByUserID,
 		SentByUsername: user.Username,

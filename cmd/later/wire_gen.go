@@ -17,19 +17,19 @@ import (
 // Injectors from wire.go:
 
 func InitializeContent(db *sql.DB) server.Content {
-	domain := repository.NewDomain(db)
-	serviceDomain := service.NewDomain(domain)
+	hostname := repository.NewHostname(db)
+	serviceHostname := service.NewHostname(hostname)
 	content := repository.NewContent(db)
-	serviceContent := service.NewContent(serviceDomain, content)
+	serviceContent := service.NewContent(serviceHostname, content)
 	serverContent := server.NewContent(serviceContent)
 	return serverContent
 }
 
-func InitializeDomain(db *sql.DB) server.Domain {
-	domain := repository.NewDomain(db)
-	serviceDomain := service.NewDomain(domain)
-	serverDomain := server.NewDomain(serviceDomain)
-	return serverDomain
+func InitializeHostname(db *sql.DB) server.Hostname {
+	hostname := repository.NewHostname(db)
+	serviceHostname := service.NewHostname(hostname)
+	serverHostname := server.NewHostname(serviceHostname)
+	return serverHostname
 }
 
 func InitializeFriend(db *sql.DB) server.Friend {
@@ -65,10 +65,10 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	serviceUserMessage := service.NewUserMessage(userMessage, serviceChat)
 	serviceMessage := service.NewMessage(message, serviceChat, serviceUserMessage)
 	serviceShare := service.NewShare(share, serviceUserContent, serviceMessage)
-	domain := repository.NewDomain(db)
-	serviceDomain := service.NewDomain(domain)
+	hostname := repository.NewHostname(db)
+	serviceHostname := service.NewHostname(hostname)
 	content := repository.NewContent(db)
-	serviceContent := service.NewContent(serviceDomain, content)
+	serviceContent := service.NewContent(serviceHostname, content)
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
 	shareServer := server.NewShareServer(serviceShare, serviceContent, serviceUser)
@@ -78,10 +78,10 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 func InitializeUserContent(db *sql.DB) server.UserContent {
 	userContent := repository.NewUserContent(db)
 	serviceUserContent := service.NewUserContent(userContent)
-	domain := repository.NewDomain(db)
-	serviceDomain := service.NewDomain(domain)
+	hostname := repository.NewHostname(db)
+	serviceHostname := service.NewHostname(hostname)
 	content := repository.NewContent(db)
-	serviceContent := service.NewContent(serviceDomain, content)
+	serviceContent := service.NewContent(serviceHostname, content)
 	user := repository.NewUser(db)
 	serviceUser := service.NewUser(user)
 	transferUserContent := transfer.NewUserContent(serviceContent, serviceUser)
@@ -96,10 +96,10 @@ func InitializeUser(db *sql.DB) server.User {
 	friend := repository.NewFriend(db)
 	serviceFriend := service.NewFriend(serviceUser, friend)
 	serviceFriendRequest := service.NewFriendRequest(friendRequest, serviceFriend, serviceUser)
-	domain := repository.NewDomain(db)
-	serviceDomain := service.NewDomain(domain)
+	hostname := repository.NewHostname(db)
+	serviceHostname := service.NewHostname(hostname)
 	content := repository.NewContent(db)
-	serviceContent := service.NewContent(serviceDomain, content)
+	serviceContent := service.NewContent(serviceHostname, content)
 	transferUser := transfer.NewUser(serviceFriendRequest, serviceFriend, serviceContent)
 	serverUser := server.NewUser(serviceUser, transferUser)
 	return serverUser
@@ -143,10 +143,10 @@ func InitializeMessage(db *sql.DB) server.Message {
 	userMessage := repository.NewUserMessage(db)
 	serviceUserMessage := service.NewUserMessage(userMessage, serviceChat)
 	serviceMessage := service.NewMessage(message, serviceChat, serviceUserMessage)
-	domain := repository.NewDomain(db)
-	serviceDomain := service.NewDomain(domain)
+	hostname := repository.NewHostname(db)
+	serviceHostname := service.NewHostname(hostname)
 	content := repository.NewContent(db)
-	serviceContent := service.NewContent(serviceDomain, content)
+	serviceContent := service.NewContent(serviceHostname, content)
 	transferMessage := transfer.NewMessage(serviceContent)
 	serverMessage := server.NewMessage(serviceMessage, serviceUserMessage, transferMessage)
 	return serverMessage

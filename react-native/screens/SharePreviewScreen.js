@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
 import { Header, SearchBar } from '../components/common';
 import Network from '../util/Network';
 import { ContentPreview } from '../components/content';
@@ -10,19 +10,28 @@ function SharePreviewScreen({ navigation, route }) {
     const [loading, setLoading] = useState(false)
     const [contentPreview, setContentPreview] = useState(null)
     const [sent, setSent] = useState(false)
+    const [err, setErr] = useState('')
 
     useEffect(() => {
-        if (url.length > 0) {
-            setLoading(true)
+        setLoading(true)
+        setContentPreview(null)
+        setErr(null)
+
+        if (url.length > 0 && validUrl(url)) {
             getContentPreview(url)
                 .then(contentPreview => {
                     setContentPreview(contentPreview)
                     setLoading(false)
                 })
-                .catch(() => setLoading(false))
-        } else if (url.length == 0) {
+                .catch(_ => {
+                    setErr('Please provide a valid URL')
+                    setLoading(false)
+                })
+        } else if (url.length > 0 && !validUrl(url)) {
+            setErr('Please provide a valid URL')
             setLoading(false)
-            setContentPreview(null)
+        } else {
+            setLoading(false)
         }
     }, [url])
 
@@ -33,6 +42,7 @@ function SharePreviewScreen({ navigation, route }) {
         }
     }, [route.params])
 
+    // TODO add content type radio
     return (
         <SafeAreaView style={styles.container}>
             <Header title='Share' />
@@ -45,41 +55,32 @@ function SharePreviewScreen({ navigation, route }) {
                 placeholder='Enter URL...'
             />
             <View style={styles.contentContainer}>
-                {
-                    contentPreview ?
-                        <View>
-                            <View style={styles.contentPreviewContainer}>
-                                <ContentPreview content={contentPreview} />
-                            </View>
-                            <View style={styles.footerContainer}>
-                                <TouchableOpacity onPress={() => {
-                                    navigation.navigate('Send Share', { contentPreview: contentPreview, previousScreen: 'Share' })
-                                }}>
-                                    <View style={styles.nextButtonContainer}>
-                                        <Text style={styles.nextButton}>Next</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View>
+                {loading && <View style={styles.noPreviewContainer}><ActivityIndicator size='small' /></View>}
+                {err && <View style={styles.noPreviewContainer}><Text>{err}</Text></View>}
+                {contentPreview &&
+                    <View>
+                        <View style={styles.contentPreviewContainer}>
+                            <ContentPreview content={contentPreview} onDotPress={() => null} />
                         </View>
-                        :
-                        <View style={styles.noPreviewContainer}>
-                            {
-                                loading ?
-                                    <Text>Retrieving data</Text>
-                                    :
-                                    <Text>
-                                        {
-                                            sent ? "Share successful!" :
-                                                url.length == 0 ? "Paste a URL to get started" :
-                                                    "We could not generate a preview of your link"
-                                        }
-                                    </Text>
-                            }
+                        <View style={styles.footerContainer}>
+                            <TouchableOpacity onPress={() => {
+                                navigation.navigate('Send Share', { contentPreview: contentPreview, previousScreen: 'Share' })
+                            }}>
+                                <View style={styles.nextButtonContainer}>
+                                    <Text style={styles.nextButton}>Next</Text>
+                                </View>
+                            </TouchableOpacity>
                         </View>
-                }
+                    </View>}
             </View>
         </SafeAreaView>
     );
+}
+
+const validUrl = url => {
+    let pattern = /^(https?|chrome):\/\/[^\s$.?#].[^\s]*$/
+
+    return url.match(pattern)
 }
 
 const getContentPreview = url => {

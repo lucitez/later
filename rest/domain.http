@@ -1,6 +1,6 @@
-POST http://localhost:8000/domains/create
+POST http://localhost:8000/hostnames/create
 
 {
-    "domain": "soundcloud",
+    "hostname": "soundcloud",
     "content_type": "music"
 }

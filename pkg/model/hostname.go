@@ -10,10 +10,10 @@ import (
 	"github.com/google/uuid"
 )
 
-// Domain object
-type Domain struct {
+// Hostname object
+type Hostname struct {
 	ID          uuid.UUID `json:"id"`
-	Domain      string    `json:"domain"`
+	Hostname    string    `json:"hostname"`
 	ContentType string    `json:"content_type"`
 
 	CreatedAt time.Time         `json:"created_at"`
@@ -21,36 +21,36 @@ type Domain struct {
 	DeletedAt wrappers.NullTime `json:"deleted_at"`
 }
 
-// NewDomain constructor for Domain
-func NewDomain(
-	domain string,
+// NewHostname constructor for Hostname
+func NewHostname(
+	hostname string,
 	contentType string,
-) Domain {
+) Hostname {
 	uuid, _ := uuid.NewRandom()
 
 	now := time.Now().UTC()
 
-	newDomain := Domain{
+	newHostname := Hostname{
 		ID:          uuid,
-		Domain:      domain,
+		Hostname:    hostname,
 		ContentType: contentType,
 
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
 
-	return newDomain
+	return newHostname
 }
 
 // ScanRows ...
-func (domain *Domain) ScanRows(rows *sql.Rows) {
+func (hostname *Hostname) ScanRows(rows *sql.Rows) {
 	err := rows.Scan(
-		&domain.ID,
-		&domain.Domain,
-		&domain.ContentType,
-		&domain.CreatedAt,
-		&domain.UpdatedAt,
-		&domain.DeletedAt)
+		&hostname.ID,
+		&hostname.Hostname,
+		&hostname.ContentType,
+		&hostname.CreatedAt,
+		&hostname.UpdatedAt,
+		&hostname.DeletedAt)
 
 	if err != nil {
 		log.Fatal(err)
@@ -58,14 +58,14 @@ func (domain *Domain) ScanRows(rows *sql.Rows) {
 }
 
 // ScanRow ...
-func (domain *Domain) ScanRow(row *sql.Row) *Domain {
+func (hostname *Hostname) ScanRow(row *sql.Row) *Hostname {
 	err := row.Scan(
-		&domain.ID,
-		&domain.Domain,
-		&domain.ContentType,
-		&domain.CreatedAt,
-		&domain.UpdatedAt,
-		&domain.DeletedAt)
+		&hostname.ID,
+		&hostname.Hostname,
+		&hostname.ContentType,
+		&hostname.CreatedAt,
+		&hostname.UpdatedAt,
+		&hostname.DeletedAt)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -74,5 +74,5 @@ func (domain *Domain) ScanRow(row *sql.Row) *Domain {
 		panic(err)
 	}
 
-	return domain
+	return hostname
 }

@@ -36,7 +36,7 @@ func (repository *Content) Insert(content model.Content) error {
 		content.ImageURL,
 		content.ContentType,
 		content.URL,
-		content.Domain,
+		content.Hostname,
 		content.Shares,
 		content.CreatedBy,
 		content.CreatedAt,

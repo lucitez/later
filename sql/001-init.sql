@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS content (
     image_url TEXT,
     content_type TEXT, -- [watch, read, listen]
     url TEXT NOT NULL,
-    domain TEXT NOT NULL,
+    hostname TEXT NOT NULL,
     shares int NOT NULL DEFAULT 0 CHECK (shares >= 0),
     created_by uuid NOT NULL, -- used to calculate user's taste
 

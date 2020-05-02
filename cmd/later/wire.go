@@ -17,20 +17,20 @@ func InitializeContent(db *sql.DB) server.Content {
 	wire.Build(
 		server.NewContent,
 		service.NewContent,
-		service.NewDomain,
+		service.NewHostname,
 		repository.NewContent,
-		repository.NewDomain,
+		repository.NewHostname,
 	)
 	return server.Content{}
 }
 
-func InitializeDomain(db *sql.DB) server.Domain {
+func InitializeHostname(db *sql.DB) server.Hostname {
 	wire.Build(
-		server.NewDomain,
-		service.NewDomain,
-		repository.NewDomain,
+		server.NewHostname,
+		service.NewHostname,
+		repository.NewHostname,
 	)
-	return server.Domain{}
+	return server.Hostname{}
 }
 
 func InitializeFriend(db *sql.DB) server.Friend {
@@ -63,7 +63,7 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 	wire.Build(
 		server.NewShareServer,
 		service.NewContent,
-		service.NewDomain,
+		service.NewHostname,
 		service.NewShare,
 		service.NewUserContent,
 		service.NewUser,
@@ -71,7 +71,7 @@ func InitializeShare(db *sql.DB) server.ShareServer {
 		service.NewMessage,
 		service.NewUserMessage,
 		repository.NewContent,
-		repository.NewDomain,
+		repository.NewHostname,
 		repository.NewShare,
 		repository.NewUserContent,
 		repository.NewUser,
@@ -87,11 +87,11 @@ func InitializeUserContent(db *sql.DB) server.UserContent {
 		server.NewUserContent,
 		service.NewUserContent,
 		service.NewContent,
-		service.NewDomain,
+		service.NewHostname,
 		service.NewUser,
 		repository.NewUserContent,
 		repository.NewContent,
-		repository.NewDomain,
+		repository.NewHostname,
 		repository.NewUser,
 		transfer.NewUserContent,
 	)
@@ -105,12 +105,12 @@ func InitializeUser(db *sql.DB) server.User {
 		service.NewFriendRequest,
 		service.NewFriend,
 		service.NewContent,
-		service.NewDomain,
+		service.NewHostname,
 		repository.NewUser,
 		repository.NewFriendRequest,
 		repository.NewFriend,
 		repository.NewContent,
-		repository.NewDomain,
+		repository.NewHostname,
 		transfer.NewUser,
 	)
 	return server.User{}
@@ -160,12 +160,12 @@ func InitializeMessage(db *sql.DB) server.Message {
 		service.NewChat,
 		service.NewMessage,
 		service.NewContent,
-		service.NewDomain,
+		service.NewHostname,
 		service.NewUserMessage,
 		repository.NewChat,
 		repository.NewMessage,
 		repository.NewContent,
-		repository.NewDomain,
+		repository.NewHostname,
 		repository.NewUserMessage,
 		transfer.NewMessage,
 	)

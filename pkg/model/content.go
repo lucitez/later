@@ -18,7 +18,7 @@ type Content struct {
 	ImageURL    wrappers.NullString `json:"image_url"`
 	ContentType wrappers.NullString `json:"content_type"`
 	URL         string              `json:"url"`
-	Domain      string              `json:"domain"`
+	Hostname    string              `json:"hostname"`
 	Shares      int                 `json:"shares"`
 	CreatedBy   uuid.UUID           `json:"created_by"`
 
@@ -33,7 +33,7 @@ func NewContent(
 	imageURL wrappers.NullString,
 	contentType wrappers.NullString,
 	url string,
-	domain string,
+	hostname string,
 	createdBy uuid.UUID,
 ) Content {
 	id, _ := uuid.NewRandom()
@@ -47,7 +47,7 @@ func NewContent(
 		ImageURL:    imageURL,
 		ContentType: contentType,
 		URL:         url,
-		Domain:      domain,
+		Hostname:    hostname,
 		Shares:      0,
 		CreatedBy:   createdBy,
 		CreatedAt:   now,
@@ -66,7 +66,7 @@ func (content *Content) ScanRows(rows *sql.Rows) {
 		&content.ImageURL,
 		&content.ContentType,
 		&content.URL,
-		&content.Domain,
+		&content.Hostname,
 		&content.Shares,
 		&content.CreatedBy,
 		&content.CreatedAt,
@@ -87,7 +87,7 @@ func (content *Content) ScanRow(row *sql.Row) (*Content, error) {
 		&content.ImageURL,
 		&content.ContentType,
 		&content.URL,
-		&content.Domain,
+		&content.Hostname,
 		&content.Shares,
 		&content.CreatedBy,
 		&content.CreatedAt,

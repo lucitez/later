@@ -17,7 +17,7 @@ type WireUserContent struct {
 	ImageURL       wrappers.NullString `json:"image_url"`
 	ContentType    wrappers.NullString `json:"content_type"`
 	Tag            wrappers.NullString `json:"tag"`
-	Domain         string              `json:"domain"`
+	Hostname         string              `json:"hostname"`
 	SentBy         uuid.UUID           `json:"sent_by"`
 	SentByUsername string              `json:"sent_by_username"`
 	URL            string              `json:"url"`

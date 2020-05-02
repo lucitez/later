@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -17,26 +18,21 @@ import (
 
 type ContentMetadata struct {
 	url         string
+	hostname    string
 	title       *string
 	description *string
 	imageURL    *string
-	contentType *string
 }
 
-func (c *ContentMetadata) ToContent(userID uuid.UUID) model.Content {
-	domain, err := DomainFromURL(c.url)
-
-	if err != nil {
-		log.Printf("[WARN] Could not parse domain from url %s\n", err.Error())
-	}
+func (c *ContentMetadata) ToContent(userID uuid.UUID, contentType wrappers.NullString) model.Content {
 
 	return model.NewContent(
 		wrappers.NewNullString(c.title),
 		wrappers.NewNullString(c.description),
 		wrappers.NewNullString(c.imageURL),
-		wrappers.NewNullString(c.contentType),
+		contentType,
 		c.url,
-		domain,
+		c.hostname,
 		userID,
 	)
 }
@@ -44,10 +40,10 @@ func (c *ContentMetadata) ToContent(userID uuid.UUID) model.Content {
 func (c *ContentMetadata) ToContentPreview() response.ContentPreview {
 	return response.ContentPreview{
 		URL:         c.url,
+		Hostname:    c.hostname,
 		Title:       wrappers.NewNullString(c.title),
 		Description: wrappers.NewNullString(c.description),
 		ImageURL:    wrappers.NewNullString(c.imageURL),
-		ContentType: wrappers.NewNullString(c.contentType),
 	}
 }
 
@@ -57,21 +53,33 @@ type headerContent struct {
 	imageURL    *string
 }
 
-// DomainFromURL extracts the domain from the url
-func DomainFromURL(urlStr string) (string, error) {
-	u, err := url.Parse(urlStr)
+// HostnameFromURL extracts the hostname from the url
+func HostnameFromURL(urlStr string) (*string, error) {
+	u, err := url.ParseRequestURI(urlStr)
+
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return u.Hostname(), nil
+	fmt.Println(u.String())
+
+	hostname := u.Hostname()
+
+	return &hostname, nil
 }
 
 // ContentFromURL scrapes the data found at the url's address to find elements to populate Content with
 // return a content preview, not a content model obj
-func ContentFromURL(url string) ContentMetadata {
+func ContentFromURL(url string) (*ContentMetadata, error) {
+	hostname, err := HostnameFromURL(url)
+
+	if err != nil {
+		return nil, err
+	}
+
 	var contentMetadata = ContentMetadata{
-		url: url,
+		url:      url,
+		hostname: *hostname,
 	}
 
 	switch {
@@ -79,7 +87,7 @@ func ContentFromURL(url string) ContentMetadata {
 		contentMetadataDefault(&contentMetadata, url)
 	}
 
-	return contentMetadata
+	return &contentMetadata, nil
 }
 
 func contentMetadataDefault(metadata *ContentMetadata, url string) {
@@ -87,18 +95,21 @@ func contentMetadataDefault(metadata *ContentMetadata, url string) {
 
 	if err != nil {
 		log.Printf("Error retrieving URL content. Error: %v", err)
+		return
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		log.Printf("Failed to retrieve URL content, response status %d", resp.StatusCode)
+		return
 	}
 
 	doc, err := html.Parse(resp.Body)
 
 	if err != nil {
 		log.Printf("Failed to parse URL content. Error: %v", err)
+		return
 	}
 
 	head := findHead(doc)

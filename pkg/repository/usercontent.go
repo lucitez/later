@@ -153,7 +153,7 @@ func (repository *UserContent) Filter(
 		statement += `
 		AND (
 			c.title ILIKE $2
-			OR c.domain ILIKE $2
+			OR c.hostname ILIKE $2
 			OR user_content.tag ILIKE $2
 		)
 		`
