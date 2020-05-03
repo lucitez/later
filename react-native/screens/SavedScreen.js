@@ -8,6 +8,7 @@ import { ButtonBottomSheet, EditTagBottomSheet } from '../components/modals';
 
 const LIMIT = 20
 
+// TODO splash for when there is nothing here
 function SavedScreen({ navigation }) {
     const [content, setContent] = useState([])
     const [search, setSearch] = useState('')
@@ -151,6 +152,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
     },
     contentContainer: {
+        flexBasis: 0,
         flexGrow: 1,
         backgroundColor: colors.lightGray,
     }

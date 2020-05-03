@@ -4,6 +4,7 @@ import { Header, SearchBar } from '../components/common';
 import Network from '../util/Network';
 import { ContentPreview } from '../components/content';
 import { colors } from '../assets/colors';
+import { useSelector } from 'react-redux';
 
 function SharePreviewScreen({ navigation, route }) {
     const [url, setUrl] = useState('')
@@ -11,6 +12,15 @@ function SharePreviewScreen({ navigation, route }) {
     const [contentPreview, setContentPreview] = useState(null)
     const [sent, setSent] = useState(false)
     const [err, setErr] = useState('')
+    const [user, setUser] = useState(null)
+
+    const userId = useSelector(state => state.auth.userId)
+
+    useEffect(() => {
+        Network.GET('/users/by-id', { id: userId })
+            .then(user => setUser(user))
+            .catch(err => console.error(err))
+    }, [])
 
     useEffect(() => {
         setLoading(true)
@@ -20,7 +30,7 @@ function SharePreviewScreen({ navigation, route }) {
         if (url.length > 0 && validUrl(url)) {
             getContentPreview(url)
                 .then(contentPreview => {
-                    setContentPreview(contentPreview)
+                    setContentPreview({ ...contentPreview, sentBy: user.id, sentByUsername: user.username, sentByName: user.name })
                     setLoading(false)
                 })
                 .catch(_ => {
@@ -42,6 +52,33 @@ function SharePreviewScreen({ navigation, route }) {
         }
     }, [route.params])
 
+    const renderShareContent = () => {
+        if (loading) {
+            return <View style={styles.noPreviewContainer}><ActivityIndicator size='small' /></View>
+        } else if (err) {
+            return <View style={styles.noPreviewContainer}><Text>{err}</Text></View>
+        } else if (contentPreview) {
+            return (
+                <View>
+                    <View style={styles.contentPreviewContainer}>
+                        <ContentPreview content={contentPreview} onDotPress={() => null} />
+                    </View>
+                    <View style={styles.footerContainer}>
+                        <TouchableOpacity onPress={() => {
+                            navigation.navigate('Send Share', { contentPreview: contentPreview, previousScreen: 'Share' })
+                        }}>
+                            <View style={styles.nextButtonContainer}>
+                                <Text style={styles.nextButton}>Next</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )
+        } else {
+            return <View style={styles.noPreviewContainer}><Text>Paste a link to get started</Text></View>
+        }
+    }
+
     // TODO add content type radio
     return (
         <SafeAreaView style={styles.container}>
@@ -49,29 +86,14 @@ function SharePreviewScreen({ navigation, route }) {
             <SearchBar
                 clear={sent}
                 onChange={value => setUrl(value)}
+
                 iconName='paste'
                 autoFocus={true}
                 returnKeyType={contentPreview ? 'next' : 'default'}
                 placeholder='Enter URL...'
             />
             <View style={styles.contentContainer}>
-                {loading && <View style={styles.noPreviewContainer}><ActivityIndicator size='small' /></View>}
-                {err && <View style={styles.noPreviewContainer}><Text>{err}</Text></View>}
-                {contentPreview &&
-                    <View>
-                        <View style={styles.contentPreviewContainer}>
-                            <ContentPreview content={contentPreview} onDotPress={() => null} />
-                        </View>
-                        <View style={styles.footerContainer}>
-                            <TouchableOpacity onPress={() => {
-                                navigation.navigate('Send Share', { contentPreview: contentPreview, previousScreen: 'Share' })
-                            }}>
-                                <View style={styles.nextButtonContainer}>
-                                    <Text style={styles.nextButton}>Next</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    </View>}
+                {renderShareContent()}
             </View>
         </SafeAreaView>
     );

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, View, Keyboard } from 'react-native'
+import { StyleSheet, View, Keyboard, SafeAreaView } from 'react-native'
 import BottomSheet from './BottomSheet'
 import { Button, SearchBar } from '../common';
 import { colors } from '../../assets/colors';
@@ -18,7 +18,7 @@ function EditTagBottomSheet({ value, isVisible, onSubmit, onHide }) {
             onHide={() => onHide()}
             avoidKeyboard={true}
         >
-            <View style={styles.contentContainer}>
+            <SafeAreaView style={styles.container}>
                 <View style={styles.addTagContainer}>
                     <SearchBar
                         placeholder='Add Tag...'
@@ -30,13 +30,13 @@ function EditTagBottomSheet({ value, isVisible, onSubmit, onHide }) {
                     />
                 </View>
                 <View style={styles.saveButtonContainer}>
-                    <Button theme='primary' name='Submit' size='medium' onPress={() => {
+                    <Button theme='light' name='Submit' size='medium' onPress={() => {
                         Keyboard.dismiss()
                         onHide()
                         onSubmit(tagValue)
                     }} />
                 </View>
-            </View>
+            </SafeAreaView>
         </BottomSheet>
     )
 }
@@ -47,34 +47,20 @@ const filterTags = search => {
 }
 
 const styles = StyleSheet.create({
-    contentContainer: {
-        height: '40%',
+    container: {
+        height: '50%',
         backgroundColor: colors.primary,
-        paddingBottom: 10
     },
     addTagContainer: {
-        margin: 10,
+        flexBasis: 0,
         flexGrow: 1,
+        borderWidth: 1,
+        borderColor: 'white'
     },
     saveButtonContainer: {
         paddingLeft: 15,
         paddingRight: 15,
     },
-    tagsContainer: {
-        flexGrow: 1,
-        marginLeft: 15,
-        marginRight: 15,
-    },
-    tagContainer: {
-        padding: 5,
-        borderTopWidth: 0.5,
-        borderBottomWidth: 0.5,
-        borderColor: colors.white,
-    },
-    tag: {
-        color: colors.white,
-        fontSize: 16,
-    }
 });
 
 export default EditTagBottomSheet

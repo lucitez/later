@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View, Keyboard, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Keyboard, TouchableOpacity, FlatList } from 'react-native';
 import { colors } from '../../assets/colors';
 import Icon from './Icon';
+import Tag from './Tag';
 
 function SearchBar(props) {
     const [search, setSearch] = useState(props.value ? props.value : '')
@@ -35,7 +36,15 @@ function SearchBar(props) {
         }
     }, [props.clear])
 
-    const _cancelButton = () => {
+    const _rightIcon = () => {
+        if (props.rightIcon) {
+            return (
+                <View style={styles.rightIconContainer} >
+                    {props.rightIcon}
+                </View>
+            )
+        }
+
         if (props.showCancelOnKeyboardActive && !isKeyboardShowing) {
             return null
         } else {
@@ -45,7 +54,7 @@ function SearchBar(props) {
                     Keyboard.dismiss()
                     if (props.onCancel) props.onCancel()
                 }}>
-                    <View style={styles.cancelContainer} >
+                    <View style={styles.rightIconContainer} >
                         <Text style={styles.cancel}>Cancel</Text>
                     </View>
                 </TouchableOpacity>
@@ -64,22 +73,30 @@ function SearchBar(props) {
     }
 
     const _autocompleteContent = () => {
+        const renderAutocompleteData = ({ item }) => (
+            <TouchableOpacity style={styles.optionContainer} onPress={() => setSearch(item)}>
+                <Tag name={item} theme='light' size='large' />
+            </TouchableOpacity>
+        )
+
         if (props.autocompleteFunc) {
             return (
-                <ScrollView style={styles.autocompleteContainer} keyboardShouldPersistTaps='handled'>
-                    {autocompleteOptions.map((option, index) => (
-                        <TouchableOpacity key={index} style={styles.optionContainer} onPress={() => setSearch(option)}>
-                            <Text style={styles.option}>{option}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
+                <View style={styles.autoCompleteContainer}>
+                    <FlatList
+                        keyboardShouldPersistTaps='handled'
+                        data={autocompleteOptions}
+                        keyExtractor={(_, index) => index.toString()}
+                        renderItem={renderAutocompleteData}
+                        persistentScrollbar={true}
+                    />
+                </View>
             )
-        }
+        } else return null
     }
 
     return (
-        <View>
-            <View style={styles.container}>
+        <View style={props.autocompleteFunc && { flexBasis: 0, flexGrow: 1 }}>
+            <View style={styles.topContainer}>
                 <View style={styles.searchBarContainer} >
                     <View style={styles.searchIconContainer} >
                         <Icon type={props.iconName ? props.iconName : 'search'} size={20} color={colors.darkGray} />
@@ -96,24 +113,28 @@ function SearchBar(props) {
                     </View>
                     {_clearButton()}
                 </View>
-                {_cancelButton()}
+                {_rightIcon()}
             </View>
             {_autocompleteContent()}
-        </View>
-
+        </ View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: colors.primary,
+    topContainer: {
         height: 55,
         width: '100%',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: "center",
-        paddingTop: 5,
+        backgroundColor: colors.primary,
         padding: 10,
+    },
+    autoCompleteContainer: {
+        flexBasis: 0,
+        flexGrow: 1,
+        padding: 5,
+        paddingLeft: 10,
     },
     searchBarContainer: {
         flexGrow: 1,
@@ -139,7 +160,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         flexBasis: 0,
     },
-    cancelContainer: {
+    rightIconContainer: {
         marginLeft: 10,
         marginRight: 5,
         justifyContent: 'center',
@@ -150,20 +171,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     autocompleteContainer: {
+        flexBasis: 0,
         flexGrow: 1,
-        marginLeft: 15,
-        marginRight: 15,
+        padding: 15
     },
     optionContainer: {
         padding: 5,
-        borderTopWidth: 0.5,
-        borderBottomWidth: 0.5,
-        borderColor: colors.white,
+        alignItems: 'flex-start'
     },
-    option: {
-        color: colors.white,
-        fontSize: 16,
-    }
 });
 
 export default SearchBar

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+
 	"github.com/lucitez/later/pkg/model"
 	"github.com/lucitez/later/pkg/repository/util"
 

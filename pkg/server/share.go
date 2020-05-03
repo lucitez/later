@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"log"
 	"net/http"
 
@@ -63,7 +62,7 @@ func (server *ShareServer) forward(context *gin.Context) {
 	content, _ := server.Content.ByID(body.ContentID)
 
 	if content == nil {
-		context.JSON(http.StatusBadRequest, errors.New("Content not found"))
+		context.JSON(http.StatusBadRequest, "Content not found")
 		return
 	}
 

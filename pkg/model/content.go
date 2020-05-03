@@ -1,8 +1,6 @@
 package model
 
 import (
-	"database/sql"
-	"log"
 	"time"
 
 	"github.com/lucitez/later/pkg/util/wrappers"
@@ -55,51 +53,4 @@ func NewContent(
 	}
 
 	return content
-}
-
-// ScanRows ...
-func (content *Content) ScanRows(rows *sql.Rows) {
-	err := rows.Scan(
-		&content.ID,
-		&content.Title,
-		&content.Description,
-		&content.ImageURL,
-		&content.ContentType,
-		&content.URL,
-		&content.Hostname,
-		&content.Shares,
-		&content.CreatedBy,
-		&content.CreatedAt,
-		&content.UpdatedAt,
-	)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-// ScanRow ...
-func (content *Content) ScanRow(row *sql.Row) (*Content, error) {
-	err := row.Scan(
-		&content.ID,
-		&content.Title,
-		&content.Description,
-		&content.ImageURL,
-		&content.ContentType,
-		&content.URL,
-		&content.Hostname,
-		&content.Shares,
-		&content.CreatedBy,
-		&content.CreatedAt,
-		&content.UpdatedAt,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return content, nil
 }

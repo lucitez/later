@@ -9,7 +9,7 @@ function BottomSheet(props) {
     return (
         <Modal
             isVisible={props.visible}
-            backdropOpacity={0}
+            backdropOpacity={props.backdropOpacity ? props.backdropOpacity : 0}
             onBackdropPress={() => props.onHide()}
             animationIn='slideInUp'
             animationOut='slideOutDown'

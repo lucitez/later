@@ -30,12 +30,13 @@ func (server *Content) Prefix() string {
 func (server *Content) Routes(router *gin.RouterGroup) []gin.IRoutes {
 	return []gin.IRoutes{
 		router.GET("/preview", server.preview),
+		router.GET("/popular", server.popular),
 	}
 }
 
-func (server *Content) preview(context *gin.Context) {
+func (server *Content) preview(c *gin.Context) {
 	deser := NewDeser(
-		context,
+		c,
 		QueryParameter{name: "url", kind: Str, required: true},
 	)
 
@@ -45,10 +46,14 @@ func (server *Content) preview(context *gin.Context) {
 		contentMetadata, err := server.Service.GetContentPreview(*url)
 
 		if err != nil {
-			context.JSON(http.StatusBadRequest, err)
+			c.JSON(http.StatusBadRequest, err)
 			return
 		}
 
-		context.JSON(http.StatusOK, contentMetadata.ToContentPreview())
+		c.JSON(http.StatusOK, contentMetadata.ToContentPreview())
 	}
+}
+
+func (server *Content) popular(c *gin.Context) {
+
 }

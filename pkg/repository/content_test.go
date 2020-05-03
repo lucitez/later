@@ -1,10 +1,11 @@
 package repository_test
 
 import (
+	"testing"
+
 	"github.com/lucitez/later/pkg/model"
 	"github.com/lucitez/later/pkg/repository"
 	"github.com/lucitez/later/pkg/util/wrappers"
-	"testing"
 )
 
 var contentRepo repository.Content
@@ -31,7 +32,7 @@ func TestContentInsertAndByID(t *testing.T) {
 func TestAll(t *testing.T) {
 	beforeEach(t)
 	contentRepo.Insert(content)
-	actual := contentRepo.All(1)
+	actual, _ := contentRepo.All(1)
 
 	testUtil.Assert.Contains(actual, content)
 }

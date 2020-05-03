@@ -56,6 +56,7 @@ func (service *Content) ByID(id uuid.UUID) (*model.Content, error) {
 }
 
 // TODO is this safe from race conditions? probablly not.
+// eventually set up a job to clean up share counts
 func (service *Content) IncrementShareCount(id uuid.UUID, amount int) error {
 	return service.Repository.IncrementShareCount(id, amount)
 }
@@ -64,13 +65,13 @@ func (service *Content) TasteByUserID(userID uuid.UUID) int {
 	taste, err := service.Repository.TasteByUserID(userID)
 
 	if err != nil {
-		log.Printf("Error getting taste for user. Error: %s", err.Error())
+		log.Printf("[WARN] Error getting taste for user. Error: %s", err.Error())
 	}
 
 	return taste
 }
 
 // All returns all content within a limit
-func (service *Content) All(limit int) []model.Content {
+func (service *Content) All(limit int) ([]model.Content, error) {
 	return service.Repository.All(limit)
 }

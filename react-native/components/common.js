@@ -8,7 +8,6 @@ import Link from './common/Link';
 import SearchBar from './common/SearchBar';
 import TabBar from './common/TabBar';
 import Tag from './common/Tag';
-import ListView from './common/ListView'
 
 export { Icon };
 export { BackIcon };
@@ -20,4 +19,3 @@ export { Link };
 export { SearchBar };
 export { TabBar };
 export { Tag };
-export { ListView };

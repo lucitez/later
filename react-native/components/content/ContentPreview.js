@@ -26,7 +26,7 @@ function ContentPreview(props) {
     if (loading) return null
 
     if (imageAR) {
-        return <ContentPreviewThumb {...props} imageAR={imageAR} />
+        return <ContentPreviewThumb {...props} imageAR={imageAR > 1.5 ? 1.5 : imageAR} />
     } else {
         return <ContentPreviewNoImage {...props} />
     }

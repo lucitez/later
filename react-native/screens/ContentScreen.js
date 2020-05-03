@@ -5,6 +5,7 @@ import Network from '../util/Network';
 import { Header, Icon, Button, Divider } from '../components/common';
 import { ContentPreview } from '../components/content';
 import { ButtonBottomSheet, EditTagBottomSheet } from '../components/modals';
+import ForwardBottomSheet from '../components/modals/ForwardBottomSheet';
 
 const LIMIT = 20
 
@@ -18,6 +19,7 @@ function ContentScreen({ navigation }) {
     const [selectedContent, setSelectedContent] = useState(null)
     const [contentBottomSheetVisible, setContentBottomSheetVisible] = useState(false)
     const [editTagBottomSheetVisible, setEditTagBottomSheetVisible] = useState(false)
+    const [forwardBottomSheetVisible, setForwardBottomSheetVisible] = useState(false)
 
     const updateContent = (contentUpdateFunc) => {
         setRefreshing(true)
@@ -70,6 +72,9 @@ function ContentScreen({ navigation }) {
         />
     )
 
+    // TODO splash for when there is no content
+    // TODO allow them to delete
+    // TODO swipe to save/delete
     return (
         <SafeAreaView style={styles.container}>
             <Header
@@ -95,7 +100,8 @@ function ContentScreen({ navigation }) {
             <ButtonBottomSheet isVisible={contentBottomSheetVisible} onHide={() => setContentBottomSheetVisible(false)}>
                 <Button theme='primary' name='Forward' size='medium' onPress={() => {
                     setContentBottomSheetVisible(false)
-                    navigation.navigate('Forward', { contentPreview: selectedContent, previousScreen: 'Home' })
+                    setTimeout(() => { setForwardBottomSheetVisible(true) }, 400)
+                    // navigation.navigate('Forward', { contentPreview: selectedContent, previousScreen: 'Home' })
                 }} />
                 <Button theme='primary' name='Save' size='medium' onPress={() => {
                     setContentBottomSheetVisible(false)
@@ -107,6 +113,11 @@ function ContentScreen({ navigation }) {
                 isVisible={editTagBottomSheetVisible}
                 onSubmit={onSave}
                 onHide={() => setEditTagBottomSheetVisible(false)}
+            />
+            <ForwardBottomSheet
+                isVisible={forwardBottomSheetVisible}
+                selectedContent={selectedContent}
+                onHide={() => setForwardBottomSheetVisible(false)}
             />
         </SafeAreaView>
     );
@@ -133,6 +144,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         backgroundColor: colors.lightGray,
+        flexBasis: 0,
         flexGrow: 1,
     }
 });

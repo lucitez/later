@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { Divider } from '../components/common';
+import { Divider, SearchBar, Icon } from '../components/common';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { ChatPreview } from '../components/chat/index'
@@ -12,6 +12,7 @@ export default function ChatsScreen({ navigation, route }) {
     const [chats, setChats] = useState([])
     const [refreshing, setRefreshing] = useState(false)
     const [limitReached, setLimitReached] = useState(false)
+    const [search, setSearch] = useState('')
 
     const replaceChats = chats => {
         if (chats.length < LIMIT) {
@@ -47,15 +48,17 @@ export default function ChatsScreen({ navigation, route }) {
 
     const renderChat = (chat, navigation) => (
         <TouchableOpacity onPress={() => {
-            setChats(chats.map(c => c.id == chat.id ? { ...c, hasUnread: false } : c))
+            setChats(chats.map(c => c.chatId == chat.chatId ? { ...c, hasUnread: false } : c))
             navigation.navigate('Chat', { chatDetails: chat })
         }}>
             <ChatPreview chat={chat} />
         </TouchableOpacity>
     )
 
+    // todo start chat with any friend
     return (
         <View style={styles.container}>
+            <SearchBar onChange={text => setSearch(text)} rightIcon={<Icon type='new-message' size={25} color={colors.white} onPress={() => console.log('pressed')} />} />
             <FlatList
                 onRefresh={() => updateChats(0, replaceChats)}
                 onEndReached={onEndReached}

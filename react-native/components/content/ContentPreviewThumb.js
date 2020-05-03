@@ -7,15 +7,14 @@ import ContentPreviewHeader from './ContentPreviewHeader'
 function ContentPreviewThumb({ onDotPress, onTagPress, content, linkActive, imageAR }) {
 
     return (
-        <View style={{ backgroundColor: colors.white, paddingTop: 5, paddingBottom: 5 }}>
-            <View style={styles.topContainer}>
-                <ContentPreviewHeader content={content} onDotPress={onDotPress} onTagPress={onTagPress} />
-            </View>
+        <View style={styles.container}>
+            <ContentPreviewHeader content={content} onDotPress={onDotPress} onTagPress={onTagPress} />
             <View style={styles.contentContainer}>
                 <View style={{ flexBasis: 0, flexGrow: 1 }}>
                     <View style={styles.titleContainer}>
                         <Text numberOfLines={8} style={styles.title}>{content.title}</Text>
                     </View>
+                    <Text numberOfLines={2} style={styles.description}>{content.description}</Text>
                 </View>
                 <Link url={content.url} active={linkActive}>
                     <View style={[styles.imageContainer, { aspectRatio: imageAR }]}>
@@ -34,11 +33,11 @@ function ContentPreviewThumb({ onDotPress, onTagPress, content, linkActive, imag
 }
 
 const styles = StyleSheet.create({
-    topContainer: {
-        padding: 10,
-        paddingTop: 0,
+    container: {
+        backgroundColor: colors.white,
+        paddingTop: 5,
+        paddingBottom: 5,
     },
-
     contentContainer: {
         flexDirection: 'row',
         padding: 10,
@@ -49,14 +48,14 @@ const styles = StyleSheet.create({
     },
     title: {
         fontWeight: '600',
-        fontSize: 17,
+        fontSize: 16,
     },
     description: {
         fontSize: 12,
     },
     imageContainer: {
         marginLeft: 10,
-        height: 115,
+        height: 100,
     },
     image: {
         borderRadius: 10,

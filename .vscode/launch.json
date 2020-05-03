@@ -5,13 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "local",
+            "name": "Launch file",
             "type": "go",
             "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/cmd/later/main.go",
-            "envFile": "${workspaceFolder}/.env.local",
-            "args": []
-        }
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/later"
+        },
     ]
 }

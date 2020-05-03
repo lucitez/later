@@ -115,6 +115,7 @@ const Network = {
             headers: headers,
             data: objToSnakeCase(body),
         }
+        console.log(options)
         return request(options)
     },
     PUT(url, body = {}) {

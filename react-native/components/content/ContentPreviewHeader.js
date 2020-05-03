@@ -2,13 +2,20 @@ import React from 'react'
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import { Tag, Icon } from '../common'
 import { colors } from '../../assets/colors'
+import { timeSince } from '../../util/time';
 
 export default function ContentPreviewHeader({ content, onDotPress, onTagPress }) {
     return (
         <View style={styles.bannerContainer}>
             <View style={styles.senderContainer}>
                 <Image style={styles.userImage} source={{ uri: 'https://www.washingtonpost.com/resizer/uwlkeOwC_3JqSUXeH8ZP81cHx3I=/arc-anglerfish-washpost-prod-washpost/public/HB4AT3D3IMI6TMPTWIZ74WAR54.jpg' }} />
-                {content.sentByUsername && <Text style={styles.senderName}>@{content.sentByUsername}</Text>}
+                <View>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.senderName}>{content.sentByName}</Text>
+                        <Text style={styles.senderUsername}>- @{content.sentByUsername}</Text>
+                    </View>
+                    {content.createdAt && <Text style={{ fontSize: 13, fontWeight: '300' }}>{timeSince(Date.parse(content.createdAt))}</Text>}
+                </View>
             </View>
             {
                 content.tag && content.savedAt &&
@@ -27,6 +34,7 @@ export default function ContentPreviewHeader({ content, onDotPress, onTagPress }
 
 const styles = StyleSheet.create({
     bannerContainer: {
+        padding: 10,
         flexDirection: 'row',
         justifyContent: 'flex-end',
     },
@@ -36,14 +44,18 @@ const styles = StyleSheet.create({
         flexGrow: 1,
     },
     senderName: {
-        fontWeight: '400',
-        fontSize: 16,
+        fontWeight: '600',
+        fontSize: 14,
+    },
+    senderUsername: {
+        fontWeight: '300',
+        fontSize: 14,
+        marginLeft: 5,
     },
     userImage: {
-        height: 40,
-        width: 40,
-        margin: 5,
-        marginLeft: 0,
+        height: 35,
+        width: 35,
+        marginRight: 5,
         borderRadius: 20,
     },
     dotsContainer: {

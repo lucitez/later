@@ -75,6 +75,8 @@ function RenderIcon(props) {
             return <MaterialIcons name='content-paste' {...props} />
         case 'next':
             return <AntIcons name='rightcircle' {...props} />
+        case 'new-message':
+            return <AntIcons name='form' {...props} />
 
 
         default:

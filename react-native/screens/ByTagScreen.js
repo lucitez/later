@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, SafeAreaView, FlatList } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
-import { Header, Button, BackIcon } from '../components/common';
+import { Header, Button, BackIcon, Divider } from '../components/common';
 import { ContentPreview } from '../components/content';
 import { ButtonBottomSheet, EditTagBottomSheet } from '../components/modals';
 
@@ -51,6 +51,7 @@ function ByTagScreen({ navigation, route }) {
                 <FlatList
                     data={content}
                     renderItem={renderContent}
+                    ItemSeparatorComponent={Divider}
                 />
             </View>
 
@@ -96,6 +97,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
     },
     contentContainer: {
+        flexBasis: 0,
         flexGrow: 1,
         backgroundColor: colors.lightGray,
     }

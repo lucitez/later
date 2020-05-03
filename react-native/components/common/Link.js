@@ -1,9 +1,9 @@
 import React from 'react';
-import { Linking, Alert, TouchableWithoutFeedback } from 'react-native';
+import { Linking, Alert, TouchableHighlight } from 'react-native';
 
 function Link({ children, url, active }) {
     return (
-        <TouchableWithoutFeedback onPress={async () => {
+        <TouchableHighlight activeOpacity={0.75} underlayColor="#FFFFFF" onPress={async () => {
             if (active) {
                 // Checking if the link is supported for links with custom URL scheme.
                 const supported = await Linking.canOpenURL(url);
@@ -18,7 +18,7 @@ function Link({ children, url, active }) {
             }
         }}>
             {children}
-        </TouchableWithoutFeedback>
+        </TouchableHighlight>
     )
 }
 
