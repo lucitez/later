@@ -3,8 +3,9 @@ import { StyleSheet, View, Text, TouchableOpacity, SafeAreaView, ActivityIndicat
 import { Header, SearchBar } from '../components/common';
 import Network from '../util/Network';
 import { ContentPreview } from '../components/content';
-import { colors } from '../assets/colors';
+import { colors, contentTypes } from '../assets/colors';
 import { useSelector } from 'react-redux';
+import { Radio, RadioGroup } from '../components/common/index';
 
 function SharePreviewScreen({ navigation, route }) {
     const [url, setUrl] = useState('')
@@ -13,6 +14,7 @@ function SharePreviewScreen({ navigation, route }) {
     const [sent, setSent] = useState(false)
     const [err, setErr] = useState('')
     const [user, setUser] = useState(null)
+    const [contentType, setContentType] = useState(null)
 
     const userId = useSelector(state => state.auth.userId)
 
@@ -64,8 +66,22 @@ function SharePreviewScreen({ navigation, route }) {
                         <ContentPreview content={contentPreview} onDotPress={() => null} />
                     </View>
                     <View style={styles.footerContainer}>
+                        <View style={{ width: '50%', marginRight: 10 }}>
+                            <RadioGroup
+                                options={[
+                                    { icon: 'watch', value: 'watch' },
+                                    { icon: 'read', value: 'read' },
+                                    { icon: 'listen', value: 'listen' }
+                                ]}
+                                onChange={value => setContentType(value)}
+                            />
+                        </View>
+
                         <TouchableOpacity onPress={() => {
-                            navigation.navigate('Send Share', { contentPreview: contentPreview, previousScreen: 'Share' })
+                            navigation.navigate(
+                                'Send Share',
+                                { contentPreview: { ...contentPreview, contentType: contentType } }
+                            )
                         }}>
                             <View style={styles.nextButtonContainer}>
                                 <Text style={styles.nextButton}>Next</Text>

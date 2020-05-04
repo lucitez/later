@@ -9,8 +9,10 @@ import { ShareFriendSelector } from '../components/share/index';
 function SendShareScreen({ navigation, route }) {
     let preview = route.params.contentPreview
 
+    console.log(preview)
+
     const onSend = (userIds, callback) => {
-        sendShares(preview.url, userIds)
+        sendShares(preview.url, preview.contentType, userIds)
             .then(() => {
                 callback()
                 navigation.dispatch(
@@ -36,10 +38,11 @@ function SendShareScreen({ navigation, route }) {
     );
 }
 
-const sendShares = (url, userIds) => {
+const sendShares = (url, contentType, userIds) => {
     let body = {
+        url,
+        contentType,
         recipientUserIds: userIds,
-        url
     }
     return Network.POST('/shares/new', body)
 }

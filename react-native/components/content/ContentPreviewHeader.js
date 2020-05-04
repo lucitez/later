@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native'
 import { Tag, Icon } from '../common'
-import { colors } from '../../assets/colors'
+import { colors, contentTypes } from '../../assets/colors'
 import { timeSince } from '../../util/time';
 
 export default function ContentPreviewHeader({ content, onDotPress, onTagPress }) {
@@ -17,6 +17,7 @@ export default function ContentPreviewHeader({ content, onDotPress, onTagPress }
                     {content.createdAt && <Text style={{ fontSize: 13, fontWeight: '300' }}>{timeSince(Date.parse(content.createdAt))}</Text>}
                 </View>
             </View>
+
             {
                 content.tag && content.savedAt &&
                 <View>
@@ -25,6 +26,7 @@ export default function ContentPreviewHeader({ content, onDotPress, onTagPress }
                     </TouchableOpacity>
                 </View>
             }
+            {content.contentType && <Icon type={content.contentType} color={contentTypes[content.contentType].color} size={25} />}
             <TouchableOpacity onPress={() => onDotPress(content)} style={styles.dotsContainer}>
                 <Icon type='dots' size={20} color={colors.black} />
             </TouchableOpacity>
