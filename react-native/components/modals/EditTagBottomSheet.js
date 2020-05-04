@@ -21,7 +21,7 @@ function EditTagBottomSheet({ value, isVisible, onSubmit, onHide }) {
             <SafeAreaView style={styles.container}>
                 <View style={styles.addTagContainer}>
                     <SearchBar
-                        placeholder='Add Tag...'
+                        placeholder='Add or Edit Tag...'
                         iconName='tag'
                         value={value}
                         onChange={value => setTagValue(value)}
@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     addTagContainer: {
         flexBasis: 0,
         flexGrow: 1,
-        borderWidth: 1,
         borderColor: 'white'
     },
     saveButtonContainer: {

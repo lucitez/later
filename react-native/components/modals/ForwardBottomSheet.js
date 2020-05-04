@@ -6,7 +6,7 @@ import { ShareFriendSelector } from '../share/index'
 import { colors } from '../../assets/colors';
 import Network from '../../util/Network';
 
-function ForwardBottomSheet({ selectedContent, isVisible, onHide }) {
+export default function ForwardBottomSheet({ selectedContent, isVisible, onHide }) {
     const [visible, setVisible] = useState(isVisible)
 
     useEffect(() => { setVisible(isVisible) }, [isVisible])
@@ -57,5 +57,3 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
     },
 })
-
-export default ForwardBottomSheet

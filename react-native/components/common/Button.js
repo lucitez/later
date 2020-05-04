@@ -33,6 +33,7 @@ const buttonContainerStyleFromTheme = theme => {
     switch (theme) {
         case 'primary': return styles.primaryButtonContainer
         case 'light': return styles.lightButtonContainer
+        case 'danger': return styles.dangerButtonContainer
     }
 }
 
@@ -40,6 +41,7 @@ const buttonStyleFromTheme = theme => {
     switch (theme) {
         case 'primary': return styles.primaryButton
         case 'light': return styles.lightButton
+        case 'danger': return styles.dangerButton
     }
 }
 
@@ -65,22 +67,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 5,
         marginBottom: 5,
+        borderWidth: 1.5,
     },
     primaryButtonContainer: {
-        backgroundColor: colors.primary,
-        borderWidth: 1.5,
         borderColor: colors.white
     },
     lightButtonContainer: {
         backgroundColor: colors.white,
-        borderWidth: 1.5,
         borderColor: colors.primary
+    },
+    dangerButtonContainer: {
+        backgroundColor: colors.red,
+        borderColor: colors.white
     },
     primaryButton: {
         color: colors.white
     },
     lightButton: {
         color: colors.primary
+    },
+    dangerButton: {
+        color: colors.white
     },
     largeButtonContainer: {
         padding: 15,

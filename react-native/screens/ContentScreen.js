@@ -2,28 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Alert, SafeAreaView, FlatList } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
-import { Header, Icon, Button, Divider } from '../components/common';
-import { ContentPreview } from '../components/content';
-import { ButtonBottomSheet, EditTagBottomSheet } from '../components/modals';
-import ForwardBottomSheet from '../components/modals/ForwardBottomSheet';
+import { Header, SearchBar, Icon, Divider, BackIcon } from '../components/common';
+import { ContentFilter, ContentPreview } from '../components/content';
+import { EditTagBottomSheet, ForwardBottomSheet } from '../components/modals';
 
 const LIMIT = 20
 
-function ContentScreen({ navigation }) {
+function ContentScreen({ navigation, route, kind }) {
+    let tag = route.params.tag
+
     const [content, setContent] = useState([])
     const [refreshing, setRefreshing] = useState(false)
+    const [search, setSearch] = useState('')
+    const [filter, setFilter] = useState({})
     const [offset, setOffset] = useState(0)
     const [limitReached, setLimitReached] = useState(false)
 
     // For modal
     const [selectedContent, setSelectedContent] = useState(null)
-    const [contentBottomSheetVisible, setContentBottomSheetVisible] = useState(false)
+    const [saveBottomSheetVisible, setSaveBottomSheetVisible] = useState(false)
     const [editTagBottomSheetVisible, setEditTagBottomSheetVisible] = useState(false)
     const [forwardBottomSheetVisible, setForwardBottomSheetVisible] = useState(false)
 
     const updateContent = (contentUpdateFunc) => {
         setRefreshing(true)
-        getContent(offset)
+        getContent(kind, search, offset, filter, tag)
             .then(content => {
                 if (content.length < LIMIT) {
                     setLimitReached(true)
@@ -40,8 +43,9 @@ function ContentScreen({ navigation }) {
 
 
     useEffect(() => {
+        setContent([])
         updateContent(content => setContent(content))
-    }, [])
+    }, [filter, search])
 
     const onEndReached = () => {
         if (!limitReached) {
@@ -55,37 +59,82 @@ function ContentScreen({ navigation }) {
         updateContent(content => setContent(content))
     }
 
-    const onSave = (tag) => {
+    const onSave = tag => {
         saveContent(selectedContent, tag)
             .then(setContent(content.filter(c => c.id != selectedContent.id)))
             .catch(error => Alert.alert(error))
     }
 
+    const onUpdateTag = newTag => {
+        let prevContent = selectedContent
+
+        if (prevContent.tag != newTag) {
+            setContent(transformContentTag(content, prevContent.id, newTag))
+            updateTag(prevContent.id, newTag)
+                .then()
+                .catch(() => setContent(transformContentTag(content, prevContent.id, prevTag)))
+        }
+    }
+
+    const onDeletePress = toDelete => {
+        Alert.alert('Confirm delete', null, [
+            {
+                text: 'Cancel',
+                onPress: () => null,
+                style: 'cancel'
+            },
+            {
+                text: 'Confirm',
+                onPress: () => {
+                    deleteContent(toDelete.id)
+                        .then(() => setContent(content.filter(c => c.id != toDelete.id)))
+                        .catch(err => console.log(err))
+                }
+            }
+        ])
+    }
+
     const renderContent = ({ item }) => (
         <ContentPreview
             content={item}
-            linkActive={!contentBottomSheetVisible && !editTagBottomSheetVisible}
-            onDotPress={content => {
+            includeFooter={true}
+            kind={kind}
+            linkActive={!editTagBottomSheetVisible && !forwardBottomSheetVisible && !saveBottomSheetVisible}
+            onTagPress={tag => navigation.navigate('Tag', { tag })}
+            onDeletePress={(content) => onDeletePress(content)}
+            onForwardPress={content => {
                 setSelectedContent(content)
-                setContentBottomSheetVisible(true)
+                setForwardBottomSheetVisible(true)
+            }}
+            onSavePress={content => {
+                setSelectedContent(content)
+                setSaveBottomSheetVisible(true)
+            }}
+            onEditTagPress={content => {
+                setSelectedContent(content)
+                setEditTagBottomSheetVisible(true)
             }}
         />
     )
 
     // TODO splash for when there is no content
-    // TODO allow them to delete
     // TODO swipe to save/delete
     return (
         <SafeAreaView style={styles.container}>
             <Header
                 title="Later"
-                rightIcon={<Icon
+                leftIcon={kind != 'home' && <BackIcon navigation={navigation} color={colors.white} />}
+                rightIcon={kind == 'home' && <Icon
                     type='save'
                     size={25}
                     color={colors.white}
                     onPress={() => navigation.navigate('Saved')}
                 />}
             />
+            {kind == 'saved' && <>
+                <SearchBar onChange={value => setSearch(value)} placeholder='Search by title or tag...' />
+                <ContentFilter onChange={(filter) => setFilter(filter)} />
+            </>}
             <View style={styles.contentContainer}>
                 <FlatList
                     data={content}
@@ -97,21 +146,14 @@ function ContentScreen({ navigation }) {
                     ItemSeparatorComponent={Divider}
                 />
             </View>
-            <ButtonBottomSheet isVisible={contentBottomSheetVisible} onHide={() => setContentBottomSheetVisible(false)}>
-                <Button theme='primary' name='Forward' size='medium' onPress={() => {
-                    setContentBottomSheetVisible(false)
-                    setTimeout(() => { setForwardBottomSheetVisible(true) }, 400)
-                    // navigation.navigate('Forward', { contentPreview: selectedContent, previousScreen: 'Home' })
-                }} />
-                <Button theme='primary' name='Save' size='medium' onPress={() => {
-                    setContentBottomSheetVisible(false)
-                    setTimeout(() => { setEditTagBottomSheetVisible(true) }, 400)
-                }} />
-                <Button theme='light' name='Cancel' size='medium' onPress={() => setContentBottomSheetVisible(false)} />
-            </ButtonBottomSheet>
+            <EditTagBottomSheet
+                isVisible={saveBottomSheetVisible}
+                onSubmit={onSave}
+                onHide={() => setSaveBottomSheetVisible(false)}
+            />
             <EditTagBottomSheet
                 isVisible={editTagBottomSheetVisible}
-                onSubmit={onSave}
+                onSubmit={onUpdateTag}
                 onHide={() => setEditTagBottomSheetVisible(false)}
             />
             <ForwardBottomSheet
@@ -123,9 +165,33 @@ function ContentScreen({ navigation }) {
     );
 }
 
-const getContent = (offset) => {
-    let params = { limit: LIMIT, offset }
-    return Network.GET(`/user-content/filter`, params)
+const getContent = (kind, search, offset, contentFilter, tag) => {
+    let homeParams = { limit: LIMIT, offset }
+
+    let savedParams = {
+        saved: true,
+        search,
+        limit: LIMIT,
+        offset,
+        ...contentFilter
+    }
+
+    switch (kind) {
+        case 'home':
+            return Network.GET('/user-content/filter', homeParams)
+        case 'saved':
+            return Network.GET('/user-content/filter', savedParams)
+        case 'byTag':
+            return Network.GET('/user-content/by-tag', { tag })
+    }
+}
+
+const updateTag = (contentId, tag) => {
+    let params = {
+        id: contentId,
+        tag: tag
+    }
+    return Network.PUT('/user-content/update', params)
 }
 
 const saveContent = (content, tag) => {
@@ -134,8 +200,18 @@ const saveContent = (content, tag) => {
         tag: tag
     }
 
-    return Network.PUT(`/user-content/save`, params)
+    return Network.PUT('/user-content/save', params)
 }
+
+const deleteContent = id => {
+    return Network.PUT('/user-content/delete', { id })
+}
+
+const transformContentTag = (content, contentId, tag) => (
+    content.map(c => (
+        c.id == contentId ? { ...c, ['tag']: tag } : c
+    ))
+)
 
 const styles = StyleSheet.create({
     container: {

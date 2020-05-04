@@ -7,7 +7,8 @@ export const colors = {
     lightGray: '#EFEFEF',
     darkGray: '#4F4F4F',
     purple: '#B24BFF',
-    blue: '#3BACFF'
+    blue: '#3BACFF',
+    red: '#EA1926',
 }
 
 export const contentTypes = {

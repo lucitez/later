@@ -1,14 +1,26 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { Icon, Link, Tag } from '../common';
 import { colors } from '../../assets/colors';
 import ContentPreviewHeader from './ContentPreviewHeader'
+import ContentPreviewFooter from './ContentPreviewFooter'
 
-function ContentPreviewThumb({ onDotPress, onTagPress, content, linkActive, imageAR }) {
+export default function ContentPreviewThumb({
+    kind,
+    onForwardPress,
+    onDeletePress,
+    onTagPress,
+    onEditTagPress,
+    onSavePress,
+    content,
+    linkActive,
+    imageAR,
+    includeFooter
+}) {
 
     return (
         <View style={styles.container}>
-            <ContentPreviewHeader content={content} onDotPress={onDotPress} onTagPress={onTagPress} />
+            <ContentPreviewHeader content={content} onTagPress={onTagPress} />
             <View style={styles.contentContainer}>
                 <View style={{ flexBasis: 0, flexGrow: 1 }}>
                     <View style={styles.titleContainer}>
@@ -28,6 +40,14 @@ function ContentPreviewThumb({ onDotPress, onTagPress, content, linkActive, imag
                     </View>
                 </Link>
             </View>
+            {includeFooter && <ContentPreviewFooter
+                kind={kind}
+                content={content}
+                onForwardPress={onForwardPress}
+                onDeletePress={onDeletePress}
+                onSavePress={onSavePress}
+                onEditTagPress={onEditTagPress}
+            />}
         </View>
     );
 }
@@ -77,5 +97,3 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start'
     },
 });
-
-export default ContentPreviewThumb

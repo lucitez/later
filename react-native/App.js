@@ -10,7 +10,6 @@ import { Icon } from './components/common'
 import {
   ByTagScreen,
   ContentScreen,
-  SavedScreen,
   SharePreviewScreen,
   SendShareScreen,
   DiscoverScreen,
@@ -38,10 +37,14 @@ const DiscoverStack = createStackNavigator()
 const ShareStack = createStackNavigator()
 const ProfileStack = createStackNavigator()
 
+const HomeScreen = ({ navigation }) => <ContentScreen kind='home' navigation={navigation} />
+const SavedScreen = ({ navigation }) => <ContentScreen kind='saved' navigation={navigation} />
+const ByTagScreen = ({ navigation }) => <ContentScreen kind='byTag' navigation={navigation} />
+
 function CreateContentStack() {
   return (
     <ContentStack.Navigator initialRouteName='Home' headerMode='none'>
-      <ContentStack.Screen name='Home' component={ContentScreen} />
+      <ContentStack.Screen name='Home' component={HomeScreen} />
       <ContentStack.Screen name='Saved' component={SavedScreen} />
       <ContentStack.Screen name='Tag' component={ByTagScreen} />
       <ContentStack.Screen name='Forward' component={SendShareScreen} />

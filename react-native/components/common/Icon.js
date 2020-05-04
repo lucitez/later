@@ -1,12 +1,13 @@
-import React from 'react';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import AntIcons from 'react-native-vector-icons/AntDesign';
-import FeatherIcons from 'react-native-vector-icons/Feather';
-import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import EntypoIcons from 'react-native-vector-icons/Entypo';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import React from 'react'
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
+import AntIcons from 'react-native-vector-icons/AntDesign'
+import FeatherIcons from 'react-native-vector-icons/Feather'
+import FontAwesomeIcons from 'react-native-vector-icons/FontAwesome'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import EntypoIcons from 'react-native-vector-icons/Entypo'
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import Evilicons from 'react-native-vector-icons/EvilIcons'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 function RenderIcon(props) {
     switch (props.type) {
@@ -63,9 +64,13 @@ function RenderIcon(props) {
         */
 
         case 'tag':
-            return <AntIcons name='tag' {...props} />
+            return <Evilicons name='tag' {...props} />
         case 'save':
             return <AntIcons name='inbox' {...props} />
+        case 'forward':
+            return <Ionicons name='ios-share-alt' {...props} />
+        case 'trash':
+            return <Evilicons name='trash' {...props} />
 
         /**
         Misc

@@ -120,8 +120,6 @@ const styles = StyleSheet.create({
         flexBasis: 0,
         flexGrow: 1,
         backgroundColor: colors.lightGray,
-        borderWidth: 1,
-        borderColor: 'pink'
     },
     contentContainer: {
         flexBasis: 0,

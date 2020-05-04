@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View, Keyboard, TouchableOpacity, FlatList } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Keyboard, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { colors } from '../../assets/colors';
 import Icon from './Icon';
 import Tag from './Tag';
@@ -8,6 +8,7 @@ function SearchBar(props) {
     const [search, setSearch] = useState(props.value ? props.value : '')
     const [isKeyboardShowing, setKeyboardShowing] = useState(false)
     const [autocompleteOptions, setAutocompleteOptions] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const _keyboardWillShow = () => setKeyboardShowing(true)
     const _keyboardWillHide = () => setKeyboardShowing(false)
@@ -22,15 +23,24 @@ function SearchBar(props) {
     }, [])
 
     useEffect(() => {
+        console.log('HAPPENING IN SEARCH')
         props.onChange(search)
         if (props.autocompleteFunc) {
+            setLoading(true)
             props.autocompleteFunc(search)
-                .then(options => setAutocompleteOptions(options))
-                .catch(err => console.error(err))
+                .then(options => {
+                    setAutocompleteOptions(options)
+                    setLoading(false)
+                })
+                .catch(err => {
+                    console.error(err)
+                    setLoading(false)
+                })
         }
     }, [search])
 
     useEffect(() => {
+        console.log('HAPPENING IN CLEAR')
         if (props.clear) {
             setSearch('')
         }
@@ -82,13 +92,25 @@ function SearchBar(props) {
         if (props.autocompleteFunc) {
             return (
                 <View style={styles.autoCompleteContainer}>
-                    <FlatList
-                        keyboardShouldPersistTaps='handled'
-                        data={autocompleteOptions}
-                        keyExtractor={(_, index) => index.toString()}
-                        renderItem={renderAutocompleteData}
-                        persistentScrollbar={true}
-                    />
+                    {loading ? (
+                        <View style={styles.autocompleteContainer}>
+                            <View style={{ alignItems: 'center', marginBottom: 10 }}>
+                                <Text style={{ color: colors.white }}>Loading your similar tags</Text>
+                            </View>
+                            <ActivityIndicator color={colors.white} />
+                        </View>
+                    ) : (
+                            <FlatList
+                                keyboardShouldPersistTaps='handled'
+                                data={autocompleteOptions}
+                                keyExtractor={(_, index) => index.toString()}
+                                renderItem={renderAutocompleteData}
+                                persistentScrollbar={true}
+                            />
+                        )
+
+                    }
+
                 </View>
             )
         } else return null
