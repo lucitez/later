@@ -17,7 +17,6 @@ const ENV = {
 };
 
 const getEnvVars = (env = Constants.manifest.releaseChannel) => {
-    console.log(process.env)
     if (__DEV__) {
         return ENV.dev;
     } else if (env == 'staging') {

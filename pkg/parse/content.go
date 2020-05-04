@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/lucitez/later/pkg/util/stringutil"
+
 	"github.com/lucitez/later/pkg/response"
 
 	"github.com/google/uuid"
@@ -91,7 +93,17 @@ func ContentFromURL(url string) (*ContentMetadata, error) {
 }
 
 func contentMetadataDefault(metadata *ContentMetadata, url string) {
-	resp, err := http.Get(url)
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", url, nil)
+
+	if err != nil {
+		log.Printf("Error creating request")
+	}
+
+	req.Header.Set("User-Agent", "Chrome/44.0.2403.89")
+	resp, err := client.Do(req)
 
 	if err != nil {
 		log.Printf("Error retrieving URL content. Error: %v", err)
@@ -154,7 +166,7 @@ func parseHead(head *html.Node) headerContent {
 
 			var name string
 			var property string
-			var content *string
+			var content string
 
 			for _, attr := range currNode.Attr {
 				switch attr.Key {
@@ -163,15 +175,15 @@ func parseHead(head *html.Node) headerContent {
 				case "property":
 					property = attr.Val
 				case "content":
-					content = &attr.Val
+					content = attr.Val
 				}
 			}
 
 			switch {
 			case name == "description":
-				headerContent.description = content
+				headerContent.description = stringutil.NullIfBlank(content)
 			case property == "og:image":
-				headerContent.imageURL = content
+				headerContent.imageURL = stringutil.NullIfBlank(content)
 			}
 		}
 	}

@@ -26,7 +26,7 @@ export default function ContentPreviewHeader({ content, onDotPress, onTagPress }
                     </TouchableOpacity>
                 </View>
             }
-            {content.contentType && <Icon type={content.contentType} color={contentTypes[content.contentType].color} size={25} />}
+            {content.contentType && <Icon style={{ marginLeft: 10 }} type={content.contentType} color={contentTypes[content.contentType].color} size={25} />}
             {/* <TouchableOpacity onPress={() => onDotPress(content)} style={styles.dotsContainer}>
                 <Icon type='dots' size={20} color={colors.black} />
             </TouchableOpacity> */}

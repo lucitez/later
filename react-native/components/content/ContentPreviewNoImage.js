@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import { Link } from '../common'
 import { colors } from '../../assets/colors'
 import ContentPreviewHeader from './ContentPreviewHeader'
+import ContentPreviewFooter from './ContentPreviewFooter'
 
 function ContentPreviewNoImage({
     kind,

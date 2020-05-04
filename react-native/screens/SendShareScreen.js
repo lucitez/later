@@ -9,8 +9,6 @@ import { ShareFriendSelector } from '../components/share/index';
 function SendShareScreen({ navigation, route }) {
     let preview = route.params.contentPreview
 
-    console.log(preview)
-
     const onSend = (userIds, callback) => {
         sendShares(preview.url, preview.contentType, userIds)
             .then(() => {

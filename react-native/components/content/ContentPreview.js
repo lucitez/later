@@ -16,7 +16,7 @@ function ContentPreview(props) {
                     setImageAR(width / height)
                     setLoading(false)
                 },
-                () => setLoading(false)
+                _ => setLoading(false)
             )
         } else {
             setLoading(false)

@@ -58,7 +58,7 @@ export default function ChatsScreen({ navigation, route }) {
     // todo start chat with any friend
     return (
         <View style={styles.container}>
-            <SearchBar onChange={text => setSearch(text)} rightIcon={<Icon type='new-message' size={25} color={colors.white} onPress={() => console.log('pressed')} />} />
+            <SearchBar onChange={text => setSearch(text)} />
             <FlatList
                 onRefresh={() => updateChats(0, replaceChats)}
                 onEndReached={onEndReached}

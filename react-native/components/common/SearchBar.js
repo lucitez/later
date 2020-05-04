@@ -23,7 +23,6 @@ function SearchBar(props) {
     }, [])
 
     useEffect(() => {
-        console.log('HAPPENING IN SEARCH')
         props.onChange(search)
         if (props.autocompleteFunc) {
             setLoading(true)
@@ -40,7 +39,6 @@ function SearchBar(props) {
     }, [search])
 
     useEffect(() => {
-        console.log('HAPPENING IN CLEAR')
         if (props.clear) {
             setSearch('')
         }

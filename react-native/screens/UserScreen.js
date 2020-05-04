@@ -7,11 +7,20 @@ import { Button, BackIcon } from '../components/common'
 
 function UserScreen({ navigation, route }) {
     const [user, setUser] = useState(null)
+    const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
+        let isMounted = true
+        setMounted(true)
+
         getUserProfile(route.params.userId)
-            .then(user => setUser(user))
+            .then(user => isMounted && setUser(user))
             .catch(error => console.error(error))
+
+        return () => {
+            setMounted(false)
+            isMounted = false
+        }
     }, [])
 
     const onSendFriendRequest = () => {
@@ -19,8 +28,8 @@ function UserScreen({ navigation, route }) {
         setUser(updatedUser)
 
         sendFriendRequest(user.id)
-            .then(friendRequest => setUser({ ...updatedUser, ['friendRequestId']: friendRequest.id }))
-            .catch(() => setUser(user))
+            .then(friendRequest => mounted && setUser({ ...updatedUser, ['friendRequestId']: friendRequest.id }))
+            .catch(() => mounted && setUser(user))
     }
 
     const onCancelFriendRequest = () => {

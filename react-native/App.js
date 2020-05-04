@@ -38,7 +38,7 @@ const ProfileStack = createStackNavigator()
 
 const HomeScreen = ({ navigation }) => <ContentScreen kind='home' navigation={navigation} />
 const SavedScreen = ({ navigation }) => <ContentScreen kind='saved' navigation={navigation} />
-const ByTagScreen = ({ navigation }) => <ContentScreen kind='byTag' navigation={navigation} />
+const ByTagScreen = ({ navigation, route }) => <ContentScreen kind='byTag' navigation={navigation} route={route} />
 
 function CreateContentStack() {
   return (

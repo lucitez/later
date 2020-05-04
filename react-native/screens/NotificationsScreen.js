@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { StyleSheet, View, FlatList, Text } from 'react-native';
 import { colors } from '../assets/colors';
 import Network from '../util/Network';
 import { FriendRequest } from '../components/user';
@@ -48,7 +48,8 @@ function NotificationsScreen() {
                 renderItem={renderFriendRequest}
                 onRefresh={loadFriendRequests}
                 refreshing={refreshing}
-                ItemSeparatorComponent={<Divider />}
+                ItemSeparatorComponent={Divider}
+                ListEmptyComponent={() => <Text>You have no notifications.</Text>}
             />
         </View>
     );

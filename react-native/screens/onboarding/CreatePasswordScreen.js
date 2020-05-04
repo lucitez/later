@@ -29,7 +29,6 @@ export default function CreatePasswordScreen({ navigation, route }) {
                 signIn()
             })
             .catch(err => {
-                console.log(err)
                 setError(err)
                 setSubmitting(false)
             })

@@ -13,6 +13,9 @@ VALUES ('glump', 'Glumpo McSqueefy', 'glump@glump.co', '3333333333', now(), cryp
 INSERT INTO users (username, name, email, phone_number, signed_up_at, password)
 VALUES ('steven', 'Steve McQueen', 'smq@gmail.com', '9999999999', now(), crypt('pass', gen_salt('bf')));
 
+INSERT INTO users (username, name, email, phone_number, signed_up_at, password)
+VALUES ('betatest', 'Beta User', 'beta@gmail.com', '0123456789', now(), crypt('betapass', gen_salt('bf')));
+
 -- create table content_types (id int, t text);
 -- insert into content_types values (1, 'watch'), (2, 'read'), (3, 'listen');
 

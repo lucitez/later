@@ -9,9 +9,9 @@
 # GET http://localhost:8000/content/preview
 #     ?id=2cc0f186-e52f-455d-8d2f-c02048f49bb6
 
-GET http://localhost:8000/content/preview
-    ?url=https://www.nytimes.com/2020/04/16/business/economy/coronavirus-economy.html?referringSource=articleShare
-Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODgxMTIwNzgsImlhdCI6MTU4ODExMTE3OCwic3ViIjoiN2I4ODE1MjItM2E3Ni00OTI4LWFlZmEtM2FhNGM4MzkyNDQzIiwidXNlcl9zZXNzaW9uX2lkIjoiMjEwZmI1MmMtZTZlNy00YjhjLTg2MjMtYjAxNDAyZWViYjU1In0.kZlnbbIP_zruCzWVi8RASuNhwoluxIEhLPeACrlczLM
+GET http://localhost:8080/content/preview
+    ?url=https://www.newsweek.com/antibody-that-blocks-coronavirus-infecting-cells-discovered-scientists-1501742
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODg2MzEwMTUsImlhdCI6MTU4ODYzMDExNSwic3ViIjoiODM0MWEyNDgtYmNjNy00OTYxLWJjZDYtNmY3Y2RhMGIzZGJkIiwidXNlcl9zZXNzaW9uX2lkIjoiMjA0NTZmZGMtNjdmMC00OTA5LThkYTQtNDQyYjk2YTAzMWViIn0.T92sqMZvTGwWTLooVnHzXRd6hinx32CzJySH5wpkQ9I
 
 # PUT http://localhost:8000/user-content/save
 

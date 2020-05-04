@@ -10,7 +10,7 @@ import { ContentScreenPlaceholder } from '../components/placeholders';
 const LIMIT = 20
 
 function ContentScreen({ navigation, route, kind }) {
-    let tag = route && route.params.tag
+    let tag = route ? route.params.tag : null
 
     const [content, setContent] = useState([])
     const [refreshing, setRefreshing] = useState(false)
@@ -137,7 +137,7 @@ function ContentScreen({ navigation, route, kind }) {
                 <ContentFilter onChange={(filter) => setFilter(filter)} />
             </>}
             <View style={styles.contentContainer}>
-                {!refreshing && content.length == 0 && <ContentScreenPlaceholder navigation={navigation} kind={kind} />}
+                {/* {!refreshing && content.length == 0 && } */}
                 <FlatList
                     data={content}
                     onRefresh={onRefresh}
@@ -146,6 +146,7 @@ function ContentScreen({ navigation, route, kind }) {
                     onEndReachedThreshold={0.1}
                     renderItem={renderContent}
                     ItemSeparatorComponent={Divider}
+                    ListEmptyComponent={() => <ContentScreenPlaceholder navigation={navigation} kind={kind} />}
                 />
             </View>
             <EditTagBottomSheet
