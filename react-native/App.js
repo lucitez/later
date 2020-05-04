@@ -8,7 +8,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createStackNavigator } from '@react-navigation/stack'
 import { Icon } from './components/common'
 import {
-  ByTagScreen,
   ContentScreen,
   SharePreviewScreen,
   SendShareScreen,
@@ -91,6 +90,7 @@ function CreateApplicationTabs() {
       tabBarOptions={{
         activeTintColor: colors.primary,
         inactiveTintColor: 'gray',
+        showLabel: false,
       }}
     >
       <ApplicationTabs.Screen name='Home' component={CreateContentStack} />

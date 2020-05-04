@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import { Icon, Link, Tag } from '../common';
+import { Link } from '../common';
 import { colors } from '../../assets/colors';
 import ContentPreviewHeader from './ContentPreviewHeader'
 import ContentPreviewFooter from './ContentPreviewFooter'
@@ -24,7 +24,7 @@ export default function ContentPreviewThumb({
             <View style={styles.contentContainer}>
                 <View style={{ flexBasis: 0, flexGrow: 1 }}>
                     <View style={styles.titleContainer}>
-                        <Text numberOfLines={8} style={styles.title}>{content.title}</Text>
+                        <Text numberOfLines={6} style={styles.title}>{content.title}</Text>
                     </View>
                     <Text numberOfLines={2} style={styles.description}>{content.description}</Text>
                 </View>

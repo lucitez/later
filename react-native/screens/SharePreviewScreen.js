@@ -6,6 +6,7 @@ import { ContentPreview } from '../components/content';
 import { colors, contentTypes } from '../assets/colors';
 import { useSelector } from 'react-redux';
 import { Radio, RadioGroup } from '../components/common/index';
+import { ScrollView } from 'react-native-gesture-handler';
 
 function SharePreviewScreen({ navigation, route }) {
     const [url, setUrl] = useState('')
@@ -102,15 +103,14 @@ function SharePreviewScreen({ navigation, route }) {
             <SearchBar
                 clear={sent}
                 onChange={value => setUrl(value)}
-
                 iconName='paste'
                 autoFocus={true}
                 returnKeyType={contentPreview ? 'next' : 'default'}
                 placeholder='Enter URL...'
             />
-            <View style={styles.contentContainer}>
+            <ScrollView style={styles.contentContainer} keyboardShouldPersistTaps='handled'>
                 {renderShareContent()}
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }

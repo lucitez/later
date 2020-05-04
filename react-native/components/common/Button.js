@@ -70,7 +70,8 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
     },
     primaryButtonContainer: {
-        borderColor: colors.white
+        borderColor: colors.white,
+        backgroundColor: colors.primary,
     },
     lightButtonContainer: {
         backgroundColor: colors.white,

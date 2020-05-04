@@ -5,11 +5,12 @@ import Network from '../util/Network';
 import { Header, SearchBar, Icon, Divider, BackIcon } from '../components/common';
 import { ContentFilter, ContentPreview } from '../components/content';
 import { EditTagBottomSheet, ForwardBottomSheet } from '../components/modals';
+import { ContentScreenPlaceholder } from '../components/placeholders';
 
 const LIMIT = 20
 
 function ContentScreen({ navigation, route, kind }) {
-    let tag = route.params.tag
+    let tag = route && route.params.tag
 
     const [content, setContent] = useState([])
     const [refreshing, setRefreshing] = useState(false)
@@ -136,6 +137,7 @@ function ContentScreen({ navigation, route, kind }) {
                 <ContentFilter onChange={(filter) => setFilter(filter)} />
             </>}
             <View style={styles.contentContainer}>
+                {!refreshing && content.length == 0 && <ContentScreenPlaceholder navigation={navigation} kind={kind} />}
                 <FlatList
                     data={content}
                     onRefresh={onRefresh}
