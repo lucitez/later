@@ -39,3 +39,8 @@ func (requestBody *UserUpdate) ToUserUpdateBody(userID uuid.UUID) body.UserUpdat
 		PhoneNumber: requestBody.PhoneNumber,
 	}
 }
+
+// UserUpdateExpoToken Binding from json
+type UserUpdateExpoToken struct {
+	Token string `form:"token" json:"token" binding:"required"`
+}

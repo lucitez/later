@@ -28,6 +28,10 @@ import { colors } from './assets/colors'
 import * as actions from './actions'
 import { AuthContext } from './context'
 import { refreshTokens } from './util/auth'
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+import Network from './util/Network'
 
 const ApplicationStack = createStackNavigator()
 const ApplicationTabs = createBottomTabNavigator()
@@ -105,33 +109,80 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSignedIn, setIsSignedIn] = useState(false)
 
+  const registerTokens = async () => {
+    let refreshToken = await AsyncStorage.getItem('refresh_token')
+
+    if (refreshToken) {
+      await store.dispatch(actions.setTokens({ accessToken: null, refreshToken }))
+      refreshTokens()
+        .then(() => {
+          setIsSignedIn(true)
+          setIsLoading(false)
+        })
+        .catch(err => {
+          console.log(err)
+          setIsLoading(false)
+
+        })
+    } else {
+      setIsLoading(false)
+    }
+  }
+
+  const registerPushNotifications = async () => {
+    try {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+
+      if (finalStatus !== 'granted') {
+        return
+      }
+
+      const fullToken = await Notifications.getExpoPushTokenAsync()
+      const exponentPushTokenPattern = /^ExponentPushToken\[(\S+)\]$/
+      const matches = fullToken.match(exponentPushTokenPattern)
+      if (matches.length != 2) {
+        return
+      }
+
+      const token = matches[1]
+
+      Network.PUT('/users/update/expo-token', { token })
+    } catch (e) {
+      console.warn(e)
+    }
+
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('default', {
+        name: 'default',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+  }
+
   useEffect(() => {
     const init = async () => {
-      let refreshToken = await AsyncStorage.getItem('refresh_token')
-
-      if (refreshToken) {
-        await store.dispatch(actions.setTokens({ accessToken: null, refreshToken }))
-        refreshTokens()
-          .then(() => {
-            setIsSignedIn(true)
-            setIsLoading(false)
-          })
-          .catch(err => {
-            console.log(err)
-            setIsLoading(false)
-
-          })
-      } else {
-        setIsLoading(false)
-      }
+      await registerTokens()
+      // await registerPushNotifications()
     }
 
     init()
   }, [])
 
+  // todo put notification check after signing in
   const authContext = useMemo(
     () => ({
-      signIn: () => { setIsSignedIn(true) },
+      signIn: () => {
+        setIsSignedIn(true)
+        registerPushNotifications()
+      },
       signOut: () => { setIsSignedIn(false) },
     }),
     []

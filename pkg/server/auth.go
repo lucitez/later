@@ -1,11 +1,12 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/lucitez/later/pkg/auth"
 	"github.com/lucitez/later/pkg/request"
 	"github.com/lucitez/later/pkg/service"
 	"github.com/lucitez/later/pkg/util/stringutil"
-	"net/http"
 
 	"github.com/google/uuid"
 
@@ -55,7 +56,7 @@ func (server *Auth) login(c *gin.Context) {
 	}
 
 	/** Lookup user by identifier and password */
-	user := server.UserService.ByIdentifierAndPassword(identifier, password)
+	user, _ := server.UserService.ByIdentifierAndPassword(identifier, password)
 
 	if user == nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "incorrect_credentials"})

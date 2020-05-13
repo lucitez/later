@@ -44,7 +44,7 @@ func (c *Chat) WireChatFromChat(chat model.Chat, userID uuid.UUID) (wireChat res
 	var activityMessage = "sent a message"
 
 	if conversationWith := getChatWithUserID(chat, userID); conversationWith != nil {
-		if user := c.UserService.ByID(*conversationWith); user != nil {
+		if user, _ := c.UserService.ByID(*conversationWith); user != nil {
 			wireChat.OtherUserID = wrappers.NewNullUUIDFromUUID(user.ID)
 			wireChat.OtherUserName = wrappers.NewNullStringFromString(user.Name)
 			wireChat.OtherUserUsername = wrappers.NewNullStringFromString(user.Username)
@@ -61,7 +61,7 @@ func (c *Chat) WireChatFromChat(chat model.Chat, userID uuid.UUID) (wireChat res
 
 		if lastMessage.SentBy == userID {
 			wireChat.Activity = fmt.Sprintf("You %s", activityMessage)
-		} else if user := c.UserService.ByID(messages[0].SentBy); user != nil {
+		} else if user, _ := c.UserService.ByID(messages[0].SentBy); user != nil {
 			wireChat.Activity = fmt.Sprintf("%s %s", user.Username, activityMessage)
 		}
 	}

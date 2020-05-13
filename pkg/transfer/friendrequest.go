@@ -19,7 +19,7 @@ func (transfer *FriendRequest) WireFriendRequestsFrom(friendRequests []model.Fri
 	wireFriendRequests := make([]response.WireFriendRequest, len(friendRequests))
 
 	for i, fr := range friendRequests {
-		user := transfer.UserService.ByID(fr.SentByUserID)
+		user, _ := transfer.UserService.ByID(fr.SentByUserID)
 		if user != nil {
 			wireFriendRequests[i] = wireFriendRequest(fr, *user)
 		}

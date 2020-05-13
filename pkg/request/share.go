@@ -17,13 +17,13 @@ type ShareCreateRequestBody struct {
 }
 
 // ToShareCreateBodies converts this request body to a list of share create bodies
-func (requestBody *ShareCreateRequestBody) ToShareCreateBodies(senderUserID uuid.UUID, content model.Content) []body.ShareCreateBody {
+func (requestBody *ShareCreateRequestBody) ToShareCreateBodies(sender model.User, content model.Content) []body.ShareCreateBody {
 	bodies := []body.ShareCreateBody{}
 
 	for _, recipientUserID := range requestBody.RecipientUserIDs {
 		createBody := body.ShareCreateBody{
 			Content:         content,
-			SenderUserID:    senderUserID,
+			Sender:          sender,
 			RecipientUserID: recipientUserID,
 		}
 
@@ -41,13 +41,13 @@ type ShareForwardRequestBody struct {
 }
 
 // ToShareCreateBodies this request body to a list of share create bodies
-func (requestBody *ShareForwardRequestBody) ToShareCreateBodies(senderUserID uuid.UUID, content model.Content) []body.ShareCreateBody {
+func (requestBody *ShareForwardRequestBody) ToShareCreateBodies(sender model.User, content model.Content) []body.ShareCreateBody {
 	bodies := []body.ShareCreateBody{}
 
 	for _, recipientUserID := range requestBody.RecipientUserIDs {
 		createBody := body.ShareCreateBody{
 			Content:         content,
-			SenderUserID:    senderUserID,
+			Sender:          sender,
 			RecipientUserID: recipientUserID,
 		}
 

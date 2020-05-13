@@ -10,18 +10,18 @@ import (
 // UserContentCreateBody ...
 type UserContentCreateBody struct {
 	ShareID         uuid.UUID
-	ContentID       uuid.UUID
+	Content         model.Content
 	RecipientUserID uuid.UUID
-	SenderUserID    uuid.UUID
+	Sender          model.User
 }
 
 // ToUserContent ...
 func (body *UserContentCreateBody) ToUserContent() model.UserContent {
 	return model.NewUserContent(
 		body.ShareID,
-		body.ContentID,
+		body.Content.ID,
 		body.RecipientUserID,
-		body.SenderUserID,
+		body.Sender.ID,
 	)
 }
 

@@ -11,6 +11,7 @@ require (
 	github.com/google/wire v0.4.0
 	github.com/joho/godotenv v1.3.0
 	github.com/lib/pq v1.3.0
+	github.com/oliveroneill/exponent-server-sdk-golang v0.0.0-20190619221248-65582a10ed02
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
 	golang.org/x/tools v0.0.0-20200403190813-44a64ad78b9b // indirect

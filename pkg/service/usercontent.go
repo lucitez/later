@@ -11,35 +11,54 @@ import (
 
 // UserContent ...
 type UserContent struct {
-	Repository repository.UserContent
+	repo                repository.UserContent
+	notificationService Notification
 }
 
 // NewUserContent ...
-func NewUserContent(repository repository.UserContent) UserContent {
-	return UserContent{repository}
+func NewUserContent(
+	repository repository.UserContent,
+	notificationService Notification,
+) UserContent {
+	return UserContent{
+		repository,
+		notificationService,
+	}
 }
 
 // Create ...
-func (service *UserContent) Create(body body.UserContentCreateBody) (*model.UserContent, error) {
+func (uc *UserContent) Create(body body.UserContentCreateBody) (*model.UserContent, error) {
 	userContent := body.ToUserContent()
-	if err := service.Repository.Insert(userContent); err != nil {
+	if err := uc.repo.Insert(userContent); err != nil {
 		return nil, err
 	}
+
+	go uc.sendContentSharedNotification(body.Content, body.Sender, body.RecipientUserID)
 	return &userContent, nil
 }
 
+func (uc *UserContent) sendContentSharedNotification(content model.Content, from model.User, to uuid.UUID) {
+	notificationMessage := PushMessage{
+		To:    to,
+		Title: from.Name + " shared content with you",
+		Body:  content.Title.String + " - " + content.URL,
+	}
+
+	uc.notificationService.SendMessage(notificationMessage)
+}
+
 // ByID ...
-func (service *UserContent) ByID(id uuid.UUID) *model.UserContent {
-	return service.Repository.ByID(id)
+func (uc *UserContent) ByID(id uuid.UUID) *model.UserContent {
+	return uc.repo.ByID(id)
 }
 
 // All ...
-func (service *UserContent) All(limit int) []model.UserContent {
-	return service.Repository.All(limit)
+func (uc *UserContent) All(limit int) []model.UserContent {
+	return uc.repo.All(limit)
 }
 
 // Filter ...
-func (service *UserContent) Filter(
+func (uc *UserContent) Filter(
 	userID uuid.UUID,
 	tag *string,
 	contentType *string,
@@ -48,7 +67,7 @@ func (service *UserContent) Filter(
 	limit int,
 ) ([]model.UserContent, error) {
 
-	return service.Repository.Filter(
+	return uc.repo.Filter(
 		userID,
 		tag,
 		contentType,
@@ -59,43 +78,43 @@ func (service *UserContent) Filter(
 }
 
 // FilterTags ...
-func (service *UserContent) FilterTags(
+func (uc *UserContent) FilterTags(
 	userID uuid.UUID,
 	search *string,
 ) ([]string, error) {
 
-	return service.Repository.FilterTags(
+	return uc.repo.FilterTags(
 		userID,
 		search,
 	)
 }
 
 // ByTag ...
-func (service *UserContent) ByTag(
+func (uc *UserContent) ByTag(
 	userID uuid.UUID,
 	tag string,
 ) ([]model.UserContent, error) {
 
-	return service.Repository.ByTag(
+	return uc.repo.ByTag(
 		userID,
 		tag,
 	)
 }
 
 // Save a piece of user content, providing an optional tag
-func (service *UserContent) Save(
+func (uc *UserContent) Save(
 	id uuid.UUID,
 	tag wrappers.NullString,
 ) error {
-	return service.Repository.Save(id, tag)
+	return uc.repo.Save(id, tag)
 }
 
 // Delete a post
-func (service *UserContent) Delete(id uuid.UUID) error {
-	return service.Repository.Delete(id)
+func (uc *UserContent) Delete(id uuid.UUID) error {
+	return uc.repo.Delete(id)
 }
 
 // Update user content
-func (service *UserContent) Update(body body.UserContentUpdateBody) {
-	service.Repository.Update(body)
+func (uc *UserContent) Update(body body.UserContentUpdateBody) {
+	uc.repo.Update(body)
 }

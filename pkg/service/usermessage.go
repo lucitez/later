@@ -10,16 +10,22 @@ import (
 )
 
 type UserMessage struct {
-	Repo repository.UserMessage
-	Chat Chat
+	repo                repository.UserMessage
+	userService         User
+	notificationService Notification
+	chat                Chat
 }
 
 func NewUserMessage(
 	repo repository.UserMessage,
+	userService User,
+	notificationService Notification,
 	chat Chat,
 ) UserMessage {
 	return UserMessage{
 		repo,
+		userService,
+		notificationService,
 		chat,
 	}
 }
@@ -30,10 +36,17 @@ func NewUserMessage(
 // 2. Create UserMessage for each of these people
 // 3. Send notifications
 func (um *UserMessage) CreateByMessage(message model.Message) {
-	chat, err := um.Chat.ByID(message.ChatID)
+	chat, err := um.chat.ByID(message.ChatID)
 
-	if err != nil && chat == nil {
+	if err != nil || chat == nil {
 		log.Printf("[WARN] Error creating user message. Error: %v Chat:%v\n", err, chat)
+		return
+	}
+
+	sender, err := um.userService.ByID(message.SentBy)
+
+	if err != nil || sender == nil {
+		log.Printf("[WARN] Error getting message sender: %s\n", err.Error())
 	}
 
 	targetUserIds := []uuid.UUID{}
@@ -55,18 +68,32 @@ func (um *UserMessage) CreateByMessage(message model.Message) {
 			message.ID,
 		)
 
-		err := um.Repo.Insert(userMessage)
+		err := um.repo.Insert(userMessage)
 
 		if err != nil {
 			log.Printf("[WARN] Error creating user message. Error: %v\n", err)
 		}
+
+		if !message.ContentID.Valid {
+			go um.sendMessageSentNotification(message, *sender, userID)
+		}
 	}
 }
 
+func (um *UserMessage) sendMessageSentNotification(message model.Message, from model.User, to uuid.UUID) {
+	notificationMessage := PushMessage{
+		To:    to,
+		Title: from.Name + " sent you a message",
+		Body:  message.Message.String,
+	}
+
+	um.notificationService.SendMessage(notificationMessage)
+}
+
 func (um *UserMessage) UnreadByChatAndUser(chatID uuid.UUID, userID uuid.UUID) bool {
-	return um.Repo.UnreadByChatAndUser(chatID, userID)
+	return um.repo.UnreadByChatAndUser(chatID, userID)
 }
 
 func (um *UserMessage) MarkReadByChatAndUser(chatID uuid.UUID, userID uuid.UUID) {
-	um.Repo.MarkReadByChatAndUser(chatID, userID)
+	um.repo.MarkReadByChatAndUser(chatID, userID)
 }

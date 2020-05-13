@@ -31,7 +31,7 @@ func NewShare(
 func (manager *Share) Create(body body.ShareCreateBody) (*model.Share, error) {
 	share := model.NewShare(
 		body.Content.ID,
-		body.SenderUserID,
+		body.Sender.ID,
 		body.RecipientUserID,
 	)
 

@@ -1,6 +1,6 @@
 POST http://localhost:8080/auth/login
 Client-Id: bc42c734-992a-463a-9602-36218ce03152
-Authorization: Basic boat:pass
+Authorization: Basic glump:pass
 
 
 

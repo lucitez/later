@@ -118,7 +118,6 @@ function ContentScreen({ navigation, route, kind }) {
         />
     )
 
-    // TODO splash for when there is no content
     // TODO swipe to save/delete
     return (
         <SafeAreaView style={styles.container}>
@@ -137,7 +136,7 @@ function ContentScreen({ navigation, route, kind }) {
                 <ContentFilter onChange={(filter) => setFilter(filter)} />
             </>}
             <View style={styles.contentContainer}>
-                {/* {!refreshing && content.length == 0 && } */}
+                {!refreshing && content.length == 0 && < ContentScreenPlaceholder navigation={navigation} kind={kind} />}
                 <FlatList
                     data={content}
                     onRefresh={onRefresh}
@@ -146,7 +145,6 @@ function ContentScreen({ navigation, route, kind }) {
                     onEndReachedThreshold={0.1}
                     renderItem={renderContent}
                     ItemSeparatorComponent={Divider}
-                    ListEmptyComponent={() => <ContentScreenPlaceholder navigation={navigation} kind={kind} />}
                 />
             </View>
             <EditTagBottomSheet

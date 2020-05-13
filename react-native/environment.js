@@ -4,15 +4,15 @@ import { CLIENT_ID } from 'react-native-dotenv'
 const ENV = {
     dev: {
         apiUrl: 'http://192.168.254.64:8080',
-        clientId: CLIENT_ID,
+        clientId: 'bc42c734-992a-463a-9602-36218ce03152',
     },
     staging: {
         apiUrl: 'https://later-api.appspot.com',
-        clientId: CLIENT_ID,
+        clientId: 'bc42c734-992a-463a-9602-36218ce03152',
     },
     prod: {
         apiUrl: 'https://later-api.appspot.com',
-        clientId: CLIENT_ID,
+        clientId: 'bc42c734-992a-463a-9602-36218ce03152',
     }
 };
 

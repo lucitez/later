@@ -2,10 +2,11 @@ package util
 
 import (
 	"database/sql"
-	"github.com/lucitez/later/pkg/util/stringutil"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/lucitez/later/pkg/util/stringutil"
 )
 
 // GenerateArguments creates a list of interface from the Query class
@@ -39,6 +40,14 @@ func ScanRowsInto(rows *sql.Rows, i interface{}) error {
 }
 
 // ScanRowInto scans the db row into the struct passed in by reference
+// Usage:
+// err := util.ScanRowInto(row, &var)
+
+// 	if err == sql.ErrNoRows {
+// 		return nil, nil
+// 	}
+
+// 	return &var, err
 func ScanRowInto(row *sql.Row, i interface{}) error {
 	elem := reflect.ValueOf(i).Elem()
 

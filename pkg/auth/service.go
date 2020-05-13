@@ -65,12 +65,12 @@ func (s *Service) CheckConflicts(
 	phoneNumber string,
 	username string,
 ) error {
-	existingUser := s.UserRepo.ByIdentifiers(
+	existingUser, err := s.UserRepo.ByIdentifiers(
 		phoneNumber,
 		username,
 	)
 
-	if existingUser == nil {
+	if existingUser == nil || err != nil {
 		return nil
 	}
 

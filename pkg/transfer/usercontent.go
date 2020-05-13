@@ -34,7 +34,7 @@ func (transfer *UserContent) WireUserContentsFrom(userContent []model.UserConten
 			return
 		}
 
-		user := transfer.UserService.ByID(userContent.SentByUserID)
+		user, _ := transfer.UserService.ByID(userContent.SentByUserID)
 		if content != nil && user != nil {
 			wire[i] = wireUserContent(userContent, *content, *user)
 		}

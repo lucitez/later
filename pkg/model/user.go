@@ -1,9 +1,6 @@
 package model
 
 import (
-	"database/sql"
-	"log"
-
 	"github.com/google/uuid"
 
 	"time"
@@ -19,6 +16,7 @@ type User struct {
 	Email       wrappers.NullString `json:"email"`
 	PhoneNumber string              `json:"phone_number"`
 	Password    string              `json:"password"`
+	ExpoToken   wrappers.NullString `json:"expo_token"`
 
 	CreatedAt  time.Time         `json:"created_at"`
 	SignedUpAt wrappers.NullTime `json:"signed_up_at"`
@@ -52,49 +50,4 @@ func NewUserFromSignUp(
 		CreatedAt:  now,
 		UpdatedAt:  now,
 	}
-}
-
-// ScanRows ...
-func (user *User) ScanRows(rows *sql.Rows) {
-	err := rows.Scan(
-		&user.ID,
-		&user.Name,
-		&user.Username,
-		&user.Email,
-		&user.PhoneNumber,
-		&user.Password,
-		&user.CreatedAt,
-		&user.SignedUpAt,
-		&user.UpdatedAt,
-		&user.DeletedAt,
-	)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-// ScanRow ...
-func (user *User) ScanRow(row *sql.Row) *User {
-	err := row.Scan(
-		&user.ID,
-		&user.Name,
-		&user.Username,
-		&user.Email,
-		&user.PhoneNumber,
-		&user.Password,
-		&user.CreatedAt,
-		&user.SignedUpAt,
-		&user.UpdatedAt,
-		&user.DeletedAt,
-	)
-
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil
-		}
-		panic(err)
-	}
-
-	return user
 }

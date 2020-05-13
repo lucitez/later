@@ -9,7 +9,7 @@ import (
 // ShareCreateBody ...
 type ShareCreateBody struct {
 	Content         model.Content
-	SenderUserID    uuid.UUID
+	Sender          model.User
 	RecipientUserID uuid.UUID
 }
 
@@ -17,8 +17,8 @@ type ShareCreateBody struct {
 func (body *ShareCreateBody) ToUserContentCreateBody(shareID uuid.UUID) UserContentCreateBody {
 	return UserContentCreateBody{
 		ShareID:         shareID,
-		ContentID:       body.Content.ID,
+		Content:         body.Content,
 		RecipientUserID: body.RecipientUserID,
-		SenderUserID:    body.SenderUserID,
+		Sender:          body.Sender,
 	}
 }

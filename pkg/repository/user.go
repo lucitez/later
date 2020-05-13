@@ -2,9 +2,10 @@ package repository
 
 import (
 	"database/sql"
-	"github.com/lucitez/later/pkg/service/body"
 	"log"
 	"strconv"
+
+	"github.com/lucitez/later/pkg/service/body"
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
@@ -29,63 +30,44 @@ var userSelectStatement = util.GenerateSelectStatement(model.User{}, "users")
 
 // Insert inserts a new user
 func (repository *User) Insert(user model.User) error {
-
-	statement := `
-	INSERT INTO USERS (
-		id,
-		name,
-		username,
-		email,
-		phone_number,
-		password,
-		created_at,
-		signed_up_at,
-		updated_at,
-		deleted_at
-	) VALUES (
-		$1,
-		$2,
-		$3,
-		$4,
-		$5,
-		crypt($6, gen_salt('bf')),
-		$7,
-		$8,
-		$9,
-		$10
-	);
-	`
-
 	_, err := repository.DB.Exec(
-		statement,
-		user.ID,
-		user.Name,
-		user.Username,
-		user.Email,
-		user.PhoneNumber,
-		user.Password,
-		user.CreatedAt,
-		user.SignedUpAt,
-		user.UpdatedAt,
-		user.DeletedAt,
+		util.GenerateInsertStatement(user, "users"),
+		util.GenerateInsertArguments(user),
 	)
 
 	return err
 }
 
+// UpdateExpoToken updates this user's expo token for push notifications
+func (repository *User) UpdateExpoToken(token string, id uuid.UUID) error {
+	statement := `
+	UPDATE users SET expo_token = $1
+	WHERE id = $2;
+	`
+
+	_, err := repository.DB.Exec(statement, token, id)
+	return err
+}
+
 // ByID gets a user by id
-func (repository *User) ByID(id uuid.UUID) *model.User {
+func (repository *User) ByID(id uuid.UUID) (*model.User, error) {
 	var user model.User
 
 	statement := userSelectStatement + ` WHERE id = $1;`
 
 	row := repository.DB.QueryRow(statement, id)
 
-	return user.ScanRow(row)
+	err := util.ScanRowInto(row, &user)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	return &user, err
 }
 
 // ByIdentifierAndPassword gets a user by id
-func (repository *User) ByIdentifierAndPassword(identifier string, password string) *model.User {
+func (repository *User) ByIdentifierAndPassword(identifier string, password string) (*model.User, error) {
 	var user model.User
 
 	statement := userSelectStatement + `
@@ -99,11 +81,17 @@ func (repository *User) ByIdentifierAndPassword(identifier string, password stri
 
 	row := repository.DB.QueryRow(statement, identifier, password)
 
-	return user.ScanRow(row)
+	err := util.ScanRowInto(row, &user)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	return &user, err
 }
 
 // ByIDs ...
-func (repository *User) ByIDs(ids []uuid.UUID) []model.User {
+func (repository *User) ByIDs(ids []uuid.UUID) ([]model.User, error) {
 	statement := userSelectStatement + `
 	WHERE id = ANY($1)
 	AND deleted_at IS NULL;
@@ -112,14 +100,14 @@ func (repository *User) ByIDs(ids []uuid.UUID) []model.User {
 	rows, err := repository.DB.Query(statement, pq.Array(ids))
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	return repository.scanRows(rows)
 }
 
 // ByPhoneNumber gets a user by their phone number
-func (repository *User) ByPhoneNumber(phoneNumber string) *model.User {
+func (repository *User) ByPhoneNumber(phoneNumber string) (*model.User, error) {
 	var user model.User
 
 	statement := userSelectStatement + `
@@ -129,14 +117,20 @@ func (repository *User) ByPhoneNumber(phoneNumber string) *model.User {
 
 	row := repository.DB.QueryRow(statement, phoneNumber)
 
-	return user.ScanRow(row)
+	err := util.ScanRowInto(row, &user)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	return &user, err
 }
 
 // AddFriendFilter ...
 func (repository *User) AddFriendFilter(
 	userID uuid.UUID,
 	search *string,
-) []model.User {
+) ([]model.User, error) {
 	withStatement := `
 	WITH user_friends AS (
 		SELECT friend_user_id
@@ -190,7 +184,7 @@ func (repository *User) Filter(
 	search *string,
 	limit int,
 	offset int,
-) []model.User {
+) ([]model.User, error) {
 	statement := userSelectStatement
 	counter := 1
 	var fuzzySearch *string = nil
@@ -240,7 +234,7 @@ func (repository *User) Filter(
 func (repository *User) ByIdentifiers(
 	phoneNumber string,
 	username string,
-) *model.User {
+) (*model.User, error) {
 	var user model.User
 
 	statement := util.GenerateSelectStatement(user, "users")
@@ -254,7 +248,13 @@ func (repository *User) ByIdentifiers(
 
 	row := repository.DB.QueryRow(statement, phoneNumber, username)
 
-	return user.ScanRow(row)
+	err := util.ScanRowInto(row, &user)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	return &user, err
 }
 
 func (repository *User) Update(body body.UserUpdate) error {
@@ -265,22 +265,25 @@ func (repository *User) Update(body body.UserUpdate) error {
 	return err
 }
 
-func (repository *User) scanRows(rows *sql.Rows) []model.User {
+func (repository *User) scanRows(rows *sql.Rows) ([]model.User, error) {
 	users := []model.User{}
 
 	defer rows.Close()
 
 	for rows.Next() {
 		var user model.User
-		user.ScanRows(rows)
+		err := util.ScanRowsInto(rows, &user)
+
+		if err != nil {
+			return nil, err
+		}
 
 		users = append(users, user)
 	}
 
-	err := rows.Err()
-	if err != nil {
-		log.Fatal(err)
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
-	return users
+	return users, nil
 }

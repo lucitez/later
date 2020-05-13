@@ -43,13 +43,15 @@ function NotificationsScreen() {
 
     return (
         <View style={styles.container}>
+            {!refreshing && friendRequests.length == 0 && <View style={{ alignItems: 'center', padding: 20 }}>
+                <Text>You have no notifications.</Text>
+            </View>}
             <FlatList
                 data={friendRequests}
                 renderItem={renderFriendRequest}
                 onRefresh={loadFriendRequests}
                 refreshing={refreshing}
                 ItemSeparatorComponent={Divider}
-                ListEmptyComponent={() => <Text>You have no notifications.</Text>}
             />
         </View>
     );

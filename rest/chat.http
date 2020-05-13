@@ -1,2 +1,10 @@
-POST http://localhost:8000/chats/for-user
-Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODc5NDA1NDQsImlhdCI6MTU4NzkzOTY0NCwidXNlclNlc3Npb25faWQiOiIxYjBjNGI3NS1jZTI0LTQ1NWItYjNkYi05OTJiZTNkZmU2MDEifQ.7fJSDRP_ReLxAHgp-HTtpqNQo01k_VfjBETDJQ0hQ60
+# GET http://localhost:8080/chats/for-user
+# Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODk0MDQ3MTUsImlhdCI6MTU4OTQwMzgxNSwic3ViIjoiNDVmYTRhMjEtZWI2NC00Y2FlLTliNjYtNjdiNTYxZWMzNjgxIiwidXNlcl9zZXNzaW9uX2lkIjoiYWRiZGQyYTgtNWQ3OC00ZDFkLWE5M2MtNjc3MjRhYmFiYWIyIn0.QbMbghERLSfhxIcw_2v9mnD42Xmq1VMurxn5eS9Ls0k
+
+POST http://localhost:8080/messages/send
+Authorization: Basic eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1ODk0MDQ3MTUsImlhdCI6MTU4OTQwMzgxNSwic3ViIjoiNDVmYTRhMjEtZWI2NC00Y2FlLTliNjYtNjdiNTYxZWMzNjgxIiwidXNlcl9zZXNzaW9uX2lkIjoiYWRiZGQyYTgtNWQ3OC00ZDFkLWE5M2MtNjc3MjRhYmFiYWIyIn0.QbMbghERLSfhxIcw_2v9mnD42Xmq1VMurxn5eS9Ls0k
+
+{
+    "chat_id": "1c7d1af3-26d8-4ab7-bae4-3ee152090e62",
+    "message": "hi"
+}

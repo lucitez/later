@@ -19,38 +19,43 @@ func NewUser(repository repository.User) User {
 }
 
 // SignUp ...
-func (manager *User) SignUp(body body.UserSignUp) (*model.User, error) {
+func (service *User) SignUp(body body.UserSignUp) (*model.User, error) {
 	user := body.ToUser()
 
-	if err := manager.Repository.Insert(user); err != nil {
+	if err := service.Repository.Insert(user); err != nil {
 		return nil, err
 	}
 
 	return &user, nil
 }
 
+// UpdateExpoToken ...
+func (service *User) UpdateExpoToken(token string, id uuid.UUID) error {
+	return service.Repository.UpdateExpoToken(token, id)
+}
+
 // ByID ...
-func (manager *User) ByID(id uuid.UUID) *model.User {
-	return manager.Repository.ByID(id)
+func (service *User) ByID(id uuid.UUID) (*model.User, error) {
+	return service.Repository.ByID(id)
 }
 
 // ByIdentifierAndPassword ...
-func (manager *User) ByIdentifierAndPassword(identifier string, password string) *model.User {
-	return manager.Repository.ByIdentifierAndPassword(identifier, password)
+func (service *User) ByIdentifierAndPassword(identifier string, password string) (*model.User, error) {
+	return service.Repository.ByIdentifierAndPassword(identifier, password)
 }
 
 // ByPhoneNumber ...
-func (manager *User) ByPhoneNumber(phoneNumber string) *model.User {
-	return manager.Repository.ByPhoneNumber(phoneNumber)
+func (service *User) ByPhoneNumber(phoneNumber string) (*model.User, error) {
+	return service.Repository.ByPhoneNumber(phoneNumber)
 }
 
 // Filter ...
-func (manager *User) Filter(
+func (service *User) Filter(
 	search *string,
 	limit int,
 	offset int,
-) []model.User {
-	return manager.Repository.Filter(
+) ([]model.User, error) {
+	return service.Repository.Filter(
 		search,
 		limit,
 		offset,
@@ -58,17 +63,17 @@ func (manager *User) Filter(
 }
 
 // AddFriendFilter ...
-func (manager *User) AddFriendFilter(
+func (service *User) AddFriendFilter(
 	userID uuid.UUID,
 	search *string,
-) []model.User {
-	return manager.Repository.AddFriendFilter(
+) ([]model.User, error) {
+	return service.Repository.AddFriendFilter(
 		userID,
 		search,
 	)
 }
 
 // Update ...
-func (manager *User) Update(body body.UserUpdate) error {
-	return manager.Repository.Update(body)
+func (service *User) Update(body body.UserUpdate) error {
+	return service.Repository.Update(body)
 }

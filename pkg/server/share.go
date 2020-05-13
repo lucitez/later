@@ -66,7 +66,13 @@ func (server *ShareServer) forward(context *gin.Context) {
 		return
 	}
 
-	shares := server.createSharesFromContent(body.ToShareCreateBodies(userID, *content))
+	user, err := server.User.ByID(userID)
+
+	if user == nil {
+		context.JSON(http.StatusInternalServerError, "Could not find sender")
+	}
+
+	shares := server.createSharesFromContent(body.ToShareCreateBodies(*user, *content))
 
 	go server.Content.IncrementShareCount(content.ID, len(shares))
 
@@ -95,7 +101,13 @@ func (server *ShareServer) new(context *gin.Context) {
 		return
 	}
 
-	shares := server.createSharesFromContent(body.ToShareCreateBodies(userID, *content))
+	user, err := server.User.ByID(userID)
+
+	if user == nil {
+		context.JSON(http.StatusInternalServerError, "Could not find sender")
+	}
+
+	shares := server.createSharesFromContent(body.ToShareCreateBodies(*user, *content))
 
 	context.JSON(http.StatusOK, shares)
 }

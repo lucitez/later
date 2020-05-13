@@ -1,8 +1,9 @@
 package server
 
 import (
-	"github.com/lucitez/later/pkg/transfer"
 	"net/http"
+
+	"github.com/lucitez/later/pkg/transfer"
 
 	"github.com/lucitez/later/pkg/request"
 	"github.com/lucitez/later/pkg/service"
@@ -35,6 +36,7 @@ func (server *User) Routes(router *gin.RouterGroup) []gin.IRoutes {
 		router.GET("/search", server.search),
 
 		router.PUT("/update", server.update),
+		router.PUT("/update/expo-token", server.updateExpoToken),
 	}
 }
 
@@ -46,7 +48,12 @@ func (server *User) byID(context *gin.Context) {
 
 	if qp, ok := deser.DeserQueryParams(); ok {
 		userID := qp["id"].(*uuid.UUID)
-		user := server.service.ByID(*userID)
+		user, err := server.service.ByID(*userID)
+
+		if err != nil {
+			context.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		if user == nil {
 			context.JSON(http.StatusOK, nil)
@@ -60,7 +67,13 @@ func (server *User) byID(context *gin.Context) {
 func (server *User) profile(context *gin.Context) {
 	userID := context.MustGet("user_id").(uuid.UUID)
 
-	user := server.service.ByID(userID)
+	user, err := server.service.ByID(userID)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	if user == nil {
 		context.JSON(http.StatusBadRequest, "User not found")
 		return
@@ -81,7 +94,12 @@ func (server *User) profileByID(context *gin.Context) {
 
 	if qp, ok := deser.DeserQueryParams(); ok {
 		profileUserID := qp["profile_user_id"].(*uuid.UUID)
-		profileUser := server.service.ByID(*profileUserID)
+		profileUser, err := server.service.ByID(*profileUserID)
+
+		if err != nil {
+			context.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
 
 		if profileUser == nil {
 			context.JSON(http.StatusBadRequest, "User not found")
@@ -109,14 +127,39 @@ func (server *User) search(context *gin.Context) {
 		search := qp["search"].(*string)
 		limit := qp["limit"].(*int)
 		offset := qp["offset"].(*int)
-		users := server.service.Filter(
+		users, err := server.service.Filter(
 			search,
 			*limit,
 			*offset,
 		)
 
+		if err != nil {
+			context.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		context.JSON(http.StatusOK, server.Transfer.WireUsersFrom(users))
 	}
+}
+
+func (server *User) updateExpoToken(context *gin.Context) {
+	userID := context.MustGet("user_id").(uuid.UUID)
+
+	var body request.UserUpdateExpoToken
+
+	if err := context.BindJSON(&body); err != nil {
+		context.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	err := server.service.UpdateExpoToken(body.Token, userID)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	context.JSON(http.StatusOK, true)
 }
 
 func (server *User) update(context *gin.Context) {
